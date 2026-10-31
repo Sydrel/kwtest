@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KW Commercial | Premium Fleet Washing & Detailing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --kw-red: #E31B23; 
+            --kw-black: #050505; 
+            --kw-dark: #0a0a0a;
+            --kw-card: #111111;
+            --kw-white: #FFFFFF;
+            --kw-gray: #888888;
+            --kw-light-gray: #cccccc;
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        /* --- GLOBAL RESET & SMOOTH SCROLL --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-sans); background-color: var(--kw-black); color: var(--kw-white); line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased;}
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* --- ANIMATIONS --- */
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* --- UTILITIES --- */
+        .container { width: 90%; max-width: 1400px; margin: 0 auto; }
+        .text-red { color: var(--kw-red); }
+        
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 18px 40px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: all 0.4s ease; cursor: pointer; border: none; font-size: 0.85rem;}
+        .btn-red { background-color: var(--kw-red); color: var(--kw-white); }
+        .btn-red:hover { background-color: #b00d14; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(227, 27, 35, 0.3); }
+        .btn-outline { background: transparent; border: 1px solid var(--kw-white); color: var(--kw-white); }
+        .btn-outline:hover { background: var(--kw-white); color: var(--kw-black); }
+
+        /* --- HEADER (Glassmorphism) --- */
+        header { position: fixed; width: 100%; top: 0; z-index: 1000; padding: 15px 0; transition: all 0.4s ease; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05);}
+        .nav-wrap { display: flex; justify-content: space-between; align-items: center; position: relative;}
+        .logo-img { height: 55px; width: auto; transition: height 0.4s ease;}
+        
+        nav ul { display: flex; gap: 35px; align-items: center;}
+        nav a { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--kw-light-gray); transition: color 0.3s;}
+        nav a:hover { color: var(--kw-white); }
+        nav .nav-btn { color: var(--kw-white); background: var(--kw-red); padding: 12px 25px; border-radius: 2px; }
+        nav .nav-btn:hover { background: #b00d14; }
+
+        /* Mobile Menu Button */
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 5px;}
+        .menu-toggle span { display: block; width: 25px; height: 2px; background: var(--kw-white); transition: 0.3s;}
+
+        /* --- HERO (Centered Cinematic) --- */
+        .hero { 
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            position: relative; 
+            background: url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat fixed;
+            text-align: center;
+            padding: 0 15px;
+        }
+        .hero::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(180deg, rgba(5,5,5,0.8) 0%, rgba(5,5,5,0.6) 50%, rgba(5,5,5,0.95) 100%); 
+            z-index: 1;
+        }
+
+        .hero-content { 
+            position: relative; 
+            z-index: 2; 
+            width: 100%; 
+            padding-top: 80px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .hero .tagline { 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            letter-spacing: 5px; 
+            text-transform: uppercase; 
+            color: var(--kw-red); 
+            display: block; 
+            margin-bottom: 25px; 
+            background: rgba(227, 27, 35, 0.1);
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(227, 27, 35, 0.3);
+        }
+        
+        .hero h1 { 
+            font-family: var(--font-serif); 
+            font-size: 5rem; 
+            line-height: 1.1; 
+            font-weight: 700; 
+            margin-bottom: 25px; 
+            max-width: 1000px;
+        }
+        
+        .hero p { 
+            font-size: 1.2rem; 
+            color: var(--kw-light-gray); 
+            max-width: 650px; 
+            margin-bottom: 45px; 
+            font-weight: 300;
+        }
+
+        .hero-buttons { display: flex; gap: 20px; justify-content: center;}
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: var(--kw-gray);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .mouse {
+            width: 25px;
+            height: 40px;
+            border: 2px solid var(--kw-gray);
+            border-radius: 15px;
+            position: relative;
+        }
+        .mouse::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--kw-red);
+            border-radius: 2px;
+            animation: scroll 2s infinite;
+        }
+        @keyframes scroll {
+            0% { top: 8px; opacity: 1; }
+            100% { top: 22px; opacity: 0; }
+        }
+
+        /* --- FLEET SERVICES (Luxury Grid) --- */
+        .services-section { padding: 150px 0; background: var(--kw-dark); position: relative;}
+        .section-header { text-align: center; margin-bottom: 80px; }
+        .section-header h2 { font-family: var(--font-serif); font-size: 3.5rem; margin-bottom: 15px;}
+        .section-header p { color: var(--kw-gray); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 3px;}
+        
+        .grid-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 30px; }
+        
+        .service-box { background: var(--kw-card); border: 1px solid #1a1a1a; position: relative; overflow: hidden; cursor: pointer; transition: all 0.5s ease; height: 350px; display: flex; flex-direction: column; justify-content: flex-end; padding: 40px;}
+        .service-box:hover { border-color: var(--kw-red); }
+        
+        .service-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; transition: transform 0.7s ease; opacity: 0.5;}
+        .service-box:hover .service-bg { transform: scale(1.08); opacity: 0.8;}
+        .service-box::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 80%; background: linear-gradient(to top, var(--kw-black) 10%, transparent 100%); z-index: 1;}
+        
+        .service-info { position: relative; z-index: 2; }
+        .service-info h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 5px; letter-spacing: 1px;}
+        .service-info p { color: var(--kw-light-gray); font-size: 0.9rem; margin-bottom: 20px;}
+        .service-link { color: var(--kw-red); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; transition: gap 0.3s ease;}
+        .service-box:hover .service-link { gap: 20px; }
+
+        /* --- MODAL --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease;}
+        .modal-overlay.active { display: flex; opacity: 1;}
+        .modal-content { background: var(--kw-card); width: 100%; max-width: 550px; border: 1px solid #333; position: relative; transform: translateY(20px); transition: transform 0.3s ease;}
+        .modal-overlay.active .modal-content { transform: translateY(0);}
+        .modal-header { padding: 30px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center;}
+        .modal-header h3 { font-family: var(--font-serif); font-size: 1.8rem; }
+        .close-btn { background: none; border: none; color: var(--kw-white); font-size: 2rem; cursor: pointer; line-height: 1; transition: 0.3s;}
+        .close-btn:hover { color: var(--kw-red); }
+        .modal-body { padding: 30px; }
+        .modal-body p { color: var(--kw-gray); font-size: 0.9rem; margin-bottom: 25px;}
+        .vehicle-tier { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #222; font-weight: 300;}
+        .modal-footer { padding: 30px; background: #0a0a0a; text-align: center;}
+
+        /* --- 365 AUTOCARE (Luxury Showcase) --- */
+        .autocare-section { padding: 150px 0; background: var(--kw-black); position: relative;}
+        .autocare-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(227, 27, 35, 0.08) 0%, transparent 70%); z-index: 0;}
+        
+        .autocare-header { text-align: center; margin-bottom: 80px; position: relative; z-index: 1;}
+        .autocare-header h2 { font-family: var(--font-serif); font-size: 4.5rem; line-height: 1; margin-bottom: 15px;}
+        .autocare-header p { color: var(--kw-red); font-size: 1rem; text-transform: uppercase; letter-spacing: 5px; font-weight: 600;}
+        
+        .luxury-card { 
+            background: var(--kw-dark); 
+            border: 1px solid #222; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            position: relative; 
+            z-index: 1; 
+            display: grid; 
+            grid-template-columns: 1fr 1.4fr; 
+        }
+        
+        .price-side { padding: 80px 60px; border-right: 1px solid #222; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
+        .price-side .price { font-size: 6rem; font-weight: 300; line-height: 1; letter-spacing: -3px; margin-bottom: 5px;}
+        .price-side .price span { font-size: 2rem; color: var(--kw-red); font-weight: 600; vertical-align: super;}
+        .price-side .term { font-size: 1rem; color: var(--kw-gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 40px;}
+        
+        .setup-note { background: #151515; padding: 15px 25px; font-size: 0.8rem; color: var(--kw-light-gray); margin-bottom: 40px; border-left: 2px solid var(--kw-red);}
+        .setup-note span { color: var(--kw-red); font-weight: 600;}
+        
+        .price-side .btn { width: 100%; padding: 22px; font-size: 1rem; }
+        .no-contract { font-size: 0.75rem; color: #666; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px;}
+
+        .details-side { padding: 80px 60px; }
+        .details-side h3 { font-family: var(--font-serif); font-size: 2rem; margin-bottom: 30px;}
+        
+        .benefit-grid { display: grid; grid-template-columns: 1fr; gap: 25px; margin-bottom: 40px;}
+        .benefit { display: flex; gap: 20px; align-items: flex-start;}
+        .benefit-icon { width: 30px; height: 30px; border-radius: 50%; background: rgba(227, 27, 35, 0.1); border: 1px solid var(--kw-red); display: flex; align-items: center; justify-content: center; color: var(--kw-red); font-size: 0.8rem; font-weight: bold; flex-shrink: 0;}
+        .benefit-text h4 { font-size: 1rem; font-weight: 600; margin-bottom: 5px;}
+        .benefit-text p { font-size: 0.85rem; color: var(--kw-gray);}
+
+        .feature-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px;}
+        .feature-col h5 { color: var(--kw-red); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 15px;}
+        .feature-col ul li { font-size: 0.9rem; color: var(--kw-light-gray); margin-bottom: 12px; font-weight: 300; display: flex; align-items: center; gap: 10px;}
+        .feature-col ul li::before { content: "—"; color: var(--kw-red); }
+
+        /* --- FOOTER --- */
+        footer { background: var(--kw-black); padding: 60px 0; text-align: center; border-top: 1px solid #111;}
+        footer .footer-logo { height: 50px; opacity: 0.5; margin-bottom: 20px;}
+        footer p { color: #444; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;}
+
+        /* ========================================= */
+        /* --- RESPONSIVE DESIGN (TABLETS & MOBILES) --- */
+        /* ========================================= */
+
+        /* Tablets & Small Laptops (1024px and down) */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 4rem; }
+            .hero p { font-size: 1.1rem; }
+            .luxury-card { grid-template-columns: 1fr; }
+            .price-side { border-right: none; border-bottom: 1px solid #222; padding: 60px 30px;}
+            .details-side { padding: 60px 30px;}
+            .grid-6 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        }
+
+        /* Large Phones & Small Tablets (768px and down) */
+        @media (max-width: 768px) {
+            /* Show Mobile Menu Button */
+            .menu-toggle { display: flex; }
+            
+            /* Mobile Navigation Dropdown */
+            nav ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #050505;
+                padding: 20px 0;
+                border-bottom: 1px solid #222;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            }
+            nav ul.active { display: flex; }
+            nav ul li { width: 100%; text-align: center; margin: 10px 0; }
+            nav a { display: block; padding: 10px; font-size: 1rem; }
+            nav .nav-btn { display: inline-block; padding: 12px 30px; width: auto; margin-top: 10px; }
+
+            /* Typography Scaling */
+            .hero h1 { font-size: 2.8rem; }
+            .hero p { font-size: 1rem; }
+            .hero .tagline { font-size: 0.7rem; letter-spacing: 2px; padding: 6px 15px;}
+            .section-header h2 { font-size: 2.2rem; }
+            .autocare-header h2 { font-size: 3rem; }
+            .section-header p, .autocare-header p { font-size: 0.85rem; letter-spacing: 2px; }
+
+            /* Hero Buttons Stack */
+            .hero-buttons { flex-direction: column; width: 100%; max-width: 320px; margin: 0 auto; gap: 15px;}
+            .hero-buttons .btn { width: 100%; padding: 16px; font-size: 0.8rem;}
+
+            /* Grid Stack */
+            .grid-6 { grid-template-columns: 1fr; gap: 20px; }
+            .service-box { height: 300px; padding: 30px;}
+
+            /* 365 AutoCare Adjustments */
+            .price-side .price { font-size: 5rem; }
+            .price-side { padding: 50px 20px; }
+            .details-side { padding: 50px 20px; }
+            .feature-columns { grid-template-columns: 1fr; gap: 20px;}
+            .details-side h3 { font-size: 1.5rem; }
+
+            /* Spacing adjustments */
+            .services-section, .autocare-section { padding: 80px 0; }
+            .section-header, .autocare-header { margin-bottom: 50px; }
+            
+            /* Scroll Indicator Hide */
+            .scroll-indicator { display: none; }
+        }
+
+        /* Small Phones (480px and down) */
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2.2rem; line-height: 1.2;}
+            .logo-img { height: 40px; }
+            .container { width: 92%; }
+            .price-side .price { font-size: 4rem; }
+            .autocare-header h2 { font-size: 2.5rem; }
+            .service-info h3 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="container nav-wrap">
+            <a href="index.html" class="logo-container">
+                <img src="https://i.imgur.com/SMtB4Ug.png" alt="KW Logo" class="logo-img">
+            </a>
+            
+            <!-- Mobile Menu Button -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="#services">Fleet Services</a></li>
+                    <li><a href="#autocare">365 AutoCare</a></li>
+                    <li><a href="contact.html" class="nav-btn">Get a Quote</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO (Centered) -->
+    <section class="hero">
+        <div class="container hero-content">
+            <div class="fade-in">
+                <span class="tagline">Commercial Fleet Washing & Mobile Detailing</span>
+                <h1>Keeping your fleet clean.<br><span class="text-red">Keeping your business moving.</span></h1>
+                <p>We deliver a premium, concierge-level wash and detailing experience directly to your fleet, yard, or home.</p>
+                <div class="hero-buttons">
+                    <a href="#autocare" class="btn btn-red">View Membership</a>
+                    <a href="#services" class="btn btn-outline">Explore Services</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <div class="mouse"></div>
+            <span>Scroll</span>
+        </div>
+    </section>
+
+    <!-- FLEET SERVICES GRID -->
+    <section id="services" class="services-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Fleet & Commercial <span class="text-red">Services</span></h2>
+                <p>Select a category to view sizes</p>
+            </div>
+            
+            <div class="grid-6">
+                <!-- 1. Delivery Vans -->
+                <div class="service-box fade-in" onclick="openModal('Delivery Vans', ['Standard Cargo Van', 'Extended Sprinter Van', 'High Roof Sprinter'])">
+                    <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=600" alt="Delivery Vans" class="service-bg">
+                    <div class="service-info">
+                        <h3>Delivery Vans</h3>
+                        <p>Cargo Vans | Sprinter Vans</p>
+                        <div class="service-link">View Options &rarr;</div>
+                    </div>
+                </div>
+
+                <!-- 2. Box Trucks -->
+                <div class="service-box fade-in" onclick="openModal('Box Trucks', ['12ft Box Truck', '16ft Box Truck', '24ft Box Truck'])">
+                    <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=600" alt="Box Trucks" class="service-bg">
+                    <div class="service-info">
+                        <h3>Box Trucks</h3>
+                        <p>Straight Trucks</p>
+                        <div class="service-link">View Options &rarr;</div>
+                    </div>
+                </div>
+
+                <!-- 3. Semi-Tractors -->
+                <div class="service-box fade-in" onclick="openModal('Semi-Tractors & Trailers', ['Day Cab Tractor', 'Sleeper Cab Tractor', '53ft Trailer (Exterior)'])">
+                    <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&q=80&w=600" alt="Semi-Tractors" class="service-bg">
+                    <div class="service-info">
+                        <h3>Semi-Tractors</h3>
+                        <p>Tractors | Trailers</p>
+                        <div class="service-link">View Options &rarr;</div>
+                    </div>
+                </div>
+
+                <!-- 4. Commercial Buses -->
+                <div class="service-box fade-in" onclick="openModal('Commercial Buses', ['Shuttle Bus / Transit', 'Full Size Charter Bus', 'School Bus'])">
+                    <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80&w=600" alt="Commercial Buses" class="service-bg">
+                    <div class="service-info">
+                        <h3>Commercial Buses</h3>
+                        <p>Transit | Charter</p>
+                        <div class="service-link">View Options &rarr;</div>
+                    </div>
+                </div>
+
+                <!-- 5. Heavy Equipment -->
+                <div class="service-box fade-in" onclick="openModal('Heavy Equipment', ['Small (Skid Steer)', 'Medium (Backhoe)', 'Large (Excavator)'])">
+                    <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600" alt="Heavy Equipment" class="service-bg">
+                    <div class="service-info">
+                        <h3>Heavy Equipment</h3>
+                        <p>Construction | Industrial</p>
+                        <div class="service-link">View Options &rarr;</div>
+                    </div>
+                </div>
+
+                <!-- 6. RVs & Boats -->
+                <div class="service-box fade-in" onclick="openModal('RVs & Boats', ['Class B RV (Camper Van)', 'Class A RV (Motorhome)', 'Boat (Up to 25ft)'])">
+                    <img src="https://images.unsplash.com/photo-1626248801379-51a0748a5f96?auto=format&fit=crop&q=80&w=600" alt="RVs & Boats" class="service-bg">
+                    <div class="service-info">
+                        <h3>RVs & Boats</h3>
+                        <p>RVs | Boats | Watercraft</p>
+                        <div class="service-link">View Options &rarr;</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL (POPUP) -->
+    <div class="modal-overlay" id="pricingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Vehicle Name</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>We service the following sizes in this category. Contact us for a custom fleet quote tailored to your volume.</p>
+                <div id="modalPriceList"></div>
+            </div>
+            <div class="modal-footer">
+                <a href="contact.html" class="btn btn-red" style="width:100%;">Get a Custom Quote</a>
+                <p style="margin-top:15px; font-size:0.8rem; color:var(--kw-gray);">Want unlimited cleanings? <a href="#autocare" onclick="closeModal()" style="color:var(--kw-red); text-decoration:underline;">View 365 AutoCare</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 365 AUTOCARE (LUXURY SHOWCASE) -->
+    <section id="autocare" class="autocare-section">
+        <div class="container">
+            <div class="autocare-header fade-in">
+                <h2><span class="text-red">365</span> AUTOCARE</h2>
+                <p>Premium Membership</p>
+            </div>
+
+            <div class="luxury-card fade-in">
+                <!-- Left Side: Pricing -->
+                <div class="price-side">
+                    <div class="price"><span>$</span>300</div>
+                    <div class="term">Per Month</div>
+                    
+                    <div class="setup-note">+ <span>$100</span> One-Time Setup Fee (Non-refundable)</div>
+                    
+                    <a href="contact.html" class="btn btn-red">Join 365 AutoCare</a>
+                    <div class="no-contract">Month-to-month. Cancel anytime.</div>
+                </div>
+
+                <!-- Right Side: Details -->
+                <div class="details-side">
+                    <h3>Concierge Detailing.<br>Delivered to your door.</h3>
+                    
+                    <div class="benefit-grid">
+                        <div class="benefit">
+                            <div class="benefit-icon">✓</div>
+                            <div class="benefit-text">
+                                <h4>2 Full Premium Details Per Month</h4>
+                                <p>Both Interior and Exterior detailing included in every visit.</p>
+                            </div>
+                        </div>
+                        <div class="benefit">
+                            <div class="benefit-icon">✓</div>
+                            <div class="benefit-text">
+                                <h4>Fully Mobile Service</h4>
+                                <p>We arrive at your home, work, or approved location with our own water and power.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-columns">
+                        <div class="feature-col">
+                            <h5>Premium Interior</h5>
+                            <ul>
+                                <li>Complete interior vacuuming</li>
+                                <li>Dashboard & console cleaning</li>
+                                <li>Door panels & trim care</li>
+                                <li>Interior & exterior glass cleaning</li>
+                                <li>Interior surface conditioning</li>
+                            </ul>
+                        </div>
+                        <div class="feature-col">
+                            <h5>Premium Exterior</h5>
+                            <ul>
+                                <li>Complete exterior hand wash</li>
+                                <li>Wheels, rims & tire cleaning</li>
+                                <li>Tire dressing & protection</li>
+                                <li>Exterior spray sealant</li>
+                                <li>Professional finishing and shine</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <img src="https://i.imgur.com/SMtB4Ug.png" alt="KW Logo" class="footer-logo">
+            <p>&copy; 2024 KW Commercial Fleet Washing & Mobile Detailing.<br>All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // --- MOBILE MENU LOGIC ---
+        const menuToggle = document.getElementById('menuToggle');
+        const mainNav = document.getElementById('mainNav').querySelector('ul');
+
+        menuToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+        });
+
+        // Close menu when a link is clicked
+        mainNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mainNav.classList.remove('active');
+            });
+        });
+
+        // --- MODAL LOGIC ---
+        const modal = document.getElementById('pricingModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalPriceList = document.getElementById('modalPriceList');
+
+        function openModal(title, sizes) {
+            modalTitle.innerText = title;
+            modalPriceList.innerHTML = ''; 
+            sizes.forEach(size => {
+                const tierHTML = `
+                    <div class="vehicle-tier">
+                        <span class="tier-name">${size}</span>
+                        <span class="tier-icon" style="color:var(--kw-red); font-weight:bold;">✓</span>
+                    </div>
+                `;
+                modalPriceList.innerHTML += tierHTML;
+            });
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // --- SCROLL ANIMATION LOGIC ---
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(element => {
+            observer.observe(element);
+        });
+    </script>
+
+</body>
+</html>
