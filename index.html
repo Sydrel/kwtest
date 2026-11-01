@@ -37,7 +37,7 @@
             --kw-light-gray: #e0e0e0;
             --font-sans: 'Inter', sans-serif;
             --font-serif: 'Playfair Display', serif;
-            --header-height: 80px;
+            --header-height: 85px;
         }
 
         /* --- GLOBAL RESET & PREVENT HORIZONTAL SCROLL --- */
@@ -105,7 +105,7 @@
         .logo-img { height: 48px; width: auto; transition: height 0.4s ease;}
 
         nav ul { display: flex; gap: 30px; align-items: center;}
-        nav a { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--kw-light-gray); transition: color 0.3s;}
+        nav a { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--kw-light-gray); transition: color 0.3s; cursor: pointer;}
         nav a:hover { color: var(--kw-white); }
         nav .nav-btn { color: var(--kw-white); background: var(--kw-red); padding: 10px 22px; border-radius: 2px; }
         nav .nav-btn:hover { background: #b00d14; }
@@ -114,19 +114,20 @@
         .menu-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 5px; margin-left: auto;}
         .menu-toggle span { display: block; width: 24px; height: 2px; background: var(--kw-white); transition: 0.3s;}
 
-        /* --- HERO (Centered Cinematic) --- */
+        /* --- HERO (Perfect Proportioned Banner Across Devices) --- */
         .hero {
-            min-height: 100vh;
+            min-height: calc(100vh - var(--header-height));
+            height: auto;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             background: url('https://i.imgur.com/bvJ4fhr.jpeg') center center / cover no-repeat fixed;
             text-align: center;
-            padding-top: var(--header-height);
-            padding-bottom: 40px;
-            padding-left: 15px;
-            padding-right: 15px;
+            padding-top: calc(var(--header-height) + 20px);
+            padding-bottom: 60px;
+            padding-left: 20px;
+            padding-right: 20px;
             width: 100%;
         }
         .hero::before {
@@ -141,7 +142,7 @@
             position: relative;
             z-index: 2;
             width: 100%;
-            max-width: 900px;
+            max-width: 950px;
             margin: auto;
             display: flex;
             flex-direction: column;
@@ -157,9 +158,9 @@
             text-transform: uppercase;
             color: var(--kw-red);
             display: inline-block;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             background: rgba(227, 27, 35, 0.1);
-            padding: 7px 18px;
+            padding: 8px 22px;
             border-radius: 30px;
             border: 1px solid rgba(227, 27, 35, 0.3);
             max-width: 100%;
@@ -168,9 +169,9 @@
         .hero h1 {
             font-family: var(--font-serif);
             font-size: 4.2rem;
-            line-height: 1.1;
+            line-height: 1.15;
             font-weight: 700;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             width: 100%;
             word-wrap: break-word;
         }
@@ -178,8 +179,8 @@
         .hero-subtext {
             font-size: 1.15rem;
             color: var(--kw-light-gray);
-            max-width: 650px;
-            margin: 0 auto 25px auto;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
             font-weight: 300;
             text-align: center;
             width: 100%;
@@ -192,9 +193,9 @@
             gap: 10px;
             background: rgba(20, 20, 20, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 8px 20px;
+            padding: 9px 22px;
             border-radius: 30px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
         }
@@ -243,7 +244,7 @@
             font-size: 0.75rem;
             color: var(--kw-gray);
             border-left: 1px solid rgba(255,255,255,0.2);
-            padding-left: 8px;
+            padding-left: 10px;
             letter-spacing: 0.5px;
         }
 
@@ -310,7 +311,7 @@
         .service-link { color: var(--kw-red); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; transition: gap 0.3s ease;}
         .service-box:hover .service-link { gap: 18px; }
 
-        /* --- MODAL --- */
+        /* --- MODAL (POPUP) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease;}
         .modal-overlay.active { display: flex; opacity: 1;}
         .modal-content { background: var(--kw-card); width: 100%; max-width: 550px; border: 1px solid #333; position: relative; transform: translateY(20px); transition: transform 0.3s ease;}
@@ -324,6 +325,14 @@
         .vehicle-tier { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; font-weight: 400; font-size: 1rem;}
         .tier-price { color: var(--kw-red); font-weight: 600; font-size: 1.15rem; }
         .modal-footer { padding: 25px; background: #0a0a0a; text-align: center;}
+
+        /* --- CONTACT MODAL SPECIFIC STYLING --- */
+        .contact-info-list { display: flex; flex-direction: column; gap: 20px; }
+        .contact-item { display: flex; align-items: flex-start; gap: 16px; background: #161616; padding: 16px; border: 1px solid #222; border-radius: 4px; }
+        .contact-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(227, 27, 35, 0.15); border: 1px solid var(--kw-red); display: flex; align-items: center; justify-content: center; color: var(--kw-red); font-size: 0.9rem; flex-shrink: 0; }
+        .contact-details h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--kw-gray); margin-bottom: 4px; }
+        .contact-details p, .contact-details a { font-size: 1.05rem; font-weight: 600; color: var(--kw-white); }
+        .contact-details a:hover { color: var(--kw-red); text-decoration: underline; }
 
         /* --- MEMBERSHIP & ADD-ONS SECTION --- */
         .master-membership-section { padding: 110px 0; background: var(--kw-black); position: relative;}
@@ -492,7 +501,9 @@
         footer { background: var(--kw-black); padding: 50px 0 35px 0; text-align: center; border-top: 1px solid #111;}
         footer .footer-logo { height: 45px; opacity: 0.5; margin-bottom: 15px;}
         footer p { color: #444; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;}
-        footer .footer-address { color: #666; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 18px;}
+        footer .footer-address { color: #666; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;}
+        footer .footer-email { color: var(--kw-gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 18px;}
+        footer .footer-email a:hover { color: var(--kw-red); text-decoration: underline; }
         
         .footer-payment-img {
             max-width: 300px;
@@ -504,11 +515,11 @@
         }
 
         /* ========================================= */
-        /* --- RESPONSIVE FIXES (TABLETS & MOBILES) --- */
+        /* --- RESPONSIVE BREAKPOINTS --- */
         /* ========================================= */
 
         @media (max-width: 1024px) {
-            .hero h1 { font-size: 3.5rem; }
+            .hero h1 { font-size: 3.2rem; }
             .hero-subtext { font-size: 1.05rem; }
             .vertical-plan-row { grid-template-columns: 1fr; }
             .v-price-side { border-right: none; border-bottom: 1px solid #222; padding: 35px 22px;}
@@ -547,37 +558,35 @@
             nav a { display: block; padding: 8px 20px; font-size: 0.95rem; }
             nav .nav-btn { display: inline-block; padding: 10px 22px; width: auto; margin-top: 8px; margin-right: 20px; }
 
-            /* Hero adjustments for mobile compactness */
+            /* Tablet / Mobile Hero Proportions */
             .hero {
-                min-height: 100vh;
+                min-height: calc(100vh - var(--header-height));
                 padding-top: calc(var(--header-height) + 10px);
-                padding-bottom: 30px;
+                padding-bottom: 40px;
                 background-attachment: scroll;
             }
             .hero-content {
                 padding-top: 10px;
                 padding-bottom: 10px;
             }
-            .hero h1 { font-size: 2.2rem; margin-bottom: 12px; }
-            .hero-subtext { font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; }
-            .hero .tagline { font-size: 0.6rem; letter-spacing: 1.5px; padding: 5px 12px; margin-bottom: 12px; }
+            .hero h1 { font-size: 2.3rem; margin-bottom: 14px; }
+            .hero-subtext { font-size: 0.92rem; margin-bottom: 18px; line-height: 1.5; }
+            .hero .tagline { font-size: 0.62rem; letter-spacing: 1.5px; padding: 5px 12px; margin-bottom: 12px; }
             .hero-status-badge { padding: 6px 14px; margin-bottom: 20px; gap: 8px; }
 
             .hero-buttons { flex-direction: column; width: 100%; max-width: 280px; margin: 0 auto; gap: 10px;}
             .hero-buttons .btn { width: 100%; padding: 12px; font-size: 0.8rem; letter-spacing: 1.5px;}
 
-            /* Adjusted section header font sizes for mobile with comfortable padding */
+            /* Section headers & cards */
             .section-header h2 { font-size: 2.1rem; }
             .section-heading h2 { font-size: 2.2rem; }
             .section-header p, .section-heading p { font-size: 0.8rem; letter-spacing: 1.5px; }
 
-            /* Relaxed mobile card padding so boxes don't feel closed in */
             .grid-6 { grid-template-columns: 1fr; gap: 24px; }
             .service-box { height: 310px; padding: 28px;}
             .service-info h3 { font-size: 1.45rem; }
             .service-info p { font-size: 0.98rem; }
 
-            /* Relaxed mobile membership & add-on padding */
             .vertical-plans-stack { gap: 30px; }
             .v-details-side { padding: 28px 22px; }
             .v-price-side { padding: 30px 20px; }
@@ -596,7 +605,7 @@
         }
 
         @media (max-width: 480px) {
-            .hero h1 { font-size: 1.9rem; line-height: 1.15;}
+            .hero h1 { font-size: 1.95rem; line-height: 1.2;}
             .container { width: 92%; }
             .v-price-side .price { font-size: 2.6rem; }
             .section-heading h2 { font-size: 1.8rem; }
@@ -627,13 +636,14 @@
                     <li><a href="#services">Fleet Services</a></li>
                     <li><a href="#membership">Membership & Add-Ons</a></li>
                     <li><a href="#location">Service Area</a></li>
+                    <li><a onclick="openContactModal()">Contact Us</a></li>
                     <li><a href="tel:2398986008" class="nav-btn">Book Us</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <!-- HERO (Centered) -->
+    <!-- HERO (Centered Proportioned Banner) -->
     <section class="hero">
         <div class="container hero-content">
             <div class="fade-in">
@@ -773,7 +783,7 @@
         </div>
     </section>
 
-    <!-- MODAL (POPUP) -->
+    <!-- VEHICLE PRICING MODAL (POPUP) -->
     <div class="modal-overlay" id="pricingModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -787,6 +797,47 @@
             <div class="modal-footer">
                 <a href="tel:2398986008" class="btn btn-red" style="width:100%;">Book Us</a>
                 <p style="margin-top:15px; font-size:0.9rem; color:var(--kw-gray);">Want recurring cleanings? <a href="#membership" onclick="closeModal()" style="color:var(--kw-red); text-decoration:underline;">View Month-to-Month Plans</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACT US MODAL (POPUP) -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Contact & Schedule</h3>
+                <button class="close-btn" onclick="closeContactModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="contact-info-list">
+                    <!-- Phone -->
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
+                        <div class="contact-details">
+                            <h4>Phone / Text</h4>
+                            <a href="tel:2398986008">239-898-6008</a>
+                        </div>
+                    </div>
+                    <!-- Email -->
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+                        <div class="contact-details">
+                            <h4>Email Address</h4>
+                            <a href="mailto:info@kwfleetcare.com">info@kwfleetcare.com</a>
+                        </div>
+                    </div>
+                    <!-- Schedule -->
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fa-solid fa-clock"></i></div>
+                        <div class="contact-details">
+                            <h4>Operating Schedule</h4>
+                            <p>Monday – Saturday<br><span class="text-red font-semibold">5:00 AM – 6:00 PM</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="tel:2398986008" class="btn btn-red" style="width:100%;">Call Us Now</a>
             </div>
         </div>
     </div>
@@ -1060,6 +1111,7 @@
             <img src="https://i.imgur.com/SMtB4Ug.png" alt="KW Logo" class="footer-logo">
             <p>&copy; 2024 KW COMMERCIAL FLEET WASHING & MOBILE DETAILING LLC</p>
             <div class="footer-address">7901 4th St N St 300 &bull; St Petersburg, FL 33702</div>
+            <div class="footer-email"><a href="mailto:info@kwfleetcare.com">info@kwfleetcare.com</a></div>
             <!-- Payment Methods Image -->
             <img src="https://geekzuprepairs.com/brand/payment-methods.png" alt="Accepted Payment Methods: Credit cards, debit card, Visa, Mastercard, Apple Pay, Cash App, Zelle, Cash" class="footer-payment-img">
         </div>
@@ -1108,7 +1160,7 @@
             });
         });
 
-        // --- MODAL LOGIC ---
+        // --- VEHICLE MODAL LOGIC ---
         const modal = document.getElementById('pricingModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalPriceList = document.getElementById('modalPriceList');
@@ -1137,6 +1189,23 @@
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
                 closeModal();
+            }
+        });
+
+        // --- CONTACT US MODAL LOGIC ---
+        const contactModal = document.getElementById('contactModal');
+
+        function openContactModal() {
+            contactModal.classList.add('active');
+        }
+
+        function closeContactModal() {
+            contactModal.classList.remove('active');
+        }
+
+        contactModal.addEventListener('click', function(e) {
+            if (e.target === contactModal) {
+                closeContactModal();
             }
         });
 
