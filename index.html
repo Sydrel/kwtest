@@ -107,9 +107,12 @@
             position: relative;
             z-index: 2;
             width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
+            text-align: center;
         }
 
         .hero .tagline {
@@ -133,19 +136,21 @@
             line-height: 1.1;
             font-weight: 700;
             margin-bottom: 20px;
-            max-width: 1000px;
+            width: 100%;
             word-wrap: break-word;
         }
 
-        .hero p {
+        .hero-subtext {
             font-size: 1.2rem;
             color: var(--kw-light-gray);
             max-width: 650px;
-            margin-bottom: 35px;
+            margin: 0 auto 35px auto;
             font-weight: 300;
+            text-align: center;
+            width: 100%;
         }
 
-        .hero-buttons { display: flex; gap: 20px; justify-content: center;}
+        .hero-buttons { display: flex; gap: 20px; justify-content: center; width: 100%;}
 
         /* Scroll Indicator */
         .scroll-indicator {
@@ -245,13 +250,13 @@
         .price-side { padding: 80px 40px; border-right: 1px solid #222; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
         .price-side .price { font-size: 6rem; font-weight: 300; line-height: 1; letter-spacing: -3px; margin-bottom: 5px;}
         .price-side .price span { font-size: 2rem; color: var(--kw-red); font-weight: 600; vertical-align: super;}
-        .price-side .term { font-size: 1rem; color: var(--kw-gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 40px;}
+        .price-side .term { font-size: 1rem; color: var(--kw-gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px;}
 
-        .setup-note { background: #151515; padding: 15px 20px; font-size: 0.8rem; color: var(--kw-light-gray); margin-bottom: 40px; border-left: 2px solid var(--kw-red); width: 100%;}
+        .setup-note { background: #151515; padding: 15px 20px; font-size: 0.8rem; color: var(--kw-light-gray); margin-bottom: 30px; border-left: 2px solid var(--kw-red); width: 100%;}
         .setup-note span { color: var(--kw-red); font-weight: 600;}
 
         .price-side .btn { width: 100%; padding: 22px; font-size: 1rem; }
-        .no-contract { font-size: 0.75rem; color: #666; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px;}
+        .no-contract { font-size: 0.75rem; color: #666; margin-top: 15px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
 
         .details-side { padding: 80px 40px; }
         .details-side h3 { font-family: var(--font-serif); font-size: 2rem; margin-bottom: 30px;}
@@ -274,9 +279,18 @@
         .location-address { font-size: 1.2rem; color: var(--kw-light-gray); margin-bottom: 35px; line-height: 1.8; font-weight: 300;}
 
         /* --- FOOTER --- */
-        footer { background: var(--kw-black); padding: 60px 0; text-align: center; border-top: 1px solid #111;}
+        footer { background: var(--kw-black); padding: 60px 0 40px 0; text-align: center; border-top: 1px solid #111;}
         footer .footer-logo { height: 50px; opacity: 0.5; margin-bottom: 20px;}
-        footer p { color: #444; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;}
+        footer p { color: #444; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;}
+        
+        .footer-payment-img {
+            max-width: 320px;
+            width: 100%;
+            height: auto;
+            opacity: 0.85;
+            margin: 15px auto 0 auto;
+            display: block;
+        }
 
         /* ========================================= */
         /* --- RESPONSIVE FIXES (TABLETS & MOBILES) --- */
@@ -284,7 +298,7 @@
 
         @media (max-width: 1024px) {
             .hero h1 { font-size: 3.8rem; }
-            .hero p { font-size: 1.1rem; }
+            .hero-subtext { font-size: 1.1rem; }
             .luxury-card { grid-template-columns: 1fr; }
             .price-side { border-right: none; border-bottom: 1px solid #222; padding: 50px 25px;}
             .details-side { padding: 50px 25px;}
@@ -326,7 +340,7 @@
                 padding-bottom: 30px;
             }
             .hero h1 { font-size: 2.3rem; margin-bottom: 15px; }
-            .hero p { font-size: 0.95rem; margin-bottom: 25px; }
+            .hero-subtext { font-size: 0.95rem; margin-bottom: 25px; }
             .hero .tagline { font-size: 0.6rem; letter-spacing: 1.5px; padding: 5px 10px; margin-bottom: 15px; }
 
             .hero-buttons { flex-direction: column; width: 100%; max-width: 320px; margin: 0 auto; gap: 12px;}
@@ -401,7 +415,7 @@
             <div class="fade-in">
                 <span class="tagline">Commercial Fleet Washing & Mobile Detailing</span>
                 <h1>Keeping your fleet clean.<br><span class="text-red">Keeping your business moving.</span></h1>
-                <p>We deliver a premium, concierge-level wash and detailing experience directly to your fleet, yard, or home.</p>
+                <p class="hero-subtext">We deliver a premium, concierge-level wash and detailing experience directly to your fleet, yard, or home.</p>
                 <div class="hero-buttons">
                     <a href="#autocare" class="btn btn-red">Monthly Recurring Service</a>
                     <a href="#services" class="btn btn-outline">Explore Services</a>
@@ -602,6 +616,8 @@
         <div class="container">
             <img src="https://i.imgur.com/SMtB4Ug.png" alt="KW Logo" class="footer-logo">
             <p>&copy; 2024 KW Commercial LLC Fleet Washing & Mobile Detailing.<br>All Rights Reserved.</p>
+            <!-- Payment Methods Image Moved to Footer Bottom -->
+            <img src="https://geekzuprepairs.com/brand/payment-methods.png" alt="Accepted Payment Methods: Credit cards, debit card, Visa, Mastercard, Apple Pay, Cash App, Zelle, Cash" class="footer-payment-img">
         </div>
     </footer>
 
