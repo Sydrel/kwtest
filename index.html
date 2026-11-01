@@ -281,6 +281,30 @@
         .feature-col ul li { font-size: 0.85rem; color: var(--kw-light-gray); margin-bottom: 10px; font-weight: 300; display: flex; align-items: center; gap: 8px;}
         .feature-col ul li::before { content: "—"; color: var(--kw-red); }
 
+        /* --- ADD-ONS SECTION --- */
+        .addons-section { padding: 100px 0; background: var(--kw-dark); border-top: 1px solid #1a1a1a; }
+        .addons-card { background: var(--kw-card); border: 1px solid #222; max-width: 1000px; margin: 0 auto; padding: 60px 40px; border-radius: 4px; }
+        .addons-header { text-align: center; margin-bottom: 40px; }
+        .addons-header h2 { font-family: var(--font-serif); font-size: 3rem; margin-bottom: 15px; }
+        .addons-header p { color: var(--kw-gray); font-size: 1rem; text-transform: uppercase; letter-spacing: 3px; }
+
+        .promo-banner {
+            background: linear-gradient(135deg, rgba(227, 27, 35, 0.15) 0%, rgba(10, 10, 10, 0.8) 100%);
+            border: 1px solid rgba(227, 27, 35, 0.4);
+            padding: 20px 25px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 45px;
+        }
+        .promo-banner h3 { font-size: 1.1rem; color: var(--kw-white); font-weight: 600; letter-spacing: 1px; margin-bottom: 5px; }
+        .promo-banner p { font-size: 0.9rem; color: var(--kw-light-gray); }
+
+        .addons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .addon-item { background: #141414; border: 1px solid #222; padding: 22px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .addon-item:hover { border-color: var(--kw-red); transform: translateY(-2px); }
+        .addon-name { font-size: 0.95rem; font-weight: 600; color: var(--kw-white); }
+        .addon-price { font-size: 0.95rem; font-weight: 600; color: var(--kw-red); }
+
         /* --- VIDEO SHOWCASE SECTION --- */
         .video-section { padding: 100px 0; background: var(--kw-black); border-top: 1px solid #1a1a1a; text-align: center; }
         .video-header { margin-bottom: 50px; }
@@ -396,8 +420,8 @@
             .feature-columns { grid-template-columns: 1fr; gap: 20px;}
             .details-side h3 { font-size: 1.5rem; }
 
-            .services-section, .autocare-section, .video-section, .location-section { padding: 70px 0; }
-            .section-header, .autocare-header, .video-header { margin-bottom: 40px; }
+            .services-section, .autocare-section, .addons-section, .video-section, .location-section { padding: 70px 0; }
+            .section-header, .autocare-header, .addons-header, .video-header { margin-bottom: 40px; }
 
             .scroll-indicator { display: none; }
         }
@@ -438,7 +462,8 @@
             <nav id="mainNav">
                 <ul>
                     <li><a href="#services">Fleet Services</a></li>
-                    <li><a href="#autocare">365 AutoCare</a></li>
+                    <li><a href="#autocare">Recurring Plans</a></li>
+                    <li><a href="#addons">Add-Ons</a></li>
                     <li><a href="#location">Service Area</a></li>
                     <li><a href="tel:2398986008" class="nav-btn">Book Us</a></li>
                 </ul>
@@ -476,7 +501,7 @@
             </div>
 
             <div class="grid-6">
-                <!-- 1. Cars & Standard Vehicles (With exact pricing structure) -->
+                <!-- 1. Cars & Standard Vehicles -->
                 <div class="service-box fade-in" onclick="openModal('Cars & Standard Vehicles', [
                     { name: 'Coupe', price: '$250' },
                     { name: 'Sedan', price: '$290' },
@@ -753,6 +778,51 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </section>
+
+    <!-- ADDITIONAL DETAILING SERVICES & ADD-ONS -->
+    <section id="addons" class="addons-section">
+        <div class="container">
+            <div class="addons-card fade-in">
+                <div class="addons-header">
+                    <h2>Additional Detailing <span class="text-red">Services</span></h2>
+                    <p>Customize Your Service With Our Professional Add-Ons</p>
+                </div>
+
+                <!-- Promo Banner -->
+                <div class="promo-banner">
+                    <h3>Month-to-Month Member Benefit</h3>
+                    <p>Month-to-Month members get <strong class="text-red">50% OFF</strong> any add-on service after your second service!</p>
+                </div>
+
+                <div class="addons-grid">
+                    <div class="addon-item">
+                        <span class="addon-name">Pet Hair Removal</span>
+                        <span class="addon-price">$50 - $90</span>
+                    </div>
+                    <div class="addon-item">
+                        <span class="addon-name">Seat Shampoo / Extraction</span>
+                        <span class="addon-price">$100 - $140</span>
+                    </div>
+                    <div class="addon-item">
+                        <span class="addon-name">Engine Bay Cleaning</span>
+                        <span class="addon-price">$100 - $150</span>
+                    </div>
+                    <div class="addon-item">
+                        <span class="addon-name">Excessive Soil Removal</span>
+                        <span class="addon-price">$70 - $100</span>
+                    </div>
+                    <div class="addon-item">
+                        <span class="addon-name">Paint Correction (Scratches & Water Spots)</span>
+                        <span class="addon-price">$250 - $450</span>
+                    </div>
+                    <div class="addon-item">
+                        <span class="addon-name">Ceramic Coatings</span>
+                        <span class="addon-price">$400 - $600</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
