@@ -144,10 +144,72 @@
             font-size: 1.25rem;
             color: var(--kw-light-gray);
             max-width: 650px;
-            margin: 0 auto 35px auto;
+            margin: 0 auto 30px auto;
             font-weight: 300;
             text-align: center;
             width: 100%;
+        }
+
+        /* --- HERO LIVE STATUS BADGE --- */
+        .hero-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(20, 20, 20, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 22px;
+            border-radius: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px currentColor;
+        }
+        
+        .status-dot.open {
+            background-color: #22c55e;
+            color: #22c55e;
+            animation: pulse-green 2s infinite;
+        }
+
+        .status-dot.closed {
+            background-color: #ef4444;
+            color: #ef4444;
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--kw-white);
+        }
+
+        .status-hours {
+            font-size: 0.8rem;
+            color: var(--kw-gray);
+            border-left: 1px solid rgba(255,255,255,0.2);
+            padding-left: 10px;
+            letter-spacing: 0.5px;
         }
 
         .hero-buttons { display: flex; gap: 20px; justify-content: center; width: 100%;}
@@ -538,6 +600,14 @@
                 <span class="tagline">Commercial Fleet Washing & Mobile Detailing</span>
                 <h1>Keeping your fleet clean.<br><span class="text-red">Keeping your business moving.</span></h1>
                 <p class="hero-subtext">We deliver a premium, concierge-level wash and detailing experience directly to your fleet, yard, or home.</p>
+                
+                <!-- LIVE OPEN / CLOSED BADGE -->
+                <div class="hero-status-badge">
+                    <span id="statusDot" class="status-dot"></span>
+                    <span id="statusText" class="status-text">Checking...</span>
+                    <span class="status-hours">Mon–Sat: 5AM–6PM</span>
+                </div>
+
                 <div class="hero-buttons">
                     <a href="#membership" class="btn btn-red">Month-to-Month Plans</a>
                     <a href="#services" class="btn btn-outline">Explore Services</a>
@@ -828,7 +898,7 @@
 
                     <div class="member-banner">
                         <span>Month-to-Month Member Benefit</span>
-                        <span>Get <strong class="text-red">50% OFF</strong> any add-on after your second service!</span>
+                        <span>Get <strong class="text-red">50% OFF</strong> any add-on after your 5th service!</span>
                     </div>
 
                     <!-- HORIZONTAL ADD-ON GRID -->
@@ -903,6 +973,32 @@
 
     <!-- JAVASCRIPT -->
     <script>
+        // --- LIVE OPERATING HOURS LOGIC (Mon-Sat 5AM-6PM) ---
+        function updateBusinessStatus() {
+            const now = new Date();
+            const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            const hour = now.getHours(); // 0 - 23 format
+
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+
+            // Monday (1) through Saturday (6), between 5 AM (5) and 6 PM (18)
+            const isWorkingDay = (day >= 1 && day <= 6);
+            const isWorkingHour = (hour >= 5 && hour < 18);
+
+            if (isWorkingDay && isWorkingHour) {
+                statusDot.className = 'status-dot open';
+                statusText.innerText = 'Open Now';
+            } else {
+                statusDot.className = 'status-dot closed';
+                statusText.innerText = 'Closed Now';
+            }
+        }
+
+        // Run on load and check every minute
+        updateBusinessStatus();
+        setInterval(updateBusinessStatus, 60000);
+
         // --- MOBILE MENU LOGIC ---
         const menuToggle = document.getElementById('menuToggle');
         const mainNav = document.getElementById('mainNav').querySelector('ul');
