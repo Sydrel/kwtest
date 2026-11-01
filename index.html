@@ -40,14 +40,14 @@
             line-height: 1.6; 
             -webkit-font-smoothing: antialiased;
 
-            /* HIDE SCROLLBAR (Chrome, Safari, Opera, Edge, Firefox, IE) */
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE and Edge */
+            /* HIDE SCROLLBAR */
+            scrollbar-width: none; 
+            -ms-overflow-style: none;  
         }
 
         html::-webkit-scrollbar,
         body::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, and Opera */
+            display: none; 
         }
         
         a { text-decoration: none; color: inherit; }
@@ -79,8 +79,8 @@
         nav .nav-btn { color: var(--kw-white); background: var(--kw-red); padding: 12px 25px; border-radius: 2px; }
         nav .nav-btn:hover { background: #b00d14; }
 
-        /* Mobile Menu Button */
-        .menu-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 5px;}
+        /* Mobile Menu Button Container */
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 5px; margin-left: auto;}
         .menu-toggle span { display: block; width: 25px; height: 2px; background: var(--kw-white); transition: 0.3s;}
 
         /* --- HERO (Centered Cinematic) --- */
@@ -294,22 +294,26 @@
         @media (max-width: 768px) {
             .menu-toggle { display: flex; }
 
+            /* Position the dropdown menu aligned to the right */
             nav ul {
                 display: none;
                 flex-direction: column;
                 position: absolute;
                 top: 100%;
-                left: 0;
-                width: 100%;
+                right: 0;
+                left: auto;
+                width: 220px;
                 background: #050505;
                 padding: 20px 0;
+                border-left: 1px solid #222;
                 border-bottom: 1px solid #222;
-                box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+                box-shadow: -10px 10px 20px rgba(0,0,0,0.5);
+                text-align: right;
             }
             nav ul.active { display: flex; }
-            nav ul li { width: 100%; text-align: center; margin: 10px 0; }
-            nav a { display: block; padding: 10px; font-size: 1rem; }
-            nav .nav-btn { display: inline-block; padding: 12px 30px; width: auto; margin-top: 10px; }
+            nav ul li { width: 100%; margin: 10px 0; }
+            nav a { display: block; padding: 10px 20px; font-size: 1rem; }
+            nav .nav-btn { display: inline-block; padding: 12px 25px; width: auto; margin-top: 10px; margin-right: 20px; }
 
             .hero h1 { font-size: 2.5rem; }
             .hero p { font-size: 1rem; }
@@ -357,7 +361,7 @@
                 <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial LLC Logo" class="logo-img">
             </a>
 
-            <!-- Mobile Menu Button -->
+            <!-- Mobile Menu Button (Pushed to the right) -->
             <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
                 <span></span>
                 <span></span>
