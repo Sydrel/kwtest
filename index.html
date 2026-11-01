@@ -7,6 +7,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS for Territory Selector -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandRed: '#DC2626',
+                        brandDark: '#0A0A0A',
+                        brandCard: '#171717',
+                        brandBorder: '#262626'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* --- CSS VARIABLES --- */
@@ -453,12 +470,6 @@
             border: 0;
         }
 
-        /* --- MOBILE SERVICE SECTION --- */
-        .location-section { padding: 100px 0; background: var(--kw-dark); border-top: 1px solid #1a1a1a; text-align: center;}
-        .location-card { background: var(--kw-card); border: 1px solid #222; max-width: 800px; margin: 0 auto; padding: 60px 30px; border-radius: 4px; width: 100%; }
-        .location-card h2 { font-family: var(--font-serif); font-size: 2.5rem; margin-bottom: 20px; }
-        .location-address { font-size: 1.2rem; color: var(--kw-light-gray); margin-bottom: 35px; line-height: 1.8; font-weight: 300;}
-
         /* --- FOOTER --- */
         footer { background: var(--kw-black); padding: 60px 0 40px 0; text-align: center; border-top: 1px solid #111;}
         footer .footer-logo { height: 50px; opacity: 0.5; margin-bottom: 20px;}
@@ -562,8 +573,6 @@
             .section-header h2 { font-size: 1.7rem; }
             .service-info h3 { font-size: 1.3rem; }
             .video-header h2 { font-size: 2rem; }
-            .location-card h2 { font-size: 1.8rem; }
-            .location-address { font-size: 1rem; }
         }
     </style>
 </head>
@@ -949,15 +958,68 @@
         </div>
     </section>
 
-    <!-- MOBILE SERVICE SECTION -->
-    <section id="location" class="location-section">
-        <div class="container">
-            <div class="location-card fade-in">
-                <h2>Currently Providing <span class="text-red">Mobile Service Only</span></h2>
-                <p class="location-address">
-                    We bring our fully equipped mobile detailing units directly to your location, yard, or facility. No shop visit required—we come to you!
+    <!-- SERVICE TERRitories SECTION (Replaced Old Mobile Service Box) -->
+    <section id="location" class="py-20 bg-brandDark border-t border-neutral-900">
+        <div class="max-w-6xl mx-auto px-4">
+            <!-- Header Section -->
+            <div class="text-center mb-8">
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">Our Florida Service Territories</h2>
+                <p class="text-neutral-400 max-w-2xl mx-auto text-sm sm:text-base">
+                    Select a city below to view coverage details and book your mobile detailing or commercial fleet wash service. (7901 4th St N St 300, St. Petersburg, FL 33702)
                 </p>
-                <a href="tel:2398986008" class="btn btn-red">Book Us Now</a>
+            </div>
+
+            <!-- Mobile Service Notice Banner -->
+            <div class="bg-brandCard border border-red-600/30 rounded-2xl p-5 mb-8 flex flex-col sm:flex-row items-center gap-4 shadow-lg shadow-red-600/5">
+                <div class="bg-red-600/10 text-brandRed p-3.5 rounded-xl text-xl flex-shrink-0">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <div class="text-center sm:text-left">
+                    <h3 class="text-white font-bold text-base sm:text-lg mb-1">Mobile Service Only</h3>
+                    <p class="text-neutral-400 text-sm">We bring our fully equipped mobile detailing units directly to your location, yard, or facility. No shop visit required—we come to you!</p>
+                </div>
+            </div>
+
+            <!-- Main Layout: Grid + Detail View -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- City List -->
+                <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3" id="city-grid">
+                    <!-- Cities will be injected via JS -->
+                </div>
+
+                <!-- Selected City Info Card -->
+                <div class="bg-brandCard border border-brandBorder rounded-2xl p-6 flex flex-col justify-between shadow-xl">
+                    <div>
+                        <div class="flex items-center justify-end mb-4">
+                            <i class="fa-solid fa-shield-halved text-neutral-500"></i>
+                        </div>
+                        <h3 id="selected-city-name" class="text-2xl font-bold mb-1 text-white">Saint Petersburg</h3>
+                        <p id="selected-city-region" class="text-sm text-neutral-400 mb-6">Pinellas County & Surrounding Areas (7901 4th St N St 300, 33702)</p>
+                        
+                        <div class="space-y-4 border-t border-brandBorder pt-4 text-sm">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-neutral-800 p-2.5 rounded-lg text-brandRed mt-0.5"><i class="fa-solid fa-truck-fast"></i></div>
+                                <div>
+                                    <h4 class="font-semibold text-white">Mobile On-Site Service</h4>
+                                    <p class="text-neutral-400 text-xs mt-0.5">Fully equipped mobile units come directly to your home, office, or fleet yard.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="bg-neutral-800 p-2.5 rounded-lg text-brandRed mt-0.5"><i class="fa-solid fa-phone"></i></div>
+                                <div>
+                                    <h4 class="font-semibold text-white">Direct Booking Line</h4>
+                                    <p class="text-neutral-400 text-xs mt-0.5">Call or text us at <span class="text-white font-medium">239-898-6008</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <a href="tel:2398986008" class="w-full bg-brandRed hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-brandRed/20 text-sm">
+                            <i class="fa-solid fa-calendar-check"></i> Book Service in <span id="btn-city-name">Saint Petersburg</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1047,6 +1109,72 @@
                 closeModal();
             }
         });
+
+        // --- TERRITORY SELECTOR LOGIC ---
+        const cities = [
+            { name: "Saint Petersburg", region: "Pinellas County (33702)", desc: "Primary service location and central area for Pinellas County residential and commercial fleets." },
+            { name: "Tampa", region: "Hillsborough County", desc: "Full commercial fleet washing and mobile detailing across Tampa Bay and surrounding business parks." },
+            { name: "Sarasota", region: "Sarasota County", desc: "Dedicated mobile units serving residential communities and commercial properties." },
+            { name: "Bradenton", region: "Manatee County", desc: "Complete automotive detailing and truck fleet maintenance packages." },
+            { name: "Naples", region: "Collier County", desc: "High-end luxury detailing, ceramic coatings, and recurring maintenance plans." },
+            { name: "Bonita Springs", region: "Lee County", desc: "Prompt on-site mobile service for residential driveways and commercial lots." },
+            { name: "Fort Myers", region: "Lee County", desc: "Comprehensive fleet washing and professional mobile detailing services." },
+            { name: "Cape Coral", region: "Lee County", desc: "Residential mobile detailing and multi-vehicle neighborhood routes." },
+            { name: "Punta Gorda", region: "Charlotte County", desc: "Specialized mobile detailing for cars, trucks, and recreational vehicles." },
+            { name: "Orlando", region: "Orange / Central FL", desc: "Commercial fleet contracts and premium mobile detailing throughout the Orlando metro area." },
+            { name: "West Palm Beach", region: "Palm Beach County", desc: "Palm Beach county mobile service catering to private fleets and luxury automobiles." },
+            { name: "Fort Lauderdale", region: "Broward County", desc: "High-volume fleet maintenance and expert mobile detailing across Broward." },
+            { name: "Miami", region: "Miami-Dade County", desc: "Full coverage across Miami-Dade for commercial fleets, exotics, and daily drivers." }
+        ];
+
+        let activeCityIndex = 0; // Default to Saint Petersburg
+
+        function renderCities() {
+            const grid = document.getElementById('city-grid');
+            grid.innerHTML = '';
+
+            cities.forEach((city, index) => {
+                const isSelected = index === activeCityIndex;
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-xl border cursor-pointer transition-all duration-200 flex items-center justify-between ${
+                    isSelected 
+                        ? 'bg-red-600/10 border-brandRed text-white shadow-lg shadow-red-600/10' 
+                        : 'bg-brandCard border-brandBorder text-neutral-300 hover:border-neutral-700 hover:bg-neutral-800/50'
+                }`;
+                
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center ${isSelected ? 'bg-brandRed text-white' : 'bg-neutral-800 text-neutral-400'}">
+                            <i class="fa-solid fa-location-dot text-xs"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm sm:text-base">${city.name}</h3>
+                            <p class="text-xs text-neutral-400">${city.region}</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs ${isSelected ? 'text-brandRed' : 'text-neutral-600'}"></i>
+                `;
+
+                card.onclick = () => {
+                    activeCityIndex = index;
+                    updateDetails();
+                    renderCities();
+                };
+
+                grid.appendChild(card);
+            });
+        }
+
+        function updateDetails() {
+            const city = cities[activeCityIndex];
+            document.getElementById('selected-city-name').innerText = city.name;
+            document.getElementById('selected-city-region').innerText = city.desc;
+            document.getElementById('btn-city-name').innerText = city.name;
+        }
+
+        // Initial render for territory selector
+        renderCities();
+        updateDetails();
 
         // --- SCROLL ANIMATION LOGIC ---
         const observerOptions = {
