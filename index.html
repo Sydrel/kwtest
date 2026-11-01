@@ -225,6 +225,7 @@
         .modal-body { padding: 30px; }
         .modal-body p { color: var(--kw-gray); font-size: 0.9rem; margin-bottom: 25px;}
         .vehicle-tier { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #222; font-weight: 300;}
+        .tier-price { color: var(--kw-red); font-weight: 600; }
         .modal-footer { padding: 30px; background: #0a0a0a; text-align: center;}
 
         /* --- 365 AUTOCARE (LUXURY SHOWCASE) --- */
@@ -463,22 +464,31 @@
         <div class="container">
             <div class="section-header fade-in">
                 <h2>Fleet & Commercial <span class="text-red">Services</span></h2>
-                <p>Select a category to view sizes</p>
+                <p>Select a category to view sizes & pricing</p>
             </div>
 
             <div class="grid-6">
-                <!-- 1. Cars & Standard Vehicles -->
-                <div class="service-box fade-in" onclick="openModal('Cars & Standard Vehicles', ['Coupe', 'Sedan', 'Midsize SUV', 'SUV', 'Pick-Up Truck'])">
+                <!-- 1. Cars & Standard Vehicles (With exact pricing structure) -->
+                <div class="service-box fade-in" onclick="openModal('Cars & Standard Vehicles', [
+                    { name: 'Coupe', price: '$250' },
+                    { name: 'Sedan', price: '$290' },
+                    { name: 'Midsize SUV', price: '$330' },
+                    { name: 'Pick-Up Truck', price: '$350' }
+                ])">
                     <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=600" alt="Cars and Standard Vehicles" class="service-bg">
                     <div class="service-info">
                         <h3>Cars & Standard Vehicles</h3>
                         <p>Coupe | Sedan | SUV | Truck</p>
-                        <div class="service-link">View Options &rarr;</div>
+                        <div class="service-link">View Options & Pricing &rarr;</div>
                     </div>
                 </div>
 
                 <!-- 2. Delivery Vans -->
-                <div class="service-box fade-in" onclick="openModal('Delivery Vans', ['Standard Cargo Van', 'Extended Sprinter Van', 'High Roof Sprinter'])">
+                <div class="service-box fade-in" onclick="openModal('Delivery Vans', [
+                    { name: 'Standard Cargo Van', price: 'Custom Quote' },
+                    { name: 'Extended Sprinter Van', price: 'Custom Quote' },
+                    { name: 'High Roof Sprinter', price: 'Custom Quote' }
+                ])">
                     <img src="https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=600" alt="Delivery Vans" class="service-bg">
                     <div class="service-info">
                         <h3>Delivery Vans</h3>
@@ -488,7 +498,11 @@
                 </div>
 
                 <!-- 3. Box Trucks -->
-                <div class="service-box fade-in" onclick="openModal('Box Trucks', ['12ft Box Truck', '16ft Box Truck', '24ft Box Truck'])">
+                <div class="service-box fade-in" onclick="openModal('Box Trucks', [
+                    { name: '12ft Box Truck', price: 'Custom Quote' },
+                    { name: '16ft Box Truck', price: 'Custom Quote' },
+                    { name: '24ft Box Truck', price: 'Custom Quote' }
+                ])">
                     <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=600" alt="Box Trucks" class="service-bg">
                     <div class="service-info">
                         <h3>Box Trucks</h3>
@@ -498,7 +512,11 @@
                 </div>
 
                 <!-- 4. Semi-Tractors -->
-                <div class="service-box fade-in" onclick="openModal('Semi-Tractors & Trailers', ['Day Cab Tractor', 'Sleeper Cab Tractor', '53ft Trailer (Exterior)'])">
+                <div class="service-box fade-in" onclick="openModal('Semi-Tractors & Trailers', [
+                    { name: 'Day Cab Tractor', price: 'Custom Quote' },
+                    { name: 'Sleeper Cab Tractor', price: 'Custom Quote' },
+                    { name: '53ft Trailer (Exterior)', price: 'Custom Quote' }
+                ])">
                     <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&q=80&w=600" alt="Semi-Tractors" class="service-bg">
                     <div class="service-info">
                         <h3>Semi-Tractors</h3>
@@ -508,7 +526,11 @@
                 </div>
 
                 <!-- 5. Commercial Buses -->
-                <div class="service-box fade-in" onclick="openModal('Commercial Buses', ['Shuttle Bus / Transit', 'Full Size Charter Bus', 'School Bus'])">
+                <div class="service-box fade-in" onclick="openModal('Commercial Buses', [
+                    { name: 'Shuttle Bus / Transit', price: 'Custom Quote' },
+                    { name: 'Full Size Charter Bus', price: 'Custom Quote' },
+                    { name: 'School Bus', price: 'Custom Quote' }
+                ])">
                     <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80&w=600" alt="Commercial Buses" class="service-bg">
                     <div class="service-info">
                         <h3>Commercial Buses</h3>
@@ -518,7 +540,11 @@
                 </div>
 
                 <!-- 6. Heavy Equipment -->
-                <div class="service-box fade-in" onclick="openModal('Heavy Equipment', ['Small (Skid Steer)', 'Medium (Backhoe)', 'Large (Excavator)'])">
+                <div class="service-box fade-in" onclick="openModal('Heavy Equipment', [
+                    { name: 'Small (Skid Steer)', price: 'Custom Quote' },
+                    { name: 'Medium (Backhoe)', price: 'Custom Quote' },
+                    { name: 'Large (Excavator)', price: 'Custom Quote' }
+                ])">
                     <img src="https://images.unsplash.com/photo-1579488349008-5390554ef929?auto=format&fit=crop&q=80&w=600" alt="Heavy Equipment" class="service-bg">
                     <div class="service-info">
                         <h3>Heavy Equipment</h3>
@@ -528,7 +554,11 @@
                 </div>
 
                 <!-- 7. RVs & Boats -->
-                <div class="service-box fade-in" onclick="openModal('RVs & Boats', ['Class B RV (Camper Van)', 'Class A RV (Motorhome)', 'Boat (Up to 25ft)'])">
+                <div class="service-box fade-in" onclick="openModal('RVs & Boats', [
+                    { name: 'Class B RV (Camper Van)', price: 'Custom Quote' },
+                    { name: 'Class A RV (Motorhome)', price: 'Custom Quote' },
+                    { name: 'Boat (Up to 25ft)', price: 'Custom Quote' }
+                ])">
                     <img src="https://images.unsplash.com/photo-1626248801379-51a0748a5f96?auto=format&fit=crop&q=80&w=600" alt="RVs & Boats" class="service-bg">
                     <div class="service-info">
                         <h3>RVs & Boats</h3>
@@ -595,6 +625,13 @@
                             <div class="benefit-text">
                                 <h4>Fully Mobile Service</h4>
                                 <p>We arrive at your home, work, or approved location with our own water and power.</p>
+                            </div>
+                        </div>
+                        <div class="benefit">
+                            <div class="benefit-icon">✓</div>
+                            <div class="benefit-text">
+                                <h4>Why Month-to-Month?</h4>
+                                <p>Enjoy absolute consistency and guaranteed priority scheduling with total flexibility—no long-term lock-ins.</p>
                             </div>
                         </div>
                     </div>
@@ -685,14 +722,16 @@
         const modalTitle = document.getElementById('modalTitle');
         const modalPriceList = document.getElementById('modalPriceList');
 
-        function openModal(title, sizes) {
+        function openModal(title, items) {
             modalTitle.innerText = title;
             modalPriceList.innerHTML = '';
-            sizes.forEach(size => {
+            items.forEach(item => {
+                const name = typeof item === 'object' ? item.name : item;
+                const price = typeof item === 'object' ? item.price : '';
                 const tierHTML = `
                     <div class="vehicle-tier">
-                        <span class="tier-name">${size}</span>
-                        <span class="tier-icon" style="color:var(--kw-red); font-weight:bold;">✓</span>
+                        <span class="tier-name">${name}</span>
+                        <span class="tier-price">${price}</span>
                     </div>
                 `;
                 modalPriceList.innerHTML += tierHTML;
