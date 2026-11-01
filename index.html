@@ -83,14 +83,14 @@
         .menu-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 5px; margin-left: auto;}
         .menu-toggle span { display: block; width: 25px; height: 2px; background: var(--kw-white); transition: 0.3s;}
 
-        /* --- HERO (Centered Cinematic) --- */
+        /* --- HERO (Centered Cinematic - Zoomed Out Background) --- */
         .hero {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            background: url('https://i.imgur.com/bvJ4fhr.jpeg') center/cover no-repeat fixed;
+            background: url('https://i.imgur.com/bvJ4fhr.jpeg') center center / 115% auto no-repeat fixed;
             text-align: center;
             padding: 90px 15px 40px;
             width: 100%;
@@ -454,6 +454,7 @@
                 padding: 85px 15px 30px;
                 min-height: auto;
                 height: auto;
+                background-size: 140% auto;
             }
             .hero-content {
                 padding-top: 20px;
@@ -488,6 +489,7 @@
         @media (max-width: 480px) {
             .hero {
                 padding-top: 75px;
+                background-size: 160% auto;
             }
             .hero h1 { font-size: 1.9rem; line-height: 1.2;}
             .logo-img { height: 40px; }
