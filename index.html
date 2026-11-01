@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KW Commercial LLC | Premium Fleet Washing & Detailing</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,12 +22,37 @@
             --font-serif: 'Playfair Display', serif;
         }
 
-        /* --- GLOBAL RESET & SMOOTH SCROLL --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { font-family: var(--font-sans); background-color: var(--kw-black); color: var(--kw-white); line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased;}
+        /* --- GLOBAL RESET & PREVENT HORIZONTAL SCROLL --- */
+        *, *::before, *::after { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        html, body { 
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            scroll-behavior: smooth; 
+            font-family: var(--font-sans); 
+            background-color: var(--kw-black); 
+            color: var(--kw-white); 
+            line-height: 1.6; 
+            -webkit-font-smoothing: antialiased;
+
+            /* HIDE SCROLLBAR (Chrome, Safari, Opera, Edge, Firefox, IE) */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+        
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
+        img, iframe { max-width: 100%; height: auto; }
 
         /* --- ANIMATIONS --- */
         .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
@@ -60,14 +85,15 @@
 
         /* --- HERO (Centered Cinematic) --- */
         .hero {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             background: url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat fixed;
             text-align: center;
-            padding: 0 15px;
+            padding: 100px 15px 60px;
+            width: 100%;
         }
         .hero::before {
             content: '';
@@ -81,7 +107,6 @@
             position: relative;
             z-index: 2;
             width: 100%;
-            padding-top: 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -93,12 +118,13 @@
             letter-spacing: 5px;
             text-transform: uppercase;
             color: var(--kw-red);
-            display: block;
+            display: inline-block;
             margin-bottom: 25px;
             background: rgba(227, 27, 35, 0.1);
             padding: 8px 20px;
             border-radius: 30px;
             border: 1px solid rgba(227, 27, 35, 0.3);
+            max-width: 100%;
         }
 
         .hero h1 {
@@ -108,6 +134,7 @@
             font-weight: 700;
             margin-bottom: 25px;
             max-width: 1000px;
+            word-wrap: break-word;
         }
 
         .hero p {
@@ -161,14 +188,14 @@
         }
 
         /* --- FLEET SERVICES (Luxury Grid) --- */
-        .services-section { padding: 150px 0; background: var(--kw-dark); position: relative;}
-        .section-header { text-align: center; margin-bottom: 80px; }
+        .services-section { padding: 120px 0; background: var(--kw-dark); position: relative;}
+        .section-header { text-align: center; margin-bottom: 60px; }
         .section-header h2 { font-family: var(--font-serif); font-size: 3.5rem; margin-bottom: 15px;}
         .section-header p { color: var(--kw-gray); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 3px;}
 
-        .grid-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 30px; }
+        .grid-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
 
-        .service-box { background: var(--kw-card); border: 1px solid #1a1a1a; position: relative; overflow: hidden; cursor: pointer; transition: all 0.5s ease; height: 350px; display: flex; flex-direction: column; justify-content: flex-end; padding: 40px;}
+        .service-box { background: var(--kw-card); border: 1px solid #1a1a1a; position: relative; overflow: hidden; cursor: pointer; transition: all 0.5s ease; height: 350px; display: flex; flex-direction: column; justify-content: flex-end; padding: 30px;}
         .service-box:hover { border-color: var(--kw-red); }
 
         .service-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; transition: transform 0.7s ease; opacity: 0.5;}
@@ -196,10 +223,10 @@
         .modal-footer { padding: 30px; background: #0a0a0a; text-align: center;}
 
         /* --- 365 AUTOCARE (LUXURY SHOWCASE) --- */
-        .autocare-section { padding: 150px 0; background: var(--kw-black); position: relative;}
-        .autocare-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(227, 27, 35, 0.08) 0%, transparent 70%); z-index: 0;}
+        .autocare-section { padding: 120px 0; background: var(--kw-black); position: relative;}
+        .autocare-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 800px; height: 800px; background: radial-gradient(circle, rgba(227, 27, 35, 0.08) 0%, transparent 70%); z-index: 0; pointer-events: none;}
 
-        .autocare-header { text-align: center; margin-bottom: 80px; position: relative; z-index: 1;}
+        .autocare-header { text-align: center; margin-bottom: 60px; position: relative; z-index: 1;}
         .autocare-header h2 { font-family: var(--font-serif); font-size: 4.5rem; line-height: 1; margin-bottom: 15px;}
         .autocare-header p { color: var(--kw-red); font-size: 1rem; text-transform: uppercase; letter-spacing: 5px; font-weight: 600;}
 
@@ -212,20 +239,21 @@
             z-index: 1;
             display: grid;
             grid-template-columns: 1fr 1.4fr;
+            width: 100%;
         }
 
-        .price-side { padding: 80px 60px; border-right: 1px solid #222; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
+        .price-side { padding: 80px 40px; border-right: 1px solid #222; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
         .price-side .price { font-size: 6rem; font-weight: 300; line-height: 1; letter-spacing: -3px; margin-bottom: 5px;}
         .price-side .price span { font-size: 2rem; color: var(--kw-red); font-weight: 600; vertical-align: super;}
         .price-side .term { font-size: 1rem; color: var(--kw-gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 40px;}
 
-        .setup-note { background: #151515; padding: 15px 25px; font-size: 0.8rem; color: var(--kw-light-gray); margin-bottom: 40px; border-left: 2px solid var(--kw-red);}
+        .setup-note { background: #151515; padding: 15px 20px; font-size: 0.8rem; color: var(--kw-light-gray); margin-bottom: 40px; border-left: 2px solid var(--kw-red); width: 100%;}
         .setup-note span { color: var(--kw-red); font-weight: 600;}
 
         .price-side .btn { width: 100%; padding: 22px; font-size: 1rem; }
         .no-contract { font-size: 0.75rem; color: #666; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px;}
 
-        .details-side { padding: 80px 60px; }
+        .details-side { padding: 80px 40px; }
         .details-side h3 { font-family: var(--font-serif); font-size: 2rem; margin-bottom: 30px;}
 
         .benefit-grid { display: grid; grid-template-columns: 1fr; gap: 25px; margin-bottom: 40px;}
@@ -234,14 +262,14 @@
         .benefit-text h4 { font-size: 1rem; font-weight: 600; margin-bottom: 5px;}
         .benefit-text p { font-size: 0.85rem; color: var(--kw-gray);}
 
-        .feature-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px;}
+        .feature-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;}
         .feature-col h5 { color: var(--kw-red); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 15px;}
         .feature-col ul li { font-size: 0.9rem; color: var(--kw-light-gray); margin-bottom: 12px; font-weight: 300; display: flex; align-items: center; gap: 10px;}
         .feature-col ul li::before { content: "—"; color: var(--kw-red); }
 
         /* --- MOBILE SERVICE SECTION --- */
         .location-section { padding: 100px 0; background: var(--kw-dark); border-top: 1px solid #1a1a1a; text-align: center;}
-        .location-card { background: var(--kw-card); border: 1px solid #222; max-width: 800px; margin: 0 auto; padding: 60px 40px; border-radius: 4px; }
+        .location-card { background: var(--kw-card); border: 1px solid #222; max-width: 800px; margin: 0 auto; padding: 60px 30px; border-radius: 4px; width: 100%; }
         .location-card h2 { font-family: var(--font-serif); font-size: 2.5rem; margin-bottom: 20px; }
         .location-address { font-size: 1.2rem; color: var(--kw-light-gray); margin-bottom: 35px; line-height: 1.8; font-weight: 300;}
 
@@ -251,25 +279,21 @@
         footer p { color: #444; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;}
 
         /* ========================================= */
-        /* --- RESPONSIVE DESIGN (TABLETS & MOBILES) --- */
+        /* --- RESPONSIVE FIXES (TABLETS & MOBILES) --- */
         /* ========================================= */
 
-        /* Tablets & Small Laptops (1024px and down) */
         @media (max-width: 1024px) {
-            .hero h1 { font-size: 4rem; }
+            .hero h1 { font-size: 3.8rem; }
             .hero p { font-size: 1.1rem; }
             .luxury-card { grid-template-columns: 1fr; }
-            .price-side { border-right: none; border-bottom: 1px solid #222; padding: 60px 30px;}
-            .details-side { padding: 60px 30px;}
-            .grid-6 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+            .price-side { border-right: none; border-bottom: 1px solid #222; padding: 50px 25px;}
+            .details-side { padding: 50px 25px;}
+            .grid-6 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
         }
 
-        /* Large Phones & Small Tablets (768px and down) */
         @media (max-width: 768px) {
-            /* Show Mobile Menu Button */
             .menu-toggle { display: flex; }
 
-            /* Mobile Navigation Dropdown */
             nav ul {
                 display: none;
                 flex-direction: column;
@@ -287,45 +311,40 @@
             nav a { display: block; padding: 10px; font-size: 1rem; }
             nav .nav-btn { display: inline-block; padding: 12px 30px; width: auto; margin-top: 10px; }
 
-            /* Typography Scaling */
-            .hero h1 { font-size: 2.8rem; }
+            .hero h1 { font-size: 2.5rem; }
             .hero p { font-size: 1rem; }
-            .hero .tagline { font-size: 0.7rem; letter-spacing: 2px; padding: 6px 15px;}
+            .hero .tagline { font-size: 0.65rem; letter-spacing: 2px; padding: 6px 12px;}
             .section-header h2 { font-size: 2.2rem; }
             .autocare-header h2 { font-size: 3rem; }
             .section-header p, .autocare-header p { font-size: 0.85rem; letter-spacing: 2px; }
 
-            /* Hero Buttons Stack */
             .hero-buttons { flex-direction: column; width: 100%; max-width: 320px; margin: 0 auto; gap: 15px;}
             .hero-buttons .btn { width: 100%; padding: 16px; font-size: 0.8rem;}
 
-            /* Grid Stack */
             .grid-6 { grid-template-columns: 1fr; gap: 20px; }
-            .service-box { height: 300px; padding: 30px;}
+            .service-box { height: 300px; padding: 25px;}
 
-            /* 365 AutoCare Adjustments */
-            .price-side .price { font-size: 5rem; }
-            .price-side { padding: 50px 20px; }
-            .details-side { padding: 50px 20px; }
+            .price-side .price { font-size: 4.5rem; }
+            .price-side { padding: 40px 20px; }
+            .details-side { padding: 40px 20px; }
             .feature-columns { grid-template-columns: 1fr; gap: 20px;}
             .details-side h3 { font-size: 1.5rem; }
 
-            /* Spacing adjustments */
-            .services-section, .autocare-section, .location-section { padding: 80px 0; }
-            .section-header, .autocare-header { margin-bottom: 50px; }
+            .services-section, .autocare-section, .location-section { padding: 70px 0; }
+            .section-header, .autocare-header { margin-bottom: 40px; }
 
-            /* Scroll Indicator Hide */
             .scroll-indicator { display: none; }
         }
 
-        /* Small Phones (480px and down) */
         @media (max-width: 480px) {
-            .hero h1 { font-size: 2.2rem; line-height: 1.2;}
+            .hero h1 { font-size: 2rem; line-height: 1.2;}
             .logo-img { height: 40px; }
             .container { width: 92%; }
-            .price-side .price { font-size: 4rem; }
-            .autocare-header h2 { font-size: 2.5rem; }
+            .price-side .price { font-size: 3.5rem; }
+            .autocare-header h2 { font-size: 2.2rem; }
             .service-info h3 { font-size: 1.3rem; }
+            .location-card h2 { font-size: 1.8rem; }
+            .location-address { font-size: 1rem; }
         }
     </style>
 </head>
