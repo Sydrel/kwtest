@@ -6,7 +6,7 @@
     <title>KW Commercial LLC | Premium Fleet Washing & Detailing</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
 
     <style>
         /* --- CSS VARIABLES --- */
@@ -16,8 +16,8 @@
             --kw-dark: #0a0a0a;
             --kw-card: #111111;
             --kw-white: #FFFFFF;
-            --kw-gray: #888888;
-            --kw-light-gray: #cccccc;
+            --kw-gray: #aaaaaa;
+            --kw-light-gray: #e0e0e0;
             --font-sans: 'Inter', sans-serif;
             --font-serif: 'Playfair Display', serif;
         }
@@ -62,7 +62,7 @@
         .container { width: 90%; max-width: 1400px; margin: 0 auto; }
         .text-red { color: var(--kw-red); }
 
-        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 18px 40px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: all 0.4s ease; cursor: pointer; border: none; font-size: 0.85rem;}
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 18px 40px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: all 0.4s ease; cursor: pointer; border: none; font-size: 0.9rem;}
         .btn-red { background-color: var(--kw-red); color: var(--kw-white); }
         .btn-red:hover { background-color: #b00d14; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(227, 27, 35, 0.3); }
         .btn-outline { background: transparent; border: 1px solid var(--kw-white); color: var(--kw-white); }
@@ -74,7 +74,7 @@
         .logo-img { height: 55px; width: auto; transition: height 0.4s ease;}
 
         nav ul { display: flex; gap: 35px; align-items: center;}
-        nav a { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--kw-light-gray); transition: color 0.3s;}
+        nav a { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--kw-light-gray); transition: color 0.3s;}
         nav a:hover { color: var(--kw-white); }
         nav .nav-btn { color: var(--kw-white); background: var(--kw-red); padding: 12px 25px; border-radius: 2px; }
         nav .nav-btn:hover { background: #b00d14; }
@@ -116,7 +116,7 @@
         }
 
         .hero .tagline {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 600;
             letter-spacing: 5px;
             text-transform: uppercase;
@@ -141,7 +141,7 @@
         }
 
         .hero-subtext {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             color: var(--kw-light-gray);
             max-width: 650px;
             margin: 0 auto 35px auto;
@@ -164,7 +164,7 @@
             align-items: center;
             gap: 8px;
             color: var(--kw-gray);
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -208,9 +208,9 @@
         .service-box::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 80%; background: linear-gradient(to top, var(--kw-black) 10%, transparent 100%); z-index: 1;}
 
         .service-info { position: relative; z-index: 2; }
-        .service-info h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 5px; letter-spacing: 1px;}
-        .service-info p { color: var(--kw-light-gray); font-size: 0.9rem; margin-bottom: 20px;}
-        .service-link { color: var(--kw-red); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; transition: gap 0.3s ease;}
+        .service-info h3 { font-size: 1.6rem; font-weight: 600; margin-bottom: 8px; letter-spacing: 1px;}
+        .service-info p { color: var(--kw-light-gray); font-size: 1rem; margin-bottom: 20px;}
+        .service-link { color: var(--kw-red); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; transition: gap 0.3s ease;}
         .service-box:hover .service-link { gap: 20px; }
 
         /* --- MODAL --- */
@@ -223,87 +223,146 @@
         .close-btn { background: none; border: none; color: var(--kw-white); font-size: 2rem; cursor: pointer; line-height: 1; transition: 0.3s;}
         .close-btn:hover { color: var(--kw-red); }
         .modal-body { padding: 30px; }
-        .modal-body p { color: var(--kw-gray); font-size: 0.9rem; margin-bottom: 25px;}
-        .vehicle-tier { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #222; font-weight: 300;}
+        .modal-body p { color: var(--kw-gray); font-size: 1rem; margin-bottom: 25px;}
+        .vehicle-tier { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #222; font-weight: 400; font-size: 1.05rem;}
         .tier-price { color: var(--kw-red); font-weight: 600; }
         .modal-footer { padding: 30px; background: #0a0a0a; text-align: center;}
 
-        /* --- 365 AUTOCARE (LUXURY SHOWCASE) --- */
-        .autocare-section { padding: 120px 0; background: var(--kw-black); position: relative;}
-        .autocare-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 800px; height: 800px; background: radial-gradient(circle, rgba(227, 27, 35, 0.08) 0%, transparent 70%); z-index: 0; pointer-events: none;}
+        /* --- MEMBERSHIP & ADD-ONS SECTION --- */
+        .master-membership-section { padding: 110px 0; background: var(--kw-black); position: relative;}
+        .master-membership-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(227, 27, 35, 0.08) 0%, transparent 70%); z-index: 0; pointer-events: none;}
 
-        .autocare-header { text-align: center; margin-bottom: 60px; position: relative; z-index: 1;}
-        .autocare-header h2 { font-family: var(--font-serif); font-size: 4.5rem; line-height: 1; margin-bottom: 15px;}
-        .autocare-header p { color: var(--kw-red); font-size: 1rem; text-transform: uppercase; letter-spacing: 5px; font-weight: 600;}
+        .section-heading { text-align: center; margin-bottom: 60px; position: relative; z-index: 1;}
+        .section-heading h2 { font-family: var(--font-serif); font-size: 4rem; line-height: 1; margin-bottom: 15px;}
+        .section-heading p { color: var(--kw-red); font-size: 1.05rem; text-transform: uppercase; letter-spacing: 4px; font-weight: 600;}
 
-        .plans-wrapper { display: flex; flex-direction: column; gap: 50px; position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .membership-open-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
 
-        .luxury-card {
+        /* VERTICALLY STACKED PLANS */
+        .vertical-plans-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin-bottom: 70px;
+        }
+
+        .vertical-plan-row {
             background: var(--kw-dark);
             border: 1px solid #222;
-            position: relative;
             display: grid;
-            grid-template-columns: 1fr 1.4fr;
-            width: 100%;
+            grid-template-columns: 360px 1fr;
+            transition: border-color 0.3s;
+        }
+        .vertical-plan-row:hover { border-color: var(--kw-red); }
+
+        .v-price-side {
+            padding: 45px 30px;
+            border-right: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: #121212;
+        }
+        .v-price-side .price { font-size: 4rem; font-weight: 300; line-height: 1; letter-spacing: -2px; margin-bottom: 8px;}
+        .v-price-side .price span { font-size: 1.6rem; color: var(--kw-red); font-weight: 600; vertical-align: super;}
+        .v-price-side .term { font-size: 0.9rem; color: var(--kw-gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;}
+        
+        .setup-tag { background: #1a1a1a; padding: 10px 15px; font-size: 0.85rem; color: var(--kw-light-gray); margin-bottom: 25px; border-left: 3px solid var(--kw-red); width: 100%; text-align: left; line-height: 1.5;}
+        .setup-tag span { color: var(--kw-red); font-weight: 600;}
+        .v-price-side .btn { width: 100%; padding: 16px; font-size: 0.9rem; letter-spacing: 2px; }
+        .cancel-note { font-size: 0.75rem; color: #888; margin-top: 12px; text-transform: uppercase; letter-spacing: 1.5px;}
+
+        .v-details-side {
+            padding: 45px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .v-details-side h3 { font-family: var(--font-serif); font-size: 2rem; margin-bottom: 12px;}
+        .v-desc { font-size: 1.05rem; color: var(--kw-light-gray); margin-bottom: 25px; line-height: 1.6; }
+
+        .mini-table { width: 100%; margin-bottom: 25px; border-collapse: collapse; }
+        .mini-table th, .mini-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #222; font-size: 0.95rem; }
+        .mini-table th { color: var(--kw-red); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; font-size: 0.85rem; }
+        .mini-table td { color: var(--kw-white); }
+        .mini-table td.val { font-weight: 600; color: var(--kw-white); text-align: right; }
+        .mini-table th.hdr { text-align: right; }
+
+        /* BENEFIT HIGHLIGHT BOXES */
+        .benefit-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-bottom: 25px;}
+        .benefit { display: flex; gap: 14px; align-items: flex-start;}
+        .benefit-icon { width: 28px; height: 28px; border-radius: 50%; background: rgba(227, 27, 35, 0.15); border: 1px solid var(--kw-red); display: flex; align-items: center; justify-content: center; color: var(--kw-red); font-size: 0.8rem; font-weight: bold; flex-shrink: 0;}
+        .benefit-text h4 { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; color: var(--kw-white);}
+        .benefit-text p { font-size: 0.92rem; color: var(--kw-gray); line-height: 1.5;}
+
+        .v-features { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 15px; }
+        .v-col h5 { color: var(--kw-red); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 12px; border-bottom: 1px solid #222; padding-bottom: 8px; font-weight: 600;}
+        .v-col ul li { font-size: 0.9rem; color: var(--kw-light-gray); margin-bottom: 8px; font-weight: 300; display: flex; align-items: center; gap: 8px;}
+        .v-col ul li::before { content: "—"; color: var(--kw-red); font-weight: bold; }
+
+
+        /* ADD-ONS SECTION */
+        .addons-division {
+            border-top: 2px solid #222;
+            padding-top: 60px;
         }
 
-        .price-side { padding: 60px 40px; border-right: 1px solid #222; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
-        .price-side .price { font-size: 4.5rem; font-weight: 300; line-height: 1; letter-spacing: -2px; margin-bottom: 5px;}
-        .price-side .price span { font-size: 1.8rem; color: var(--kw-red); font-weight: 600; vertical-align: super;}
-        .price-side .term { font-size: 0.9rem; color: var(--kw-gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px;}
+        .addons-title-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .addons-title-wrap h3 { font-family: var(--font-serif); font-size: 2.5rem; }
+        .addons-title-wrap p { color: var(--kw-gray); font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
 
-        .setup-note { background: #151515; padding: 12px 15px; font-size: 0.8rem; color: var(--kw-light-gray); margin-bottom: 25px; border-left: 2px solid var(--kw-red); width: 100%; text-align: left;}
-        .setup-note span { color: var(--kw-red); font-weight: 600;}
-
-        .price-side .btn { width: 100%; padding: 18px; font-size: 0.9rem; }
-        .no-contract { font-size: 0.75rem; color: #666; margin-top: 15px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
-
-        .details-side { padding: 60px 40px; display: flex; flex-direction: column; justify-content: center; }
-        .details-side h3 { font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 15px;}
-        .plan-desc { font-size: 0.9rem; color: var(--kw-gray); margin-bottom: 30px; line-height: 1.6; }
-
-        /* Pricing table for multi-tier plan */
-        .pricing-table { width: 100%; margin-bottom: 30px; border-collapse: collapse; }
-        .pricing-table th, .pricing-table td { padding: 10px 15px; text-align: left; border-bottom: 1px solid #222; font-size: 0.85rem; }
-        .pricing-table th { color: var(--kw-red); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        .pricing-table td { color: var(--kw-light-gray); }
-        .pricing-table td.price-val { font-weight: 600; color: var(--kw-white); text-align: right; }
-        .pricing-table th.price-hdr { text-align: right; }
-
-        .benefit-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 30px;}
-        .benefit { display: flex; gap: 15px; align-items: flex-start;}
-        .benefit-icon { width: 26px; height: 26px; border-radius: 50%; background: rgba(227, 27, 35, 0.1); border: 1px solid var(--kw-red); display: flex; align-items: center; justify-content: center; color: var(--kw-red); font-size: 0.75rem; font-weight: bold; flex-shrink: 0;}
-        .benefit-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 3px;}
-        .benefit-text p { font-size: 0.82rem; color: var(--kw-gray);}
-
-        .feature-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 25px;}
-        .feature-col h5 { color: var(--kw-red); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px;}
-        .feature-col ul li { font-size: 0.85rem; color: var(--kw-light-gray); margin-bottom: 10px; font-weight: 300; display: flex; align-items: center; gap: 8px;}
-        .feature-col ul li::before { content: "—"; color: var(--kw-red); }
-
-        /* --- ADD-ONS SECTION --- */
-        .addons-section { padding: 100px 0; background: var(--kw-dark); border-top: 1px solid #1a1a1a; }
-        .addons-card { background: var(--kw-card); border: 1px solid #222; max-width: 1000px; margin: 0 auto; padding: 60px 40px; border-radius: 4px; }
-        .addons-header { text-align: center; margin-bottom: 40px; }
-        .addons-header h2 { font-family: var(--font-serif); font-size: 3rem; margin-bottom: 15px; }
-        .addons-header p { color: var(--kw-gray); font-size: 1rem; text-transform: uppercase; letter-spacing: 3px; }
-
-        .promo-banner {
-            background: linear-gradient(135deg, rgba(227, 27, 35, 0.15) 0%, rgba(10, 10, 10, 0.8) 100%);
+        .member-banner {
+            background: linear-gradient(135deg, rgba(227, 27, 35, 0.18) 0%, rgba(15, 15, 15, 0.95) 100%);
             border: 1px solid rgba(227, 27, 35, 0.4);
             padding: 20px 25px;
-            text-align: center;
             border-radius: 4px;
-            margin-bottom: 45px;
+            margin-bottom: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .promo-banner h3 { font-size: 1.1rem; color: var(--kw-white); font-weight: 600; letter-spacing: 1px; margin-bottom: 5px; }
-        .promo-banner p { font-size: 0.9rem; color: var(--kw-light-gray); }
+        .member-banner span { font-size: 1rem; color: var(--kw-white); font-weight: 600; letter-spacing: 0.5px; }
+        .member-banner strong { color: var(--kw-red); font-size: 1.1rem; }
 
-        .addons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .addon-item { background: #141414; border: 1px solid #222; padding: 22px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        .addon-item:hover { border-color: var(--kw-red); transform: translateY(-2px); }
-        .addon-name { font-size: 0.95rem; font-weight: 600; color: var(--kw-white); }
-        .addon-price { font-size: 0.95rem; font-weight: 600; color: var(--kw-red); }
+        /* HORIZONTAL ADD-ON CARDS GRID */
+        .horizontal-addons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .h-addon-card {
+            background: var(--kw-card);
+            border: 1px solid #222;
+            padding: 22px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .h-addon-card:hover {
+            border-color: var(--kw-red);
+            transform: translateY(-3px);
+        }
+        .h-addon-name { font-size: 0.95rem; font-weight: 600; color: var(--kw-white); }
+        .h-addon-price { font-size: 1rem; font-weight: 700; color: var(--kw-red); }
+
 
         /* --- VIDEO SHOWCASE SECTION --- */
         .video-section { padding: 100px 0; background: var(--kw-black); border-top: 1px solid #1a1a1a; text-align: center; }
@@ -359,9 +418,10 @@
         @media (max-width: 1024px) {
             .hero h1 { font-size: 3.8rem; }
             .hero-subtext { font-size: 1.1rem; }
-            .luxury-card { grid-template-columns: 1fr; }
-            .price-side { border-right: none; border-bottom: 1px solid #222; padding: 50px 25px;}
-            .details-side { padding: 50px 25px;}
+            .vertical-plan-row { grid-template-columns: 1fr; }
+            .v-price-side { border-right: none; border-bottom: 1px solid #222; padding: 35px 20px;}
+            .v-details-side { padding: 35px 25px;}
+            .horizontal-addons-grid { grid-template-columns: repeat(2, 1fr); }
             .grid-6 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
         }
 
@@ -404,24 +464,23 @@
             .hero .tagline { font-size: 0.6rem; letter-spacing: 1.5px; padding: 5px 10px; margin-bottom: 15px; }
 
             .hero-buttons { flex-direction: column; width: 100%; max-width: 320px; margin: 0 auto; gap: 12px;}
-            .hero-buttons .btn { width: 100%; padding: 14px; font-size: 0.8rem;}
+            .hero-buttons .btn { width: 100%; padding: 14px; font-size: 0.85rem;}
 
             /* Adjusted section header font size for mobile */
             .section-header h2 { font-size: 2rem; }
-            .autocare-header h2 { font-size: 2.6rem; }
-            .section-header p, .autocare-header p { font-size: 0.8rem; letter-spacing: 2px; }
+            .section-heading h2 { font-size: 2.4rem; }
+            .section-header p, .section-heading p { font-size: 0.85rem; letter-spacing: 2px; }
 
             .grid-6 { grid-template-columns: 1fr; gap: 20px; }
             .service-box { height: 300px; padding: 25px;}
 
-            .price-side .price { font-size: 4rem; }
-            .price-side { padding: 40px 20px; }
-            .details-side { padding: 40px 20px; }
-            .feature-columns { grid-template-columns: 1fr; gap: 20px;}
-            .details-side h3 { font-size: 1.5rem; }
+            .v-price-side .price { font-size: 3.2rem; }
+            .v-features { grid-template-columns: 1fr; gap: 15px;}
+            .v-details-side h3 { font-size: 1.5rem; }
+            .horizontal-addons-grid { grid-template-columns: 1fr; }
 
-            .services-section, .autocare-section, .addons-section, .video-section, .location-section { padding: 70px 0; }
-            .section-header, .autocare-header, .addons-header, .video-header { margin-bottom: 40px; }
+            .services-section, .master-membership-section, .video-section, .location-section { padding: 70px 0; }
+            .section-header, .section-heading, .video-header { margin-bottom: 40px; }
 
             .scroll-indicator { display: none; }
         }
@@ -433,8 +492,8 @@
             .hero h1 { font-size: 1.9rem; line-height: 1.2;}
             .logo-img { height: 40px; }
             .container { width: 92%; }
-            .price-side .price { font-size: 3.2rem; }
-            .autocare-header h2 { font-size: 2.2rem; }
+            .v-price-side .price { font-size: 2.8rem; }
+            .section-heading h2 { font-size: 2rem; }
             .section-header h2 { font-size: 1.7rem; }
             .service-info h3 { font-size: 1.3rem; }
             .video-header h2 { font-size: 2rem; }
@@ -462,8 +521,7 @@
             <nav id="mainNav">
                 <ul>
                     <li><a href="#services">Fleet Services</a></li>
-                    <li><a href="#autocare">Recurring Plans</a></li>
-                    <li><a href="#addons">Add-Ons</a></li>
+                    <li><a href="#membership">Membership & Add-Ons</a></li>
                     <li><a href="#location">Service Area</a></li>
                     <li><a href="tel:2398986008" class="nav-btn">Book Us</a></li>
                 </ul>
@@ -479,7 +537,7 @@
                 <h1>Keeping your fleet clean.<br><span class="text-red">Keeping your business moving.</span></h1>
                 <p class="hero-subtext">We deliver a premium, concierge-level wash and detailing experience directly to your fleet, yard, or home.</p>
                 <div class="hero-buttons">
-                    <a href="#autocare" class="btn btn-red">Month-to-Month Plans</a>
+                    <a href="#membership" class="btn btn-red">Month-to-Month Plans</a>
                     <a href="#services" class="btn btn-outline">Explore Services</a>
                 </div>
             </div>
@@ -530,13 +588,13 @@
                     </div>
                 </div>
 
-                <!-- 3. Box Trucks (Restored to original Unsplash image) -->
+                <!-- 3. Box Trucks (Updated Image Link) -->
                 <div class="service-box fade-in" onclick="openModal('Box Trucks', [
                     { name: '12ft Box Truck', price: 'Custom Quote' },
                     { name: '16ft Box Truck', price: 'Custom Quote' },
                     { name: '24ft Box Truck', price: 'Custom Quote' }
                 ])">
-                    <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=600" alt="Box Trucks" class="service-bg">
+                    <img src="https://i.imgur.com/ZY09lBL.jpeg" alt="Box Trucks" class="service-bg">
                     <div class="service-info">
                         <h3>Box Trucks</h3>
                         <p>Straight Trucks</p>
@@ -544,7 +602,7 @@
                     </div>
                 </div>
 
-                <!-- 4. Semi-Tractors (Assigned custom image link https://i.imgur.com/HMmC2vg.jpeg) -->
+                <!-- 4. Semi-Tractors -->
                 <div class="service-box fade-in" onclick="openModal('Semi-Tractors & Trailers', [
                     { name: 'Day Cab Tractor', price: 'Custom Quote' },
                     { name: 'Sleeper Cab Tractor', price: 'Custom Quote' },
@@ -572,13 +630,13 @@
                     </div>
                 </div>
 
-                <!-- 6. Heavy Equipment -->
+                <!-- 6. Heavy Equipment (Updated Image Link) -->
                 <div class="service-box fade-in" onclick="openModal('Heavy Equipment', [
                     { name: 'Small (Skid Steer)', price: 'Custom Quote' },
                     { name: 'Medium (Backhoe)', price: 'Custom Quote' },
                     { name: 'Large (Excavator)', price: 'Custom Quote' }
                 ])">
-                    <img src="https://images.unsplash.com/photo-1579488349008-5390554ef929?auto=format&fit=crop&q=80&w=600" alt="Heavy Equipment" class="service-bg">
+                    <img src="https://i.imgur.com/jdjyuFO.jpeg" alt="Heavy Equipment" class="service-bg">
                     <div class="service-info">
                         <h3>Heavy Equipment</h3>
                         <p>Construction | Industrial</p>
@@ -616,213 +674,190 @@
             </div>
             <div class="modal-footer">
                 <a href="tel:2398986008" class="btn btn-red" style="width:100%;">Book Us</a>
-                <p style="margin-top:15px; font-size:0.8rem; color:var(--kw-gray);">Want recurring cleanings? <a href="#autocare" onclick="closeModal()" style="color:var(--kw-red); text-decoration:underline;">View Month-to-Month Recurring Service</a></p>
+                <p style="margin-top:15px; font-size:0.9rem; color:var(--kw-gray);">Want recurring cleanings? <a href="#membership" onclick="closeModal()" style="color:var(--kw-red); text-decoration:underline;">View Month-to-Month Plans</a></p>
             </div>
         </div>
     </div>
 
-    <!-- RECURRING SERVICE PLANS SECTION -->
-    <section id="autocare" class="autocare-section">
+    <!-- MEMBERSHIP & ADD-ONS SECTION -->
+    <section id="membership" class="master-membership-section">
         <div class="container">
-            <div class="autocare-header fade-in">
-                <h2><span class="text-red">RECURRING</span> PLANS</h2>
-                <p>Month-to-Month Mobile Detailing & Wash Packages</p>
+            <div class="section-heading fade-in">
+                <h2><span class="text-red">MEMBERSHIP</span> & ADD-ONS</h2>
+                <p>Month-to-Month Recurring Plans & Professional Add-Ons</p>
             </div>
 
-            <div class="plans-wrapper">
+            <div class="membership-open-wrap fade-in">
                 
-                <!-- PLAN 1: KW Signature Wash 365 -->
-                <div class="luxury-card fade-in">
-                    <!-- Left Side: Pricing -->
-                    <div class="price-side">
-                        <div class="price"><span>$</span>150<span>+</span></div>
-                        <div class="term">Twice-Monthly Washes</div>
-
-                        <div class="setup-note">+ <span>$100</span> One-Time Setup Fee<br><small style="color:#aaa;">Fee is non-refundable.</small></div>
-
-                        <a href="tel:2398986008" class="btn btn-red">Book Signature Wash</a>
-                        <div class="no-contract">Month-to-month. Cancel anytime.</div>
-                    </div>
-
-                    <!-- Right Side: Details -->
-                    <div class="details-side">
-                        <h3>KW Signature Wash 365</h3>
-                        <p class="plan-desc">Keep your vehicle clean and looking its best with our convenient Basic Premium Wash service. We come directly to your home, workplace, or approved location.</p>
-
-                        <!-- Vehicle Pricing Table -->
-                        <table class="pricing-table">
-                            <thead>
-                                <tr>
-                                    <th>Vehicle Type</th>
-                                    <th class="price-hdr">Monthly Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Sedan / Coupe</td>
-                                    <td class="price-val">$150+</td>
-                                </tr>
-                                <tr>
-                                    <td>Small SUV / Crossover</td>
-                                    <td class="price-val">$180+</td>
-                                </tr>
-                                <tr>
-                                    <td>Large SUV</td>
-                                    <td class="price-val">$220+</td>
-                                </tr>
-                                <tr>
-                                    <td>Pickup Truck</td>
-                                    <td class="price-val">$200+</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="benefit-grid">
-                            <div class="benefit">
-                                <div class="benefit-icon">✓</div>
-                                <div class="benefit-text">
-                                    <h4>Twice-Monthly Mobile Service</h4>
-                                    <p>Two scheduled maintenance washes per month delivered right to your location.</p>
-                                </div>
-                            </div>
-                            <div class="benefit">
-                                <div class="benefit-icon">✓</div>
-                                <div class="benefit-text">
-                                    <h4>Why Month-to-Month?</h4>
-                                    <p>Enjoy absolute consistency and guaranteed priority scheduling with total flexibility—no long-term lock-ins.</p>
-                                </div>
-                            </div>
+                <!-- VERTICALLY STACKED PLANS -->
+                <div class="vertical-plans-stack">
+                    
+                    <!-- Plan 1: KW Signature Wash 365 -->
+                    <div class="vertical-plan-row">
+                        <div class="v-price-side">
+                            <div class="price"><span>$</span>150<span>+</span></div>
+                            <div class="term">Twice-Monthly Washes</div>
+                            <div class="setup-tag">+ <span>$100</span> Setup Fee <small style="color:#aaa;">(Non-refundable)</small></div>
+                            <a href="tel:2398986008" class="btn btn-red">Book Signature Wash</a>
+                            <div class="cancel-note">Cancel anytime</div>
                         </div>
-
-                        <div class="feature-columns">
-                            <div class="feature-col">
-                                <h5>Exterior Cleaning</h5>
-                                <ul>
-                                    <li>Exterior hand wash</li>
-                                    <li>Wheel and rim cleaning</li>
-                                    <li>Tire cleaning and dressing</li>
-                                    <li>Exterior window cleaning</li>
-                                    <li>Exterior drying and finishing</li>
-                                </ul>
-                            </div>
-                            <div class="feature-col">
-                                <h5>Basic Interior Cleaning</h5>
-                                <ul>
-                                    <li>Light interior vacuuming</li>
-                                    <li>Dashboard & console wipe-down</li>
-                                    <li>Interior window cleaning</li>
-                                    <li>Heavy dust removal</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PLAN 2: 365 AutoCare (Full Luxury) -->
-                <div class="luxury-card fade-in">
-                    <!-- Left Side: Pricing -->
-                    <div class="price-side">
-                        <div class="price"><span>$</span>350</div>
-                        <div class="term">2 Luxury Services</div>
-
-                        <div class="setup-note">+ <span>$100</span> One-Time Setup Fee<br><small style="color:#aaa;">Fee is non-refundable.</small></div>
-
-                        <a href="tel:2398986008" class="btn btn-red">Book 365 AutoCare</a>
-                        <div class="no-contract">Month-to-month. Cancel anytime.</div>
-                    </div>
-
-                    <!-- Right Side: Details -->
-                    <div class="details-side">
-                        <h3><span class="text-red">365</span> AUTOCARE</h3>
-                        <p class="plan-desc">Concierge Detailing delivered to your door. Complete deep cleaning and exterior protection packages.</p>
-
-                        <div class="benefit-grid">
-                            <div class="benefit">
-                                <div class="benefit-icon">✓</div>
-                                <div class="benefit-text">
-                                    <h4>2 Full Luxury Premium Details</h4>
-                                    <p>Both deep Interior cleaning and Exterior detailing are included in every visit.</p>
+                        <div class="v-details-side">
+                            <h3>KW Signature Wash 365</h3>
+                            <p class="v-desc">Convenient Basic Premium Wash service delivered directly to your home, workplace, or approved location.</p>
+                            
+                            <!-- BENEFITS -->
+                            <div class="benefit-grid">
+                                <div class="benefit">
+                                    <div class="benefit-icon">✓</div>
+                                    <div class="benefit-text">
+                                        <h4>Twice-Monthly Mobile Service</h4>
+                                        <p>Two scheduled maintenance washes per month delivered right to your location.</p>
+                                    </div>
+                                </div>
+                                <div class="benefit">
+                                    <div class="benefit-icon">✓</div>
+                                    <div class="benefit-text">
+                                        <h4>Why Month-to-Month?</h4>
+                                        <p>Enjoy absolute consistency and guaranteed priority scheduling with total flexibility—no long-term lock-ins.</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="benefit">
-                                <div class="benefit-icon">✓</div>
-                                <div class="benefit-text">
-                                    <h4>Fully Mobile Service</h4>
-                                    <p>We arrive at your home, work, or approved location with our own water and power.</p>
+
+                            <table class="mini-table">
+                                <thead>
+                                    <tr>
+                                        <th>Vehicle Type</th>
+                                        <th class="hdr">Monthly Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Sedan / Coupe</td><td class="val">$150+</td></tr>
+                                    <tr><td>Small SUV / Crossover</td><td class="val">$180+</td></tr>
+                                    <tr><td>Large SUV</td><td class="val">$220+</td></tr>
+                                    <tr><td>Pickup Truck</td><td class="val">$200+</td></tr>
+                                </tbody>
+                            </table>
+
+                            <div class="v-features">
+                                <div class="v-col">
+                                    <h5>Exterior Wash</h5>
+                                    <ul>
+                                        <li>Exterior hand wash</li>
+                                        <li>Wheel & rim cleaning</li>
+                                        <li>Tire clean & dress</li>
+                                        <li>Exterior windows</li>
+                                    </ul>
+                                </div>
+                                <div class="v-col">
+                                    <h5>Interior Basic</h5>
+                                    <ul>
+                                        <li>Light interior vacuum</li>
+                                        <li>Dashboard wipe-down</li>
+                                        <li>Interior windows</li>
+                                        <li>Dust removal</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="feature-columns">
-                            <div class="feature-col">
-                                <h5>Premium Interior</h5>
-                                <ul>
-                                    <li>Complete interior vacuuming</li>
-                                    <li>Dashboard & console cleaning</li>
-                                    <li>Door panels & trim care</li>
-                                    <li>Interior & exterior glass cleaning</li>
-                                    <li>Interior surface conditioning</li>
-                                </ul>
+                    <!-- Plan 2: 365 AutoCare -->
+                    <div class="vertical-plan-row">
+                        <div class="v-price-side">
+                            <div class="price"><span>$</span>350</div>
+                            <div class="term">2 Luxury Services</div>
+                            <div class="setup-tag">+ <span>$100</span> Setup Fee <small style="color:#aaa;">(Non-refundable)</small></div>
+                            <a href="tel:2398986008" class="btn btn-red">Book 365 AutoCare</a>
+                            <div class="cancel-note">Cancel anytime</div>
+                        </div>
+                        <div class="v-details-side">
+                            <h3><span class="text-red">365</span> AUTOCARE</h3>
+                            <p class="v-desc">Concierge Detailing delivered to your door. Complete deep cleaning and exterior protection packages.</p>
+
+                            <!-- BENEFITS -->
+                            <div class="benefit-grid">
+                                <div class="benefit">
+                                    <div class="benefit-icon">✓</div>
+                                    <div class="benefit-text">
+                                        <h4>2 Full Luxury Premium Details</h4>
+                                        <p>Both deep Interior cleaning and Exterior detailing are included in every visit.</p>
+                                    </div>
+                                </div>
+                                <div class="benefit">
+                                    <div class="benefit-icon">✓</div>
+                                    <div class="benefit-text">
+                                        <h4>Fully Mobile Service</h4>
+                                        <p>We arrive at your home, work, or approved location with our own water and power.</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="feature-col">
-                                <h5>Premium Exterior</h5>
-                                <ul>
-                                    <li>Complete exterior hand wash</li>
-                                    <li>Wheels, rims & tire cleaning</li>
-                                    <li>Tire dressing & protection</li>
-                                    <li>Exterior spray sealant</li>
-                                    <li>Professional finishing and shine</li>
-                                </ul>
+
+                            <div class="v-features">
+                                <div class="v-col">
+                                    <h5>Premium Interior</h5>
+                                    <ul>
+                                        <li>Complete interior vacuum</li>
+                                        <li>Dashboard & console clean</li>
+                                        <li>Door panels & trim care</li>
+                                        <li>Interior surface condition</li>
+                                    </ul>
+                                </div>
+                                <div class="v-col">
+                                    <h5>Premium Exterior</h5>
+                                    <ul>
+                                        <li>Complete hand wash</li>
+                                        <li>Wheels & tire protection</li>
+                                        <li>Exterior spray sealant</li>
+                                        <li>Professional shine finish</li>
+                                    </ul>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ADD-ONS SECTION -->
+                <div class="addons-division">
+                    <div class="addons-title-wrap">
+                        <h3>Additional <span class="text-red">Add-Ons</span></h3>
+                        <p>Professional Customization Services</p>
+                    </div>
+
+                    <div class="member-banner">
+                        <span>Month-to-Month Member Benefit</span>
+                        <span>Get <strong class="text-red">50% OFF</strong> any add-on after your second service!</span>
+                    </div>
+
+                    <!-- HORIZONTAL ADD-ON GRID -->
+                    <div class="horizontal-addons-grid">
+                        <div class="h-addon-card">
+                            <span class="h-addon-name">Pet Hair Removal</span>
+                            <span class="h-addon-price">$50 - $90</span>
+                        </div>
+                        <div class="h-addon-card">
+                            <span class="h-addon-name">Seat Shampoo / Extraction</span>
+                            <span class="h-addon-price">$100 - $140</span>
+                        </div>
+                        <div class="h-addon-card">
+                            <span class="h-addon-name">Engine Bay Cleaning</span>
+                            <span class="h-addon-price">$100 - $150</span>
+                        </div>
+                        <div class="h-addon-card">
+                            <span class="h-addon-name">Excessive Soil Removal</span>
+                            <span class="h-addon-price">$70 - $100</span>
+                        </div>
+                        <div class="h-addon-card">
+                            <span class="h-addon-name">Paint Correction</span>
+                            <span class="h-addon-price">$250 - $450</span>
+                        </div>
+                        <div class="h-addon-card">
+                            <span class="h-addon-name">Ceramic Coatings</span>
+                            <span class="h-addon-price">$400 - $600</span>
                         </div>
                     </div>
                 </div>
 
-            </div>
-        </div>
-    </section>
-
-    <!-- ADDITIONAL DETAILING SERVICES & ADD-ONS -->
-    <section id="addons" class="addons-section">
-        <div class="container">
-            <div class="addons-card fade-in">
-                <div class="addons-header">
-                    <h2>Additional Detailing <span class="text-red">Services</span></h2>
-                    <p>Customize Your Service With Our Professional Add-Ons</p>
-                </div>
-
-                <!-- Promo Banner -->
-                <div class="promo-banner">
-                    <h3>Month-to-Month Member Benefit</h3>
-                    <p>Month-to-Month members get <strong class="text-red">50% OFF</strong> any add-on service after your second service!</p>
-                </div>
-
-                <div class="addons-grid">
-                    <div class="addon-item">
-                        <span class="addon-name">Pet Hair Removal</span>
-                        <span class="addon-price">$50 - $90</span>
-                    </div>
-                    <div class="addon-item">
-                        <span class="addon-name">Seat Shampoo / Extraction</span>
-                        <span class="addon-price">$100 - $140</span>
-                    </div>
-                    <div class="addon-item">
-                        <span class="addon-name">Engine Bay Cleaning</span>
-                        <span class="addon-price">$100 - $150</span>
-                    </div>
-                    <div class="addon-item">
-                        <span class="addon-name">Excessive Soil Removal</span>
-                        <span class="addon-price">$70 - $100</span>
-                    </div>
-                    <div class="addon-item">
-                        <span class="addon-name">Paint Correction (Scratches & Water Spots)</span>
-                        <span class="addon-price">$250 - $450</span>
-                    </div>
-                    <div class="addon-item">
-                        <span class="addon-name">Ceramic Coatings</span>
-                        <span class="addon-price">$400 - $600</span>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
