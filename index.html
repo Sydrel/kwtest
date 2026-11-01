@@ -7,12 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    
+
     <style>
         /* --- CSS VARIABLES --- */
         :root {
-            --kw-red: #E31B23; 
-            --kw-black: #050505; 
+            --kw-red: #E31B23;
+            --kw-black: #050505;
             --kw-dark: #0a0a0a;
             --kw-card: #111111;
             --kw-white: #FFFFFF;
@@ -36,7 +36,7 @@
         /* --- UTILITIES --- */
         .container { width: 90%; max-width: 1400px; margin: 0 auto; }
         .text-red { color: var(--kw-red); }
-        
+
         .btn { display: inline-flex; align-items: center; justify-content: center; padding: 18px 40px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: all 0.4s ease; cursor: pointer; border: none; font-size: 0.85rem;}
         .btn-red { background-color: var(--kw-red); color: var(--kw-white); }
         .btn-red:hover { background-color: #b00d14; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(227, 27, 35, 0.3); }
@@ -47,7 +47,7 @@
         header { position: fixed; width: 100%; top: 0; z-index: 1000; padding: 15px 0; transition: all 0.4s ease; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05);}
         .nav-wrap { display: flex; justify-content: space-between; align-items: center; position: relative;}
         .logo-img { height: 55px; width: auto; transition: height 0.4s ease;}
-        
+
         nav ul { display: flex; gap: 35px; align-items: center;}
         nav a { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--kw-light-gray); transition: color 0.3s;}
         nav a:hover { color: var(--kw-white); }
@@ -59,62 +59,62 @@
         .menu-toggle span { display: block; width: 25px; height: 2px; background: var(--kw-white); transition: 0.3s;}
 
         /* --- HERO (Centered Cinematic) --- */
-        .hero { 
-            height: 100vh; 
-            display: flex; 
-            align-items: center; 
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            position: relative; 
+            position: relative;
             background: url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat fixed;
             text-align: center;
             padding: 0 15px;
         }
-        .hero::before { 
-            content: ''; 
-            position: absolute; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            background: linear-gradient(180deg, rgba(5,5,5,0.8) 0%, rgba(5,5,5,0.6) 50%, rgba(5,5,5,0.95) 100%); 
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, rgba(5,5,5,0.8) 0%, rgba(5,5,5,0.6) 50%, rgba(5,5,5,0.95) 100%);
             z-index: 1;
         }
 
-        .hero-content { 
-            position: relative; 
-            z-index: 2; 
-            width: 100%; 
-            padding-top: 80px; 
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            padding-top: 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        
-        .hero .tagline { 
-            font-size: 0.9rem; 
-            font-weight: 600; 
-            letter-spacing: 5px; 
-            text-transform: uppercase; 
-            color: var(--kw-red); 
-            display: block; 
-            margin-bottom: 25px; 
+
+        .hero .tagline {
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--kw-red);
+            display: block;
+            margin-bottom: 25px;
             background: rgba(227, 27, 35, 0.1);
             padding: 8px 20px;
             border-radius: 30px;
             border: 1px solid rgba(227, 27, 35, 0.3);
         }
-        
-        .hero h1 { 
-            font-family: var(--font-serif); 
-            font-size: 5rem; 
-            line-height: 1.1; 
-            font-weight: 700; 
-            margin-bottom: 25px; 
+
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-size: 5rem;
+            line-height: 1.1;
+            font-weight: 700;
+            margin-bottom: 25px;
             max-width: 1000px;
         }
-        
-        .hero p { 
-            font-size: 1.2rem; 
-            color: var(--kw-light-gray); 
-            max-width: 650px; 
-            margin-bottom: 45px; 
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--kw-light-gray);
+            max-width: 650px;
+            margin-bottom: 45px;
             font-weight: 300;
         }
 
@@ -165,16 +165,16 @@
         .section-header { text-align: center; margin-bottom: 80px; }
         .section-header h2 { font-family: var(--font-serif); font-size: 3.5rem; margin-bottom: 15px;}
         .section-header p { color: var(--kw-gray); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 3px;}
-        
+
         .grid-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 30px; }
-        
+
         .service-box { background: var(--kw-card); border: 1px solid #1a1a1a; position: relative; overflow: hidden; cursor: pointer; transition: all 0.5s ease; height: 350px; display: flex; flex-direction: column; justify-content: flex-end; padding: 40px;}
         .service-box:hover { border-color: var(--kw-red); }
-        
+
         .service-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; transition: transform 0.7s ease; opacity: 0.5;}
         .service-box:hover .service-bg { transform: scale(1.08); opacity: 0.8;}
         .service-box::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 80%; background: linear-gradient(to top, var(--kw-black) 10%, transparent 100%); z-index: 1;}
-        
+
         .service-info { position: relative; z-index: 2; }
         .service-info h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 5px; letter-spacing: 1px;}
         .service-info p { color: var(--kw-light-gray); font-size: 0.9rem; margin-bottom: 20px;}
@@ -198,36 +198,36 @@
         /* --- 365 AUTOCARE (Luxury Showcase) --- */
         .autocare-section { padding: 150px 0; background: var(--kw-black); position: relative;}
         .autocare-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(227, 27, 35, 0.08) 0%, transparent 70%); z-index: 0;}
-        
+
         .autocare-header { text-align: center; margin-bottom: 80px; position: relative; z-index: 1;}
         .autocare-header h2 { font-family: var(--font-serif); font-size: 4.5rem; line-height: 1; margin-bottom: 15px;}
         .autocare-header p { color: var(--kw-red); font-size: 1rem; text-transform: uppercase; letter-spacing: 5px; font-weight: 600;}
-        
-        .luxury-card { 
-            background: var(--kw-dark); 
-            border: 1px solid #222; 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            position: relative; 
-            z-index: 1; 
-            display: grid; 
-            grid-template-columns: 1fr 1.4fr; 
+
+        .luxury-card {
+            background: var(--kw-dark);
+            border: 1px solid #222;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
         }
-        
+
         .price-side { padding: 80px 60px; border-right: 1px solid #222; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
         .price-side .price { font-size: 6rem; font-weight: 300; line-height: 1; letter-spacing: -3px; margin-bottom: 5px;}
         .price-side .price span { font-size: 2rem; color: var(--kw-red); font-weight: 600; vertical-align: super;}
         .price-side .term { font-size: 1rem; color: var(--kw-gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 40px;}
-        
+
         .setup-note { background: #151515; padding: 15px 25px; font-size: 0.8rem; color: var(--kw-light-gray); margin-bottom: 40px; border-left: 2px solid var(--kw-red);}
         .setup-note span { color: var(--kw-red); font-weight: 600;}
-        
+
         .price-side .btn { width: 100%; padding: 22px; font-size: 1rem; }
         .no-contract { font-size: 0.75rem; color: #666; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px;}
 
         .details-side { padding: 80px 60px; }
         .details-side h3 { font-family: var(--font-serif); font-size: 2rem; margin-bottom: 30px;}
-        
+
         .benefit-grid { display: grid; grid-template-columns: 1fr; gap: 25px; margin-bottom: 40px;}
         .benefit { display: flex; gap: 20px; align-items: flex-start;}
         .benefit-icon { width: 30px; height: 30px; border-radius: 50%; background: rgba(227, 27, 35, 0.1); border: 1px solid var(--kw-red); display: flex; align-items: center; justify-content: center; color: var(--kw-red); font-size: 0.8rem; font-weight: bold; flex-shrink: 0;}
@@ -238,6 +238,14 @@
         .feature-col h5 { color: var(--kw-red); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 15px;}
         .feature-col ul li { font-size: 0.9rem; color: var(--kw-light-gray); margin-bottom: 12px; font-weight: 300; display: flex; align-items: center; gap: 10px;}
         .feature-col ul li::before { content: "—"; color: var(--kw-red); }
+
+        /* --- LOCATION SECTION --- */
+        .location-section { padding: 100px 0; background: var(--kw-dark); border-top: 1px solid #1a1a1a; text-align: center;}
+        .location-card { background: var(--kw-card); border: 1px solid #222; max-width: 900px; margin: 0 auto; padding: 50px 30px; border-radius: 4px; }
+        .location-card h2 { font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 15px; }
+        .location-address { font-size: 1.1rem; color: var(--kw-light-gray); margin-bottom: 30px; line-height: 1.8; font-weight: 300;}
+        .map-container { width: 100%; height: 380px; margin-bottom: 30px; border: 1px solid #333; border-radius: 4px; overflow: hidden; filter: grayscale(90%) invert(90%) contrast(120%); }
+        .map-container iframe { width: 100%; height: 100%; border: 0; }
 
         /* --- FOOTER --- */
         footer { background: var(--kw-black); padding: 60px 0; text-align: center; border-top: 1px solid #111;}
@@ -262,7 +270,7 @@
         @media (max-width: 768px) {
             /* Show Mobile Menu Button */
             .menu-toggle { display: flex; }
-            
+
             /* Mobile Navigation Dropdown */
             nav ul {
                 display: none;
@@ -305,9 +313,10 @@
             .details-side h3 { font-size: 1.5rem; }
 
             /* Spacing adjustments */
-            .services-section, .autocare-section { padding: 80px 0; }
+            .services-section, .autocare-section, .location-section { padding: 80px 0; }
             .section-header, .autocare-header { margin-bottom: 50px; }
-            
+            .map-container { height: 280px; }
+
             /* Scroll Indicator Hide */
             .scroll-indicator { display: none; }
         }
@@ -331,7 +340,7 @@
             <a href="index.html" class="logo-container">
                 <img src="https://i.imgur.com/9Q025WO.png" alt="KW Logo" class="logo-img">
             </a>
-            
+
             <!-- Mobile Menu Button -->
             <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
                 <span></span>
@@ -343,7 +352,8 @@
                 <ul>
                     <li><a href="#services">Fleet Services</a></li>
                     <li><a href="#autocare">365 AutoCare</a></li>
-                    <li><a href="contact.html" class="nav-btn">Get a Quote</a></li>
+                    <li><a href="#location">Location</a></li>
+                    <li><a href="tel:2398986008" class="nav-btn">Book Us</a></li>
                 </ul>
             </nav>
         </div>
@@ -362,7 +372,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Scroll Indicator -->
         <div class="scroll-indicator">
             <div class="mouse"></div>
@@ -377,7 +387,7 @@
                 <h2>Fleet & Commercial <span class="text-red">Services</span></h2>
                 <p>Select a category to view sizes</p>
             </div>
-            
+
             <div class="grid-6">
                 <!-- 1. Delivery Vans -->
                 <div class="service-box fade-in" onclick="openModal('Delivery Vans', ['Standard Cargo Van', 'Extended Sprinter Van', 'High Roof Sprinter'])">
@@ -454,7 +464,7 @@
                 <div id="modalPriceList"></div>
             </div>
             <div class="modal-footer">
-                <a href="contact.html" class="btn btn-red" style="width:100%;">Get a Custom Quote</a>
+                <a href="tel:2398986008" class="btn btn-red" style="width:100%;">Book Us</a>
                 <p style="margin-top:15px; font-size:0.8rem; color:var(--kw-gray);">Want unlimited cleanings? <a href="#autocare" onclick="closeModal()" style="color:var(--kw-red); text-decoration:underline;">View 365 AutoCare</a></p>
             </div>
         </div>
@@ -473,17 +483,17 @@
                 <div class="price-side">
                     <div class="price"><span>$</span>300</div>
                     <div class="term">Per Month</div>
-                    
+
                     <div class="setup-note">+ <span>$100</span> One-Time Setup Fee (Non-refundable)</div>
-                    
-                    <a href="contact.html" class="btn btn-red">Join 365 AutoCare</a>
+
+                    <a href="tel:2398986008" class="btn btn-red">Book Us</a>
                     <div class="no-contract">Month-to-month. Cancel anytime.</div>
                 </div>
 
                 <!-- Right Side: Details -->
                 <div class="details-side">
                     <h3>Concierge Detailing.<br>Delivered to your door.</h3>
-                    
+
                     <div class="benefit-grid">
                         <div class="benefit">
                             <div class="benefit-icon">✓</div>
@@ -528,6 +538,28 @@
         </div>
     </section>
 
+    <!-- LOCATION SECTION WITH GOOGLE MAP -->
+    <section id="location" class="location-section">
+        <div class="container">
+            <div class="location-card fade-in">
+                <h2>Where We Are <span class="text-red">Located</span></h2>
+                <p class="location-address" style="margin-top: 15px;">
+                    7901 4th St N Ste 300<br>
+                    St Petersburg, FL 33702
+                </p>
+                <div class="map-container">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3527.798481498064!2d-82.63935292358897!3d27.844426576104803!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88c2e646fa315053%3A0x2ff2ab72a44bb4a1!2s7901%204th%20St%20N%20%23300%2C%20St.%20Petersburg%2C%20FL%2033702!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <a href="tel:2398986008" class="btn btn-red">Book Us Now</a>
+            </div>
+        </div>
+    </section>
+
     <!-- FOOTER -->
     <footer>
         <div class="container">
@@ -560,7 +592,7 @@
 
         function openModal(title, sizes) {
             modalTitle.innerText = title;
-            modalPriceList.innerHTML = ''; 
+            modalPriceList.innerHTML = '';
             sizes.forEach(size => {
                 const tierHTML = `
                     <div class="vehicle-tier">
