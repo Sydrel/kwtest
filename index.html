@@ -272,6 +272,33 @@
         .feature-col ul li { font-size: 0.9rem; color: var(--kw-light-gray); margin-bottom: 12px; font-weight: 300; display: flex; align-items: center; gap: 10px;}
         .feature-col ul li::before { content: "—"; color: var(--kw-red); }
 
+        /* --- VIDEO SHOWCASE SECTION --- */
+        .video-section { padding: 100px 0; background: var(--kw-black); border-top: 1px solid #1a1a1a; text-align: center; }
+        .video-header { margin-bottom: 50px; }
+        .video-header h2 { font-family: var(--font-serif); font-size: 3rem; margin-bottom: 15px; }
+        .video-header p { color: var(--kw-gray); font-size: 1rem; text-transform: uppercase; letter-spacing: 3px; }
+        
+        .video-container {
+            max-width: 950px;
+            margin: 0 auto;
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            background: var(--kw-card);
+            border: 1px solid #222;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
         /* --- MOBILE SERVICE SECTION --- */
         .location-section { padding: 100px 0; background: var(--kw-dark); border-top: 1px solid #1a1a1a; text-align: center;}
         .location-card { background: var(--kw-card); border: 1px solid #222; max-width: 800px; margin: 0 auto; padding: 60px 30px; border-radius: 4px; width: 100%; }
@@ -360,8 +387,8 @@
             .feature-columns { grid-template-columns: 1fr; gap: 20px;}
             .details-side h3 { font-size: 1.5rem; }
 
-            .services-section, .autocare-section, .location-section { padding: 70px 0; }
-            .section-header, .autocare-header { margin-bottom: 40px; }
+            .services-section, .autocare-section, .video-section, .location-section { padding: 70px 0; }
+            .section-header, .autocare-header, .video-header { margin-bottom: 40px; }
 
             .scroll-indicator { display: none; }
         }
@@ -377,6 +404,7 @@
             .autocare-header h2 { font-size: 2.2rem; }
             .section-header h2 { font-size: 1.7rem; }
             .service-info h3 { font-size: 1.3rem; }
+            .video-header h2 { font-size: 2rem; }
             .location-card h2 { font-size: 1.8rem; }
             .location-address { font-size: 1rem; }
         }
@@ -594,6 +622,20 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIDEO SHOWCASE SECTION -->
+    <section class="video-section">
+        <div class="container">
+            <div class="video-header fade-in">
+                <h2>See Our Work in <span class="text-red">Action</span></h2>
+                <p>Professional Fleet Washing & Mobile Detailing Standards</p>
+            </div>
+            <div class="video-container fade-in">
+                <!-- Replace the src URL with your own YouTube/Vimeo embed link -->
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="KW Commercial LLC Fleet Detailing in Action" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </section>
