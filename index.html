@@ -90,7 +90,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            background: url('https://i.imgur.com/5lnn3ue.jpeg') center/cover no-repeat fixed;
+            background: url('https://i.imgur.com/bvJ4fhr.jpeg') center/cover no-repeat fixed;
             text-align: center;
             padding: 90px 15px 40px;
             width: 100%;
@@ -225,7 +225,7 @@
         .modal-body { padding: 30px; }
         .modal-body p { color: var(--kw-gray); font-size: 1rem; margin-bottom: 25px;}
         .vehicle-tier { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #222; font-weight: 400; font-size: 1.05rem;}
-        .tier-price { color: var(--kw-red); font-weight: 600; }
+        .tier-price { color: var(--kw-red); font-weight: 600; font-size: 1.2rem; }
         .modal-footer { padding: 30px; background: #0a0a0a; text-align: center;}
 
         /* --- MEMBERSHIP & ADD-ONS SECTION --- */
@@ -292,7 +292,7 @@
         .mini-table th, .mini-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #222; font-size: 0.95rem; }
         .mini-table th { color: var(--kw-red); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; font-size: 0.85rem; }
         .mini-table td { color: var(--kw-white); }
-        .mini-table td.val { font-weight: 600; color: var(--kw-white); text-align: right; }
+        .mini-table td.val { font-weight: 600; color: var(--kw-red); text-align: right; }
         .mini-table th.hdr { text-align: right; }
 
         /* BENEFIT HIGHLIGHT BOXES */
@@ -576,9 +576,9 @@
 
                 <!-- 2. Delivery Vans -->
                 <div class="service-box fade-in" onclick="openModal('Delivery Vans', [
-                    { name: 'Standard Cargo Van', price: 'Custom Quote' },
-                    { name: 'Extended Sprinter Van', price: 'Custom Quote' },
-                    { name: 'High Roof Sprinter', price: 'Custom Quote' }
+                    { name: 'Standard Cargo Van', price: '✓' },
+                    { name: 'Extended Sprinter Van', price: '✓' },
+                    { name: 'High Roof Sprinter', price: '✓' }
                 ])">
                     <img src="https://i.imgur.com/bv2UHeT.jpeg" alt="Delivery Vans" class="service-bg">
                     <div class="service-info">
@@ -590,9 +590,9 @@
 
                 <!-- 3. Box Trucks -->
                 <div class="service-box fade-in" onclick="openModal('Box Trucks', [
-                    { name: '12ft Box Truck', price: 'Custom Quote' },
-                    { name: '16ft Box Truck', price: 'Custom Quote' },
-                    { name: '24ft Box Truck', price: 'Custom Quote' }
+                    { name: '12ft Box Truck', price: '✓' },
+                    { name: '16ft Box Truck', price: '✓' },
+                    { name: '24ft Box Truck', price: '✓' }
                 ])">
                     <img src="https://i.imgur.com/ZY09lBL.jpeg" alt="Box Trucks" class="service-bg">
                     <div class="service-info">
@@ -604,9 +604,9 @@
 
                 <!-- 4. Semi-Tractors -->
                 <div class="service-box fade-in" onclick="openModal('Semi-Tractors & Trailers', [
-                    { name: 'Day Cab Tractor', price: 'Custom Quote' },
-                    { name: 'Sleeper Cab Tractor', price: 'Custom Quote' },
-                    { name: '53ft Trailer (Exterior)', price: 'Custom Quote' }
+                    { name: 'Day Cab Tractor', price: '✓' },
+                    { name: 'Sleeper Cab Tractor', price: '✓' },
+                    { name: '53ft Trailer (Exterior)', price: '✓' }
                 ])">
                     <img src="https://i.imgur.com/HMmC2vg.jpeg" alt="Semi-Tractors" class="service-bg">
                     <div class="service-info">
@@ -618,9 +618,9 @@
 
                 <!-- 5. Commercial Buses -->
                 <div class="service-box fade-in" onclick="openModal('Commercial Buses', [
-                    { name: 'Shuttle Bus / Transit', price: 'Custom Quote' },
-                    { name: 'Full Size Charter Bus', price: 'Custom Quote' },
-                    { name: 'School Bus', price: 'Custom Quote' }
+                    { name: 'Shuttle Bus / Transit', price: '✓' },
+                    { name: 'Full Size Charter Bus', price: '✓' },
+                    { name: 'School Bus', price: '✓' }
                 ])">
                     <img src="https://i.imgur.com/YcpZOtg.jpeg" alt="Commercial Buses" class="service-bg">
                     <div class="service-info">
@@ -632,9 +632,9 @@
 
                 <!-- 6. Heavy Equipment -->
                 <div class="service-box fade-in" onclick="openModal('Heavy Equipment', [
-                    { name: 'Small (Skid Steer)', price: 'Custom Quote' },
-                    { name: 'Medium (Backhoe)', price: 'Custom Quote' },
-                    { name: 'Large (Excavator)', price: 'Custom Quote' }
+                    { name: 'Small (Skid Steer)', price: '✓' },
+                    { name: 'Medium (Backhoe)', price: '✓' },
+                    { name: 'Large (Excavator)', price: '✓' }
                 ])">
                     <img src="https://i.imgur.com/jdjyuFO.jpeg" alt="Heavy Equipment" class="service-bg">
                     <div class="service-info">
@@ -644,11 +644,11 @@
                     </div>
                 </div>
 
-                <!-- 7. RVs & Boats (Updated Image Link) -->
+                <!-- 7. RVs & Boats -->
                 <div class="service-box fade-in" onclick="openModal('RVs & Boats', [
-                    { name: 'Class B RV (Camper Van)', price: 'Custom Quote' },
-                    { name: 'Class A RV (Motorhome)', price: 'Custom Quote' },
-                    { name: 'Boat (Up to 25ft)', price: 'Custom Quote' }
+                    { name: 'Class B RV (Camper Van)', price: '✓' },
+                    { name: 'Class A RV (Motorhome)', price: '✓' },
+                    { name: 'Boat (Up to 25ft)', price: '✓' }
                 ])">
                     <img src="https://i.imgur.com/S2fFnCw.png" alt="RVs & Boats" class="service-bg">
                     <div class="service-info">
