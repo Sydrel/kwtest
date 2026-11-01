@@ -92,7 +92,7 @@
             position: relative;
             background: url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat fixed;
             text-align: center;
-            padding: 100px 15px 60px;
+            padding: 90px 15px 40px;
             width: 100%;
         }
         .hero::before {
@@ -119,7 +119,7 @@
             text-transform: uppercase;
             color: var(--kw-red);
             display: inline-block;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             background: rgba(227, 27, 35, 0.1);
             padding: 8px 20px;
             border-radius: 30px;
@@ -132,7 +132,7 @@
             font-size: 5rem;
             line-height: 1.1;
             font-weight: 700;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             max-width: 1000px;
             word-wrap: break-word;
         }
@@ -141,7 +141,7 @@
             font-size: 1.2rem;
             color: var(--kw-light-gray);
             max-width: 650px;
-            margin-bottom: 45px;
+            margin-bottom: 35px;
             font-weight: 300;
         }
 
@@ -150,41 +150,41 @@
         /* Scroll Indicator */
         .scroll-indicator {
             position: absolute;
-            bottom: 40px;
+            bottom: 25px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             color: var(--kw-gray);
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
         .mouse {
-            width: 25px;
-            height: 40px;
+            width: 22px;
+            height: 36px;
             border: 2px solid var(--kw-gray);
-            border-radius: 15px;
+            border-radius: 12px;
             position: relative;
         }
         .mouse::before {
             content: '';
             position: absolute;
-            top: 8px;
+            top: 6px;
             left: 50%;
             transform: translateX(-50%);
-            width: 4px;
-            height: 8px;
+            width: 3px;
+            height: 6px;
             background: var(--kw-red);
             border-radius: 2px;
             animation: scroll 2s infinite;
         }
         @keyframes scroll {
-            0% { top: 8px; opacity: 1; }
-            100% { top: 22px; opacity: 0; }
+            0% { top: 6px; opacity: 1; }
+            100% { top: 18px; opacity: 0; }
         }
 
         /* --- FLEET SERVICES (Luxury Grid) --- */
@@ -315,15 +315,22 @@
             nav a { display: block; padding: 10px 20px; font-size: 1rem; }
             nav .nav-btn { display: inline-block; padding: 12px 25px; width: auto; margin-top: 10px; margin-right: 20px; }
 
-            .hero h1 { font-size: 2.5rem; }
-            .hero p { font-size: 1rem; }
-            .hero .tagline { font-size: 0.65rem; letter-spacing: 2px; padding: 6px 12px;}
-            .section-header h2 { font-size: 2.2rem; }
-            .autocare-header h2 { font-size: 3rem; }
-            .section-header p, .autocare-header p { font-size: 0.85rem; letter-spacing: 2px; }
+            /* Hero adjustments to lift text up and eliminate gaps */
+            .hero {
+                padding: 85px 15px 30px;
+                min-height: auto;
+                height: auto;
+            }
+            .hero-content {
+                padding-top: 20px;
+                padding-bottom: 30px;
+            }
+            .hero h1 { font-size: 2.3rem; margin-bottom: 15px; }
+            .hero p { font-size: 0.95rem; margin-bottom: 25px; }
+            .hero .tagline { font-size: 0.6rem; letter-spacing: 1.5px; padding: 5px 10px; margin-bottom: 15px; }
 
-            .hero-buttons { flex-direction: column; width: 100%; max-width: 320px; margin: 0 auto; gap: 15px;}
-            .hero-buttons .btn { width: 100%; padding: 16px; font-size: 0.8rem;}
+            .hero-buttons { flex-direction: column; width: 100%; max-width: 320px; margin: 0 auto; gap: 12px;}
+            .hero-buttons .btn { width: 100%; padding: 14px; font-size: 0.8rem;}
 
             .grid-6 { grid-template-columns: 1fr; gap: 20px; }
             .service-box { height: 300px; padding: 25px;}
@@ -341,7 +348,10 @@
         }
 
         @media (max-width: 480px) {
-            .hero h1 { font-size: 2rem; line-height: 1.2;}
+            .hero {
+                padding-top: 75px;
+            }
+            .hero h1 { font-size: 1.9rem; line-height: 1.2;}
             .logo-img { height: 40px; }
             .container { width: 92%; }
             .price-side .price { font-size: 3.5rem; }
@@ -409,7 +419,7 @@
             </div>
 
             <div class="grid-6">
-                <!-- 1. Cars & Standard Vehicles (Added) -->
+                <!-- 1. Cars & Standard Vehicles -->
                 <div class="service-box fade-in" onclick="openModal('Cars & Standard Vehicles', ['Coupe', 'Sedan', 'Midsize SUV', 'SUV', 'Pick-Up Truck'])">
                     <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=600" alt="Cars and Standard Vehicles" class="service-bg">
                     <div class="service-info">
