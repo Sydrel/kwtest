@@ -114,7 +114,7 @@
         .menu-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 5px; margin-left: auto;}
         .menu-toggle span { display: block; width: 24px; height: 2px; background: var(--kw-white); transition: 0.3s;}
 
-        /* --- HERO (Perfect Proportioned Banner Across Devices) --- */
+        /* --- HERO (Refined Fluid Banner Across All Devices) --- */
         .hero {
             min-height: calc(100vh - var(--header-height));
             height: auto;
@@ -124,8 +124,8 @@
             position: relative;
             background: url('https://i.imgur.com/bvJ4fhr.jpeg') center center / cover no-repeat fixed;
             text-align: center;
-            padding-top: calc(var(--header-height) + 20px);
-            padding-bottom: 60px;
+            padding-top: calc(var(--header-height) + 30px);
+            padding-bottom: 80px;
             padding-left: 20px;
             padding-right: 20px;
             width: 100%;
@@ -134,7 +134,7 @@
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, rgba(5,5,5,0.85) 0%, rgba(5,5,5,0.65) 50%, rgba(5,5,5,0.95) 100%);
+            background: linear-gradient(180deg, rgba(5,5,5,0.88) 0%, rgba(5,5,5,0.72) 50%, rgba(5,5,5,0.96) 100%);
             z-index: 1;
         }
 
@@ -142,7 +142,7 @@
             position: relative;
             z-index: 2;
             width: 100%;
-            max-width: 950px;
+            max-width: 1050px;
             margin: auto;
             display: flex;
             flex-direction: column;
@@ -152,52 +152,55 @@
         }
 
         .hero .tagline {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
             letter-spacing: 4px;
             text-transform: uppercase;
             color: var(--kw-red);
             display: inline-block;
-            margin-bottom: 20px;
-            background: rgba(227, 27, 35, 0.1);
-            padding: 8px 22px;
+            margin-bottom: 22px;
+            background: rgba(227, 27, 35, 0.12);
+            padding: 9px 26px;
             border-radius: 30px;
-            border: 1px solid rgba(227, 27, 35, 0.3);
+            border: 1px solid rgba(227, 27, 35, 0.35);
             max-width: 100%;
+            box-shadow: 0 4px 15px rgba(227, 27, 35, 0.15);
         }
 
         .hero h1 {
             font-family: var(--font-serif);
-            font-size: 4.2rem;
+            font-size: clamp(2.4rem, 5vw, 4.4rem);
             line-height: 1.15;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
             width: 100%;
             word-wrap: break-word;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.6);
         }
 
         .hero-subtext {
-            font-size: 1.15rem;
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
             color: var(--kw-light-gray);
-            max-width: 700px;
-            margin: 0 auto 30px auto;
+            max-width: 720px;
+            margin: 0 auto 32px auto;
             font-weight: 300;
             text-align: center;
             width: 100%;
+            line-height: 1.65;
         }
 
         /* --- HERO LIVE STATUS BADGE --- */
         .hero-status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(20, 20, 20, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 9px 22px;
+            gap: 12px;
+            background: rgba(18, 18, 18, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 10px 24px;
             border-radius: 30px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            margin-bottom: 35px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
         }
 
         .status-dot {
@@ -244,16 +247,16 @@
             font-size: 0.75rem;
             color: var(--kw-gray);
             border-left: 1px solid rgba(255,255,255,0.2);
-            padding-left: 10px;
+            padding-left: 12px;
             letter-spacing: 0.5px;
         }
 
-        .hero-buttons { display: flex; gap: 15px; justify-content: center; width: 100%;}
+        .hero-buttons { display: flex; gap: 18px; justify-content: center; width: 100%; flex-wrap: wrap;}
 
         /* Scroll Indicator */
         .scroll-indicator {
             position: absolute;
-            bottom: 20px;
+            bottom: 25px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 2;
@@ -519,8 +522,6 @@
         /* ========================================= */
 
         @media (max-width: 1024px) {
-            .hero h1 { font-size: 3.2rem; }
-            .hero-subtext { font-size: 1.05rem; }
             .vertical-plan-row { grid-template-columns: 1fr; }
             .v-price-side { border-right: none; border-bottom: 1px solid #222; padding: 35px 22px;}
             .v-details-side { padding: 35px 25px;}
@@ -561,21 +562,20 @@
             /* Tablet / Mobile Hero Proportions */
             .hero {
                 min-height: calc(100vh - var(--header-height));
-                padding-top: calc(var(--header-height) + 10px);
-                padding-bottom: 40px;
+                padding-top: calc(var(--header-height) + 15px);
+                padding-bottom: 50px;
                 background-attachment: scroll;
             }
             .hero-content {
                 padding-top: 10px;
                 padding-bottom: 10px;
             }
-            .hero h1 { font-size: 2.3rem; margin-bottom: 14px; }
-            .hero-subtext { font-size: 0.92rem; margin-bottom: 18px; line-height: 1.5; }
-            .hero .tagline { font-size: 0.62rem; letter-spacing: 1.5px; padding: 5px 12px; margin-bottom: 12px; }
-            .hero-status-badge { padding: 6px 14px; margin-bottom: 20px; gap: 8px; }
+            .hero .tagline { font-size: 0.65rem; letter-spacing: 1.8px; padding: 6px 14px; margin-bottom: 16px; }
+            .hero-subtext { font-size: 0.95rem; margin-bottom: 20px; line-height: 1.55; }
+            .hero-status-badge { padding: 7px 16px; margin-bottom: 22px; gap: 8px; }
 
-            .hero-buttons { flex-direction: column; width: 100%; max-width: 280px; margin: 0 auto; gap: 10px;}
-            .hero-buttons .btn { width: 100%; padding: 12px; font-size: 0.8rem; letter-spacing: 1.5px;}
+            .hero-buttons { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto; gap: 12px;}
+            .hero-buttons .btn { width: 100%; padding: 14px; font-size: 0.8rem; letter-spacing: 1.5px;}
 
             /* Section headers & cards */
             .section-header h2 { font-size: 2.1rem; }
@@ -605,7 +605,6 @@
         }
 
         @media (max-width: 480px) {
-            .hero h1 { font-size: 1.95rem; line-height: 1.2;}
             .container { width: 92%; }
             .v-price-side .price { font-size: 2.6rem; }
             .section-heading h2 { font-size: 1.8rem; }
@@ -643,7 +642,7 @@
         </div>
     </header>
 
-    <!-- HERO (Centered Proportioned Banner) -->
+    <!-- HERO (Enhanced Proportioned Banner) -->
     <section class="hero">
         <div class="container hero-content">
             <div class="fade-in">
@@ -777,6 +776,20 @@
                         <h3>RVs & Boats</h3>
                         <p>RVs | Boats | Watercraft</p>
                         <div class="service-link">View Options &rarr;</div>
+                    </div>
+                </div>
+
+                <!-- 8. Solar Panels Cleaning -->
+                <div class="service-box fade-in" onclick="openModal('Solar Panel Cleaning', [
+                    { name: 'Residential Solar Array (Up to 20 Panels)', price: '$199' },
+                    { name: 'Residential Solar Array (21–40 Panels)', price: '$299' },
+                    { name: 'Commercial Solar Array / Farm', price: 'Custom Quote' }
+                ])">
+                    <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=800&q=80" alt="Solar Panels Cleaning" class="service-bg">
+                    <div class="service-info">
+                        <h3>Solar Panel Cleaning</h3>
+                        <p>Residential & Commercial Arrays</p>
+                        <div class="service-link">View Options & Pricing &rarr;</div>
                     </div>
                 </div>
             </div>
@@ -1046,7 +1059,7 @@
             <div class="text-center mb-8">
                 <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">Our Florida Service Territories</h2>
                 <p class="text-neutral-400 max-w-2xl mx-auto text-sm sm:text-base">
-                    Select a city below to view coverage details and book your mobile detailing or commercial fleet wash service. (7901 4th St N St 300, St. Petersburg, FL 33702)
+                    Select a city below to view coverage details and book your mobile detailing or commercial fleet wash service.
                 </p>
             </div>
 
@@ -1071,11 +1084,12 @@
                 <!-- Selected City Info Card -->
                 <div class="bg-brandCard border border-brandBorder rounded-2xl p-6 flex flex-col justify-between shadow-xl">
                     <div>
-                        <div class="flex items-center justify-end mb-4">
-                            <i class="fa-solid fa-shield-halved text-neutral-500"></i>
+                        <div class="flex items-center justify-between mb-4">
+                            <span id="primary-badge" class="bg-brandRed/20 text-brandRed text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-brandRed/30 hidden">Primary Hub</span>
+                            <i class="fa-solid fa-shield-halved text-neutral-500 ml-auto"></i>
                         </div>
                         <h3 id="selected-city-name" class="text-2xl font-bold mb-1 text-white">Saint Petersburg</h3>
-                        <p id="selected-city-region" class="text-sm text-neutral-400 mb-6">Pinellas County & Surrounding Areas (7901 4th St N St 300, 33702)</p>
+                        <p id="selected-city-region" class="text-sm text-neutral-400 mb-6">Pinellas County & Surrounding Areas</p>
                         
                         <div class="space-y-4 border-t border-brandBorder pt-4 text-sm">
                             <div class="flex items-start gap-3">
@@ -1211,22 +1225,22 @@
 
         // --- TERRITORY SELECTOR LOGIC ---
         const cities = [
-            { name: "Saint Petersburg", region: "Pinellas County (33702)", desc: "Primary service location and central area for Pinellas County residential and commercial fleets." },
-            { name: "Tampa", region: "Hillsborough County", desc: "Full commercial fleet washing and mobile detailing across Tampa Bay and surrounding business parks." },
-            { name: "Sarasota", region: "Sarasota County", desc: "Dedicated mobile units serving residential communities and commercial properties." },
-            { name: "Bradenton", region: "Manatee County", desc: "Complete automotive detailing and truck fleet maintenance packages." },
-            { name: "Naples", region: "Collier County", desc: "High-end luxury detailing, ceramic coatings, and recurring maintenance plans." },
-            { name: "Bonita Springs", region: "Lee County", desc: "Prompt on-site mobile service for residential driveways and commercial lots." },
-            { name: "Fort Myers", region: "Lee County", desc: "Comprehensive fleet washing and professional mobile detailing services." },
-            { name: "Cape Coral", region: "Lee County", desc: "Residential mobile detailing and multi-vehicle neighborhood routes." },
-            { name: "Punta Gorda", region: "Charlotte County", desc: "Specialized mobile detailing for cars, trucks, and recreational vehicles." },
-            { name: "Orlando", region: "Orange / Central FL", desc: "Commercial fleet contracts and premium mobile detailing throughout the Orlando metro area." },
-            { name: "West Palm Beach", region: "Palm Beach County", desc: "Palm Beach county mobile service catering to private fleets and luxury automobiles." },
-            { name: "Fort Lauderdale", region: "Broward County", desc: "High-volume fleet maintenance and expert mobile detailing across Broward." },
-            { name: "Miami", region: "Miami-Dade County", desc: "Full coverage across Miami-Dade for commercial fleets, exotics, and daily drivers." }
+            { name: "Saint Petersburg", region: "Pinellas County (Primary Hub)", desc: "Our main headquarters and primary service hub for Pinellas County residential and commercial fleets.", isPrimary: true },
+            { name: "Tampa", region: "Hillsborough County", desc: "Full commercial fleet washing and mobile detailing across Tampa Bay and surrounding business parks.", isPrimary: false },
+            { name: "Sarasota", region: "Sarasota County", desc: "Dedicated mobile units serving residential communities and commercial properties.", isPrimary: false },
+            { name: "Bradenton", region: "Manatee County", desc: "Complete automotive detailing and truck fleet maintenance packages.", isPrimary: false },
+            { name: "Naples", region: "Collier County", desc: "High-end luxury detailing, ceramic coatings, and recurring maintenance plans.", isPrimary: false },
+            { name: "Bonita Springs", region: "Lee County", desc: "Prompt on-site mobile service for residential driveways and commercial lots.", isPrimary: false },
+            { name: "Fort Myers", region: "Lee County", desc: "Comprehensive fleet washing and professional mobile detailing services.", isPrimary: false },
+            { name: "Cape Coral", region: "Lee County", desc: "Residential mobile detailing and multi-vehicle neighborhood routes.", isPrimary: false },
+            { name: "Punta Gorda", region: "Charlotte County", desc: "Specialized mobile detailing for cars, trucks, and recreational vehicles.", isPrimary: false },
+            { name: "Orlando", region: "Orange / Central FL", desc: "Commercial fleet contracts and premium mobile detailing throughout the Orlando metro area.", isPrimary: false },
+            { name: "West Palm Beach", region: "Palm Beach County", desc: "Palm Beach county mobile service catering to private fleets and luxury automobiles.", isPrimary: false },
+            { name: "Fort Lauderdale", region: "Broward County", desc: "High-volume fleet maintenance and expert mobile detailing across Broward.", isPrimary: false },
+            { name: "Miami", region: "Miami-Dade County", desc: "Full coverage across Miami-Dade for commercial fleets, exotics, and daily drivers.", isPrimary: false }
         ];
 
-        let activeCityIndex = 0; // Default to Saint Petersburg
+        let activeCityIndex = 0; // Default to Saint Petersburg (Primary Hub)
 
         function renderCities() {
             const grid = document.getElementById('city-grid');
@@ -1247,7 +1261,10 @@
                             <i class="fa-solid fa-location-dot text-xs"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-sm sm:text-base">${city.name}</h3>
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-bold text-sm sm:text-base">${city.name}</h3>
+                                ${city.isPrimary ? '<span class="bg-brandRed text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Primary</span>' : ''}
+                            </div>
                             <p class="text-xs text-neutral-400">${city.region}</p>
                         </div>
                     </div>
@@ -1269,6 +1286,13 @@
             document.getElementById('selected-city-name').innerText = city.name;
             document.getElementById('selected-city-region').innerText = city.desc;
             document.getElementById('btn-city-name').innerText = city.name;
+            
+            const primaryBadge = document.getElementById('primary-badge');
+            if (city.isPrimary) {
+                primaryBadge.classList.remove('hidden');
+            } else {
+                primaryBadge.classList.add('hidden');
+            }
         }
 
         // Initial render for territory selector
