@@ -114,7 +114,7 @@
         .menu-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 5px; margin-left: auto;}
         .menu-toggle span { display: block; width: 24px; height: 2px; background: var(--kw-white); transition: 0.3s;}
 
-        /* --- HERO (Refined Fluid Banner Across All Devices) --- */
+        /* --- HERO (Refined Cross-Platform Fluid Banner) --- */
         .hero {
             min-height: calc(100vh - var(--header-height));
             height: auto;
@@ -518,7 +518,7 @@
         }
 
         /* ========================================= */
-        /* --- RESPONSIVE BREAKPOINTS --- */
+        /* --- RESPONSIVE BREAKPOINTS (iOS & Android) --- */
         /* ========================================= */
 
         @media (max-width: 1024px) {
@@ -559,22 +559,25 @@
             nav a { display: block; padding: 8px 20px; font-size: 0.95rem; }
             nav .nav-btn { display: inline-block; padding: 10px 22px; width: auto; margin-top: 8px; margin-right: 20px; }
 
-            /* Mobile Hero Proportions: Pulled up closer to header */
+            /* Cross-Platform Mobile Hero Fix (Pixel & iPhone dynamic viewport sizing) */
             .hero {
-                min-height: calc(100vh - var(--header-height));
-                padding-top: calc(var(--header-height) + 2px);
-                padding-bottom: 40px;
+                min-height: calc(100dvh - var(--header-height));
+                height: auto;
+                padding-top: calc(var(--header-height) + 12px);
+                padding-bottom: 30px;
                 background-attachment: scroll;
+                justify-content: flex-start; /* Forces content up, eliminating the gap */
             }
             .hero-content {
-                padding-top: 0px;
-                padding-bottom: 10px;
+                padding-top: 5px;
+                padding-bottom: 5px;
             }
-            .hero .tagline { font-size: 0.65rem; letter-spacing: 1.8px; padding: 5px 12px; margin-bottom: 12px; }
-            .hero-subtext { font-size: 0.95rem; margin-bottom: 18px; line-height: 1.5; }
-            .hero-status-badge { padding: 6px 14px; margin-bottom: 18px; gap: 8px; }
+            .hero .tagline { font-size: 0.65rem; letter-spacing: 1.8px; padding: 5px 12px; margin-bottom: 10px; }
+            .hero h1 { font-size: clamp(2rem, 7vw, 2.6rem); margin-bottom: 14px; }
+            .hero-subtext { font-size: 0.9rem; margin-bottom: 16px; line-height: 1.45; }
+            .hero-status-badge { padding: 6px 14px; margin-bottom: 16px; gap: 8px; }
 
-            .hero-buttons { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto; gap: 10px;}
+            .hero-buttons { flex-direction: column; width: 100%; max-width: 280px; margin: 0 auto; gap: 10px;}
             .hero-buttons .btn { width: 100%; padding: 12px; font-size: 0.8rem; letter-spacing: 1.5px;}
 
             /* Section headers & cards */
