@@ -366,6 +366,7 @@
             display: grid;
             grid-template-columns: 360px 1fr;
             transition: border-color 0.3s;
+            position: relative;
         }
         .vertical-plan-row:hover { border-color: var(--kw-red); }
 
@@ -403,6 +404,28 @@
         .mini-table td { color: var(--kw-white); }
         .mini-table td.val { font-weight: 600; color: var(--kw-red); text-align: right; }
         .mini-table th.hdr { text-align: right; }
+
+        /* VIP STATUS BADGE */
+        .vip-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(227, 27, 35, 0.25) 0%, rgba(180, 13, 20, 0.4) 100%);
+            border: 1px solid var(--kw-red);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(227, 27, 35, 0.25);
+            width: fit-content;
+        }
+        .vip-status-badge i {
+            color: #ffd700;
+            font-size: 0.8rem;
+        }
 
         /* BENEFIT HIGHLIGHT BOXES */
         .benefit-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-bottom: 25px;}
@@ -1024,7 +1047,10 @@
                             <div class="cancel-note">Month-to-Month • Cancel Anytime</div>
                         </div>
                         <div class="v-details-side">
-                            <div style="font-size: 0.8rem; letter-spacing: 3px; color: var(--kw-red); text-transform: uppercase; font-weight: 600; margin-bottom: 5px;">KW Signature Luxury Collection</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+                                <div style="font-size: 0.8rem; letter-spacing: 3px; color: var(--kw-red); text-transform: uppercase; font-weight: 600;">KW Signature Luxury Collection</div>
+                                <div class="vip-status-badge"><i class="fa-solid fa-crown"></i> VIP STATUS</div>
+                            </div>
                             <h3>BLACK LABEL 365</h3>
                             <p class="v-desc">The Ultimate VIP Detailing Experience. Two premium scheduled detailing visits per month with complete white-glove care.</p>
                             
