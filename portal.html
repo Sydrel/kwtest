@@ -10,6 +10,9 @@
 </head>
 <body class="bg-black text-white min-h-screen p-4 sm:p-6 font-sans flex flex-col justify-center items-center">
 
+  <!-- POPUP TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
   <!-- LOGIN SCREEN CONTAINER -->
   <div id="loginScreen" class="w-full max-w-md bg-zinc-950 p-8 rounded-2xl border border-zinc-800 shadow-2xl my-auto">
     <div class="flex flex-col items-center mb-6 text-center">
@@ -56,7 +59,12 @@
           <p class="text-xs text-gray-400">Mobile Service Fleet, Client Subscriptions & Revenue Analytics</p>
         </div>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Audio Alert Toggle Button -->
+        <button id="audioToggleBtn" onclick="toggleAudioAlerts()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-400 font-bold py-2 px-3 rounded-lg transition flex items-center gap-2">
+          <span>🔔</span> Audio Alerts: <span id="audioStatusText" class="text-red-500">OFF</span>
+        </button>
+
         <button onclick="fetchBookings()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2 px-3 rounded-lg transition">
           🔄 Refresh Data
         </button>
@@ -144,6 +152,8 @@
     let allBookings = [];
     let currentFilter = 'All';
     let autoRefreshTimer = null;
+    let audioEnabled = false;
+    let initialLoadComplete = false;
 
     // Check existing authentication session on load
     window.addEventListener('DOMContentLoaded', () => {
@@ -153,6 +163,83 @@
       }
     });
 
+    // Synthesize Audio Chime Notification using Web Audio API
+    function playNotificationSound() {
+      if (!audioEnabled) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioContext();
+        
+        // Note 1: High Chime (880Hz - A5)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.value = 880;
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        
+        // Note 2: Higher Chime (1174.66Hz - D6)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.value = 1174.66;
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+        
+        // Play Chime Sequence
+        gain1.gain.setValueAtTime(0.15, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc1.start(now);
+        osc1.stop(now + 0.3);
+
+        gain2.gain.setValueAtTime(0.2, now + 0.15);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+        osc2.start(now + 0.15);
+        osc2.stop(now + 0.6);
+      } catch (e) {
+        console.warn('Audio play error:', e);
+      }
+    }
+
+    function toggleAudioAlerts() {
+      audioEnabled = !audioEnabled;
+      const textEl = document.getElementById('audioStatusText');
+      if (audioEnabled) {
+        textEl.textContent = 'ON';
+        textEl.className = 'text-green-400 font-bold';
+        playNotificationSound(); // Play test sound to confirm enabled state
+        showToast('Notification Sound Enabled 🔔', 'Alert chimes will play when new orders arrive.');
+      } else {
+        textEl.textContent = 'OFF';
+        textEl.className = 'text-red-500 font-bold';
+      }
+    }
+
+    function showToast(title, message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto bg-zinc-900 border border-zinc-700 text-white p-3.5 rounded-xl shadow-2xl flex items-start gap-3 transform transition-all duration-300 translate-y-[-10px] opacity-0';
+      toast.innerHTML = `
+        <div class="text-xl">🔔</div>
+        <div>
+          <div class="font-bold text-xs text-red-500">${escapeHtml(title)}</div>
+          <div class="text-[11px] text-gray-300 mt-0.5">${escapeHtml(message)}</div>
+        </div>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-[-10px]', 'opacity-0');
+      }, 50);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-[-10px]');
+        setTimeout(() => toast.remove(), 300);
+      }, 4500);
+    }
+
     async function handleLogin(e) {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
@@ -161,7 +248,6 @@
       
       errorEl.classList.add('hidden');
 
-      // 1. Try Supabase Auth
       try {
         const { data, error } = await supabaseClient.auth.signInWithPassword({
           email: email,
@@ -177,7 +263,6 @@
         console.warn('Supabase Auth error, checking fallback passcodes...');
       }
 
-      // 2. Fallback local passcodes for access
       const validPasscodes = ['admin123', 'kwdetailing', 'kw2026'];
       if (validPasscodes.includes(password) || (email === 'admin@kwdetailing.com' && password === 'admin123')) {
         sessionStorage.setItem('kw_auth', 'true');
@@ -204,9 +289,26 @@
       document.getElementById('portalDashboard').classList.remove('hidden');
 
       fetchBookings();
+      setupRealtimeSubscription();
+
       if (!autoRefreshTimer) {
         autoRefreshTimer = setInterval(fetchBookings, 30000);
       }
+    }
+
+    // Set up instant Supabase database listener for new bookings
+    function setupRealtimeSubscription() {
+      supabaseClient
+        .channel('public:bookings')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bookings' }, payload => {
+          const newBooking = payload.new;
+          allBookings.unshift(newBooking);
+          calculateAnalytics();
+          renderTable();
+          playNotificationSound();
+          showToast('New Order Received!', `${newBooking.client_name || 'Client'} booked ${newBooking.service_type || 'a service'} ($${newBooking.amount_paid || 0})`);
+        })
+        .subscribe();
     }
 
     function togglePasswordVisibility() {
@@ -222,7 +324,19 @@
           .order('id', { ascending: false });
 
         if (error) throw error;
-        allBookings = data || [];
+        
+        const previousCount = allBookings.length;
+        const freshData = data || [];
+
+        // Check if new orders arrived during fetch pulse
+        if (initialLoadComplete && freshData.length > previousCount) {
+          const newCount = freshData.length - previousCount;
+          playNotificationSound();
+          showToast('New Order Update', `${newCount} new booking(s) detected.`);
+        }
+
+        allBookings = freshData;
+        initialLoadComplete = true;
         calculateAnalytics();
         renderTable();
       } catch (err) {
