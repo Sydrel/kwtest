@@ -41,7 +41,7 @@
         </div>
       </div>
 
-      <!-- Time Slots Grid -->
+      <!-- Compact Time Slots Grid -->
       <div class="pt-2 border-t border-zinc-900">
         <label class="block text-xs font-medium mb-1.5 text-gray-300">Select Available Time Slot</label>
         <div id="timeSlotGrid" class="grid grid-cols-2 gap-2 opacity-50 pointer-events-none">
@@ -176,10 +176,10 @@
   </div>
 
   <script>
-    // Configuration Variables
-    const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-    const STRIPE_PUBLISHABLE_KEY = 'pk_live_YOUR_STRIPE_PUBLISHABLE_KEY';
+    // Configured Supabase Credentials
+    const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
+    const STRIPE_PUBLISHABLE_KEY = 'pk_live_YOUR_STRIPE_PUBLISHABLE_KEY'; // Replace with your Stripe Publishable Key
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
