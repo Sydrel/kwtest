@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KW Commercial Fleet Washing & Mobile Detailing - Book & Pay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Stripe JS Library -->
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body class="bg-black text-white min-h-screen p-4 flex flex-col items-center justify-center">
+
+  <!-- Logo Header -->
+  <div class="mb-6 text-center">
+    <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Washing & Mobile Detailing Logo" class="h-16 mx-auto mb-2 object-contain filter drop-shadow-[0_0_10px_rgba(239,68,68,0.3)]">
+    <h1 class="text-lg font-bold text-white tracking-wide">KW COMMERCIAL FLEET WASHING <span class="text-red-600">&</span> MOBILE DETAILING</h1>
+    <p class="text-xs text-gray-400">Professional Mobile Service Direct to Your Location</p>
+  </div>
+
+  <div class="max-w-4xl w-full bg-zinc-950 p-6 sm:p-8 rounded-xl shadow-2xl border border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-8">
+    
+    <!-- Left Column: Visual Month Matrix -->
+    <div class="bg-black p-5 rounded-lg border border-zinc-800 flex flex-col justify-between">
+      <div>
+        <div class="flex justify-between items-center mb-4">
+          <button type="button" id="prevMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3 py-1.5 rounded text-sm font-bold border border-zinc-800 transition">&larr; Prev</button>
+          <h3 id="monthYearDisplay" class="text-base font-bold text-white"></h3>
+          <button type="button" id="nextMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3 py-1.5 rounded text-sm font-bold border border-zinc-800 transition">Next &rarr;</button>
+        </div>
+
+        <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500 mb-2">
+          <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+        </div>
+
+        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1 text-center"></div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-zinc-900 text-xs text-gray-400 text-center">
+        Selected Date: <span id="selectedDateDisplay" class="text-red-500 font-bold">None selected</span>
+      </div>
+    </div>
+
+    <!-- Right Column: Booking & Payment Form -->
+    <div>
+      <h2 class="text-xl font-bold mb-1 text-white flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-red-600"></span> Book & Secure Payment
+      </h2>
+      <p class="text-xs text-gray-400 mb-4">Complete your details to proceed to secure checkout.</p>
+
+      <form id="bookingForm" class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium mb-1 text-gray-300">Full Name</label>
+          <input type="text" id="clientName" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-300">Phone Number</label>
+            <input type="tel" id="phone" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-300">Email Address</label>
+            <input type="email" id="email" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-300">Vehicle Category</label>
+            <select id="vehicleCategory" onchange="updatePriceDisplay()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+              <option value="Coupe" data-price="250">Coupe ($250)</option>
+              <option value="Sedan" data-price="290">Sedan ($290)</option>
+              <option value="Midsize SUV" data-price="330">Midsize SUV ($330)</option>
+              <option value="Pick-Up Truck" data-price="350">Pick-Up Truck ($350)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1 text-gray-300">Package</label>
+            <select id="serviceType" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+              <option value="Full Luxury Detail">Full Luxury Detail</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium mb-1 text-gray-300">Available Time Slots</label>
+          <select id="timeSlot" required disabled class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600 opacity-50">
+            <option value="">-- First Select a Date from Left Grid --</option>
+          </select>
+        </div>
+
+        <!-- 100% Free Address Input with Custom Dropdown -->
+        <div class="relative">
+          <label class="block text-xs font-medium mb-1 text-gray-300">Mobile Service Address</label>
+          <input type="text" id="serviceAddress" placeholder="Start typing street address..." autocomplete="off" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+          <div id="addressDropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl z-50 max-h-48 overflow-y-auto"></div>
+        </div>
+
+        <input type="hidden" id="serviceDate" required>
+
+        <!-- Dynamic Express Wallet Container (Apple Pay & Google Pay) -->
+        <div class="mt-4">
+          <label class="block text-xs font-medium mb-1.5 text-gray-300">Express Instant Checkout</label>
+          <div id="express-checkout-element"></div>
+        </div>
+
+        <!-- Section Divider -->
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-zinc-800"></div>
+          <span class="flex-shrink mx-3 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">or pay with card</span>
+          <div class="flex-grow border-t border-zinc-800"></div>
+        </div>
+
+        <!-- Standard Credit Card Input Container -->
+        <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg">
+          <label class="block text-xs font-medium mb-2 text-gray-300">Debit / Credit Card</label>
+          <div id="card-element" class="p-3 bg-black border border-zinc-800 rounded-lg text-white"></div>
+          <div id="card-errors" class="text-xs text-red-500 mt-2 font-medium" role="alert"></div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
+          Pay & Confirm Booking (<span id="payBtnAmount">$250</span>)
+        </button>
+      </form>
+      
+      <div id="successMessage" class="hidden mt-4 p-4 bg-zinc-900 border border-red-600 text-white rounded-lg text-center text-sm shadow-lg">
+        Payment successful! Your mobile detailing appointment and address have been confirmed.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration Variables
+    const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    const STRIPE_PUBLISHABLE_KEY = 'pk_live_YOUR_STRIPE_PUBLISHABLE_KEY';
+    const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
+
+    // Initialize Supabase Client
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 100% Free OpenStreetMap Autocomplete Handler
+    const addressInput = document.getElementById('serviceAddress');
+    const addressDropdown = document.getElementById('addressDropdown');
+    let debounceTimer;
+
+    addressInput.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      const query = e.target.value.trim();
+
+      if (query.length < 3) {
+        addressDropdown.classList.add('hidden');
+        return;
+      }
+
+      debounceTimer = setTimeout(async () => {
+        try {
+          // Free Photon OpenStreetMap API call biased to US addresses
+          const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&lang=en`);
+          const data = await res.json();
+
+          addressDropdown.innerHTML = '';
+          if (data.features && data.features.length > 0) {
+            data.features.forEach(feature => {
+              const props = feature.properties;
+              const street = [props.housenumber, props.street || props.name].filter(Boolean).join(' ');
+              const cityState = [props.city || props.town, props.state, props.postcode].filter(Boolean).join(', ');
+              const fullAddress = [street, cityState].filter(Boolean).join(', ');
+
+              if (fullAddress) {
+                const item = document.createElement('div');
+                item.className = 'p-2.5 hover:bg-zinc-800 text-xs text-gray-200 cursor-pointer border-b border-zinc-800 last:border-0';
+                item.textContent = fullAddress;
+                item.addEventListener('click', () => {
+                  addressInput.value = fullAddress;
+                  addressDropdown.classList.add('hidden');
+                });
+                addressDropdown.appendChild(item);
+              }
+            });
+            addressDropdown.classList.remove('hidden');
+          } else {
+            addressDropdown.classList.add('hidden');
+          }
+        } catch (err) {
+          console.warn('Free geocoding failed:', err);
+        }
+      }, 300);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!addressInput.contains(e.target) && !addressDropdown.contains(e.target)) {
+        addressDropdown.classList.add('hidden');
+      }
+    });
+
+    // Initialize Stripe & Mount Elements
+    const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+    const elements = stripe.elements({ mode: 'payment', amount: 25000, currency: 'usd' });
+
+    // Express Checkout (Apple Pay & Google Pay)
+    const expressCheckoutElement = elements.create('expressCheckout', {
+      buttonHeight: 44,
+      buttonTheme: { applePay: 'white-outline', googlePay: 'black' }
+    });
+    expressCheckoutElement.mount('#express-checkout-element');
+
+    expressCheckoutElement.on('confirm', async (event) => {
+      if (!selectedDateStr) {
+        alert('Please select a date from the calendar grid before paying.');
+        return;
+      }
+
+      const select = document.getElementById('vehicleCategory');
+      const amountInDollars = parseInt(select.options[select.selectedIndex].getAttribute('data-price'), 10);
+
+      try {
+        const response = await fetch(EDGE_FUNCTION_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({ amount: amountInDollars * 100 })
+        });
+
+        const resData = await response.json();
+        if (!response.ok || resData.error) throw new Error(resData.error || 'Payment initialization failed');
+
+        const { error, paymentIntent } = await stripe.confirmPayment({
+          elements,
+          clientSecret: resData.clientSecret,
+          confirmParams: {
+            return_url: window.location.href,
+          },
+          redirect: 'if_required'
+        });
+
+        if (error) {
+          document.getElementById('card-errors').textContent = error.message;
+        } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+          await saveBookingToSupabase(amountInDollars, paymentIntent.id);
+        }
+      } catch (err) {
+        document.getElementById('card-errors').textContent = err.message;
+      }
+    });
+
+    // Standard Card Input (Fallback)
+    const card = elements.create('card', {
+      style: {
+        base: {
+          color: '#ffffff',
+          fontFamily: 'inherit',
+          fontSize: '14px',
+          '::placeholder': { color: '#71717a' }
+        },
+        invalid: { color: '#ef4444', iconColor: '#ef4444' }
+      }
+    });
+    card.mount('#card-element');
+
+    card.on('change', (event) => {
+      document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
+    });
+
+    function updatePriceDisplay() {
+      const select = document.getElementById('vehicleCategory');
+      const selectedOption = select.options[select.selectedIndex];
+      const price = selectedOption.getAttribute('data-price');
+      document.getElementById('payBtnAmount').textContent = `$${price}`;
+    }
+
+    let currentDate = new Date();
+    let selectedDateStr = '';
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      document.getElementById('monthYearDisplay').textContent = `${monthNames[month]} ${year}`;
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      const grid = document.getElementById('calendarDaysGrid');
+      grid.innerHTML = '';
+
+      for (let i = 0; i < firstDayIndex; i++) {
+        grid.appendChild(document.createElement('div'));
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dayDiv = document.createElement('div');
+        const formattedMonth = String(month + 1).padStart(2, '0');
+        const formattedDay = String(day).padStart(2, '0');
+        const dateStr = `${year}-${formattedMonth}-${formattedDay}`;
+
+        dayDiv.textContent = day;
+        dayDiv.className = "py-2 text-xs rounded-lg cursor-pointer transition flex items-center justify-center font-medium ";
+
+        if (dateStr < todayStr) {
+          dayDiv.classList.add('text-zinc-700', 'cursor-not-allowed');
+        } else {
+          dayDiv.classList.add('text-gray-200', 'hover:bg-zinc-800', 'hover:text-red-400');
+          if (dateStr === selectedDateStr) {
+            dayDiv.classList.add('bg-red-600', 'text-white', 'font-bold', 'shadow');
+          }
+
+          dayDiv.addEventListener('click', () => {
+            selectedDateStr = dateStr;
+            document.getElementById('serviceDate').value = selectedDateStr;
+            document.getElementById('selectedDateDisplay').textContent = selectedDateStr;
+
+            const timeSlotSelect = document.getElementById('timeSlot');
+            timeSlotSelect.disabled = false;
+            timeSlotSelect.classList.remove('opacity-50');
+            timeSlotSelect.innerHTML = `
+              <option value="09:00 AM - 12:00 PM">09:00 AM - 12:00 PM (Available)</option>
+              <option value="01:00 PM - 04:00 PM">01:00 PM - 04:00 PM (Available)</option>
+              <option value="04:30 PM - 07:30 PM">04:30 PM - 07:30 PM (Available)</option>
+            `;
+            renderCalendar();
+          });
+        }
+        grid.appendChild(dayDiv);
+      }
+    }
+
+    document.getElementById('prevMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
+    document.getElementById('nextMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
+    renderCalendar();
+
+    // Standard Form Submission (Card Fallback)
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!selectedDateStr) {
+        alert('Please select a date from the calendar grid.');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submitBtn');
+      const cardErrors = document.getElementById('card-errors');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing Payment...';
+      cardErrors.textContent = '';
+
+      const select = document.getElementById('vehicleCategory');
+      const selectedOption = select.options[select.selectedIndex];
+      const amountInDollars = parseInt(selectedOption.getAttribute('data-price'), 10);
+
+      try {
+        const response = await fetch(EDGE_FUNCTION_URL, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({ amount: amountInDollars * 100 })
+        });
+
+        const resData = await response.json();
+        if (!response.ok || resData.error) throw new Error(resData.error || 'Failed to initialize payment');
+
+        const paymentResult = await stripe.confirmCardPayment(resData.clientSecret, {
+          payment_method: {
+            card: card,
+            billing_details: {
+              name: document.getElementById('clientName').value,
+              email: document.getElementById('email').value,
+              phone: document.getElementById('phone').value
+            }
+          }
+        });
+
+        if (paymentResult.error) {
+          cardErrors.textContent = paymentResult.error.message;
+          submitBtn.disabled = false;
+          submitBtn.textContent = `Pay & Confirm Booking ($${amountInDollars})`;
+          return;
+        }
+
+        if (paymentResult.paymentIntent.status === 'succeeded') {
+          await saveBookingToSupabase(amountInDollars, paymentResult.paymentIntent.id);
+        }
+      } catch (err) {
+        console.error(err);
+        cardErrors.textContent = err.message || 'Payment processing failed.';
+        submitBtn.disabled = false;
+        submitBtn.textContent = `Pay & Confirm Booking ($${amountInDollars})`;
+      }
+    });
+
+    // Write Record to Supabase
+    async function saveBookingToSupabase(amountPaid, stripePaymentId) {
+      const { error: dbError } = await supabaseClient
+        .from('bookings')
+        .insert([{
+          client_name: document.getElementById('clientName').value,
+          phone: document.getElementById('phone').value,
+          email: document.getElementById('email').value,
+          vehicle_category: document.getElementById('vehicleCategory').value,
+          service_type: document.getElementById('serviceType').value,
+          service_date: selectedDateStr,
+          time_slot: document.getElementById('timeSlot').value,
+          service_address: document.getElementById('serviceAddress').value,
+          payment_status: 'Paid & Confirmed',
+          stripe_payment_id: stripePaymentId,
+          amount_paid: amountPaid
+        }]);
+
+      if (dbError) {
+        console.error('Supabase record failed:', dbError);
+      }
+
+      document.getElementById('bookingForm').classList.add('hidden');
+      document.getElementById('successMessage').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
