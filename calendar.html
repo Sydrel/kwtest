@@ -95,9 +95,9 @@
     <!-- Right Column: Booking & Payment Form -->
     <div>
       <h2 class="text-xl font-bold mb-1 text-white flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-red-600"></span> Book & Secure Payment
+        <span class="w-2 h-2 rounded-full bg-red-600"></span> Book & Secure Appointment
       </h2>
-      <p class="text-xs text-gray-400 mb-4">Complete your details to proceed to secure checkout.</p>
+      <p class="text-xs text-gray-400 mb-4">Complete your details to confirm your detail service.</p>
 
       <form id="bookingForm" class="space-y-3">
         <div>
@@ -173,33 +173,59 @@
         <input type="hidden" id="serviceDate" required>
         <input type="hidden" id="selectedTimeSlotValue" required>
 
-        <!-- Express Checkout (Apple Pay & Google Pay) -->
+        <!-- Payment Method Choice Selector -->
         <div class="mt-4">
-          <label class="block text-xs font-medium mb-1.5 text-gray-300">Express Instant Checkout</label>
-          <div id="express-checkout-element"></div>
-        </div>
+          <label class="block text-xs font-medium mb-1.5 text-gray-300">Payment Option</label>
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <button type="button" id="payOnlineTab" class="py-2 px-3 text-xs font-bold rounded-lg border border-red-600 bg-red-600 text-white transition">
+              Card / Mobile Wallet
+            </button>
+            <button type="button" id="payInPersonTab" class="py-2 px-3 text-xs font-bold rounded-lg border border-zinc-800 bg-zinc-900 text-gray-400 hover:text-white transition">
+              Pay in Person / Zelle
+            </button>
+          </div>
 
-        <!-- Section Divider -->
-        <div class="relative flex py-1 items-center">
-          <div class="flex-grow border-t border-zinc-800"></div>
-          <span class="flex-shrink mx-3 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">or pay with card</span>
-          <div class="flex-grow border-t border-zinc-800"></div>
-        </div>
+          <!-- Section 1: Card / Online Payment Box -->
+          <div id="cardPaymentSection" class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium mb-1.5 text-gray-300">Express Instant Checkout</label>
+              <div id="express-checkout-element"></div>
+            </div>
 
-        <!-- Standard Card Input -->
-        <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg">
-          <label class="block text-xs font-medium mb-2 text-gray-300">Debit / Credit Card</label>
-          <div id="card-element" class="p-3 bg-black border border-zinc-800 rounded-lg text-white"></div>
-          <div id="card-errors" class="text-xs text-red-500 mt-2 font-medium" role="alert"></div>
+            <div class="relative flex py-1 items-center">
+              <div class="flex-grow border-t border-zinc-800"></div>
+              <span class="flex-shrink mx-3 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">or pay with card</span>
+              <div class="flex-grow border-t border-zinc-800"></div>
+            </div>
+
+            <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg">
+              <label class="block text-xs font-medium mb-2 text-gray-300">Debit / Credit Card</label>
+              <div id="card-element" class="p-3 bg-black border border-zinc-800 rounded-lg text-white"></div>
+              <div id="card-errors" class="text-xs text-red-500 mt-2 font-medium" role="alert"></div>
+            </div>
+          </div>
+
+          <!-- Section 2: Pay in Person / Zelle Box (Hidden by Default) -->
+          <div id="inPersonSection" class="hidden p-4 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
+            <div class="flex items-center gap-2 text-red-500 font-bold text-xs">
+              <span class="w-2 h-2 rounded-full bg-red-600"></span> Pay Upon Completion or via Zelle
+            </div>
+            <p class="text-xs text-gray-300 leading-relaxed">
+              No payment is required right now. You can pay with <strong class="text-white">Cash</strong>, <strong class="text-white">Card</strong>, or <strong class="text-white">Zelle</strong> when our detailing unit finishes servicing your vehicle at your location.
+            </p>
+            <div class="p-2.5 bg-black border border-zinc-800 rounded text-xs text-gray-400">
+              <span class="font-bold text-white">Zelle Info:</span> Send payment to <span class="text-red-400 font-medium">KW Commercial Fleet Washing & Mobile Detailing</span> upon arrival.
+            </div>
+          </div>
         </div>
 
         <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
-          Pay & Confirm Booking (<span id="payBtnAmount">$250</span>)
+          Confirm Booking (<span id="payBtnAmount">$250</span>)
         </button>
       </form>
       
       <div id="successMessage" class="hidden mt-4 p-4 bg-zinc-900 border border-red-600 text-white rounded-lg text-center text-sm shadow-lg">
-        Payment successful! Your mobile detailing appointment and address have been confirmed.
+        Appointment successfully confirmed! We look forward to servicing your vehicle.
       </div>
     </div>
   </div>
@@ -212,6 +238,48 @@
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Payment Option Tab Toggle Logic
+    let currentPaymentMethod = 'online'; // 'online' or 'in_person'
+    const payOnlineTab = document.getElementById('payOnlineTab');
+    const payInPersonTab = document.getElementById('payInPersonTab');
+    const cardPaymentSection = document.getElementById('cardPaymentSection');
+    const inPersonSection = document.getElementById('inPersonSection');
+    const submitBtn = document.getElementById('submitBtn');
+
+    payOnlineTab.addEventListener('click', () => {
+      currentPaymentMethod = 'online';
+      payOnlineTab.classList.replace('bg-zinc-900', 'bg-red-600');
+      payOnlineTab.classList.replace('text-gray-400', 'text-white');
+      payOnlineTab.classList.replace('border-zinc-800', 'border-red-600');
+
+      payInPersonTab.classList.replace('bg-red-600', 'bg-zinc-900');
+      payInPersonTab.classList.replace('text-white', 'text-gray-400');
+      payInPersonTab.classList.replace('border-red-600', 'border-zinc-800');
+
+      cardPaymentSection.classList.remove('hidden');
+      inPersonSection.classList.add('hidden');
+      
+      const totalAmount = calculateTotalPrice();
+      submitBtn.innerHTML = `Pay & Confirm Booking (<span id="payBtnAmount">$${totalAmount}</span>)`;
+    });
+
+    payInPersonTab.addEventListener('click', () => {
+      currentPaymentMethod = 'in_person';
+      payInPersonTab.classList.replace('bg-zinc-900', 'bg-red-600');
+      payInPersonTab.classList.replace('text-gray-400', 'text-white');
+      payInPersonTab.classList.replace('border-zinc-800', 'border-red-600');
+
+      payOnlineTab.classList.replace('bg-red-600', 'bg-zinc-900');
+      payOnlineTab.classList.replace('text-white', 'text-gray-400');
+      payOnlineTab.classList.replace('border-red-600', 'border-zinc-800');
+
+      inPersonSection.classList.remove('hidden');
+      cardPaymentSection.classList.add('hidden');
+
+      const totalAmount = calculateTotalPrice();
+      submitBtn.innerHTML = `Confirm Booking (Pay $${totalAmount} in Person/Zelle)`;
+    });
 
     // Google Places Autocomplete Setup
     function initGoogleAutocomplete() {
@@ -245,7 +313,7 @@
       window.addEventListener('load', initGoogleAutocomplete);
     }
 
-    // Dynamic Price Calculator with Safe Fallbacks
+    // Dynamic Price Calculator
     function calculateTotalPrice() {
       const vehicleSelect = document.getElementById('vehicleCategory');
       const serviceSelect = document.getElementById('serviceType');
@@ -300,7 +368,8 @@
     // Express Checkout
     const expressCheckoutElement = elements.create('expressCheckout', {
       buttonHeight: 44,
-      buttonTheme: { applePay: 'white-outline', googlePay: 'black' }
+      buttonTheme: { applePay: 'white-outline', googlePay: 'black' },
+      wallets: { applePay: 'always', googlePay: 'always', link: 'never', amazonPay: 'never' }
     });
     expressCheckoutElement.mount('#express-checkout-element');
 
@@ -339,7 +408,7 @@
         if (error) {
           document.getElementById('card-errors').textContent = error.message;
         } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-          await saveBookingToSupabase(totalAmount, paymentIntent.id);
+          await saveBookingToSupabase(totalAmount, paymentIntent.id, 'Paid & Confirmed (Express Wallet)');
         }
       } catch (err) {
         document.getElementById('card-errors').textContent = err.message;
@@ -425,7 +494,7 @@
     document.getElementById('nextMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
     renderCalendar();
 
-    // Form Submission (Card Fallback)
+    // Form Submission Handler
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!selectedDateStr) {
@@ -437,13 +506,20 @@
         return;
       }
 
-      const submitBtn = document.getElementById('submitBtn');
       const cardErrors = document.getElementById('card-errors');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Processing Payment...';
-      cardErrors.textContent = '';
-
       const totalAmount = calculateTotalPrice();
+
+      // Path A: Pay in Person / Zelle
+      if (currentPaymentMethod === 'in_person') {
+        submitBtn.textContent = 'Saving Booking...';
+        await saveBookingToSupabase(totalAmount, 'IN_PERSON_ZELLE', 'Pending - Pay in Person / Zelle');
+        return;
+      }
+
+      // Path B: Online Card Payment via Stripe
+      submitBtn.textContent = 'Processing Payment...';
+      if (cardErrors) cardErrors.textContent = '';
 
       try {
         const response = await fetch(EDGE_FUNCTION_URL, {
@@ -470,25 +546,25 @@
         });
 
         if (paymentResult.error) {
-          cardErrors.textContent = paymentResult.error.message;
+          if (cardErrors) cardErrors.textContent = paymentResult.error.message;
           submitBtn.disabled = false;
           submitBtn.textContent = `Pay & Confirm Booking ($${totalAmount})`;
           return;
         }
 
         if (paymentResult.paymentIntent.status === 'succeeded') {
-          await saveBookingToSupabase(totalAmount, paymentResult.paymentIntent.id);
+          await saveBookingToSupabase(totalAmount, paymentResult.paymentIntent.id, 'Paid & Confirmed (Stripe Card)');
         }
       } catch (err) {
         console.error(err);
-        cardErrors.textContent = err.message || 'Payment processing failed.';
+        if (cardErrors) cardErrors.textContent = err.message || 'Payment processing failed.';
         submitBtn.disabled = false;
         submitBtn.textContent = `Pay & Confirm Booking ($${totalAmount})`;
       }
     });
 
     // Write Record to Supabase
-    async function saveBookingToSupabase(amountPaid, stripePaymentId) {
+    async function saveBookingToSupabase(amountPaid, stripePaymentId, paymentStatus) {
       const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
       const packageSelected = document.getElementById('serviceType').value;
       const fullServiceDescription = selectedAddons ? `${packageSelected} + Addons: [${selectedAddons}]` : packageSelected;
@@ -504,7 +580,7 @@
           service_date: selectedDateStr,
           time_slot: selectedTimeSlotStr,
           service_address: document.getElementById('serviceAddress').value,
-          payment_status: 'Paid & Confirmed',
+          payment_status: paymentStatus,
           stripe_payment_id: stripePaymentId,
           amount_paid: amountPaid
         }]);
