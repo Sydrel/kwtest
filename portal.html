@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KW Detailing - Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-black text-white min-h-screen p-4 sm:p-6 font-sans flex flex-col justify-center items-center">
+
+  <!-- LOGIN SCREEN CONTAINER -->
+  <div id="loginScreen" class="w-full max-w-md bg-zinc-950 p-8 rounded-2xl border border-zinc-800 shadow-2xl my-auto">
+    <div class="flex flex-col items-center mb-6 text-center">
+      <img src="https://i.imgur.com/9Q025WO.png" alt="KW Logo" class="h-16 object-contain mb-3 filter drop-shadow-[0_0_12px_rgba(239,68,68,0.4)]">
+      <h1 class="text-2xl font-black tracking-wide text-white uppercase">KW PORTAL</h1>
+      <p class="text-xs text-gray-400 mt-1">Management, Revenue & Subscriptions</p>
+    </div>
+
+    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+      <div id="loginError" class="hidden bg-red-950/60 border border-red-800 text-red-400 text-xs p-3 rounded-lg text-center font-medium"></div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-300 mb-1">Email / Username</label>
+        <input type="text" id="loginEmail" required placeholder="admin@kwdetailing.com" 
+          class="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-red-600 transition">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-300 mb-1">Password</label>
+        <div class="relative">
+          <input type="password" id="loginPassword" required placeholder="••••••••" 
+            class="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-red-600 transition pr-10">
+          <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-gray-400 hover:text-white text-xs">
+            👁️
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" id="loginBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs tracking-wider uppercase transition shadow-lg shadow-red-900/20">
+        Sign In to Portal
+      </button>
+    </form>
+  </div>
+
+  <!-- MAIN PORTAL DASHBOARD (Hidden until authenticated) -->
+  <div id="portalDashboard" class="w-full max-w-7xl mx-auto hidden space-y-6">
+
+    <!-- Header Section -->
+    <header class="flex flex-col sm:flex-row justify-between items-center gap-4 pb-4 border-b border-zinc-800">
+      <div class="flex items-center gap-3">
+        <img src="https://i.imgur.com/9Q025WO.png" alt="KW Logo" class="h-12 object-contain filter drop-shadow-[0_0_8px_rgba(239,68,68,0.3)]">
+        <div>
+          <h1 class="text-xl font-bold tracking-wide">KW PORTAL</h1>
+          <p class="text-xs text-gray-400">Mobile Service Fleet, Client Subscriptions & Revenue Analytics</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="fetchBookings()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2 px-3 rounded-lg transition">
+          🔄 Refresh Data
+        </button>
+        <div id="statusBadge" class="bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Live Sync Active
+        </div>
+        <button onclick="handleLogout()" class="bg-red-950/40 hover:bg-red-900/60 border border-red-800 text-xs text-red-400 font-bold py-2 px-3 rounded-lg transition">
+          🔒 Sign Out
+        </button>
+      </div>
+    </header>
+
+    <main class="space-y-6">
+      <!-- KPI Metric Cards / Analytics Dashboard -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+          <p class="text-[11px] font-semibold text-gray-400 uppercase">This Week</p>
+          <p id="revWeek" class="text-xl font-extrabold text-green-400 mt-1">$0.00</p>
+        </div>
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+          <p class="text-[11px] font-semibold text-gray-400 uppercase">This Month</p>
+          <p id="revMonth" class="text-xl font-extrabold text-green-400 mt-1">$0.00</p>
+        </div>
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+          <p class="text-[11px] font-semibold text-gray-400 uppercase">This Year</p>
+          <p id="revYear" class="text-xl font-extrabold text-green-400 mt-1">$0.00</p>
+        </div>
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+          <p class="text-[11px] font-semibold text-gray-400 uppercase">Total Revenue</p>
+          <p id="revTotal" class="text-xl font-extrabold text-white mt-1">$0.00</p>
+        </div>
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+          <p class="text-[11px] font-semibold text-gray-400 uppercase">Subscriptions</p>
+          <p id="subCount" class="text-xl font-extrabold text-purple-400 mt-1">0</p>
+        </div>
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+          <p class="text-[11px] font-semibold text-gray-400 uppercase">Pending Orders</p>
+          <p id="pendingCount" class="text-xl font-extrabold text-yellow-400 mt-1">0</p>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="flex flex-wrap gap-2 items-center justify-between bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
+        <div class="flex flex-wrap gap-2">
+          <button onclick="filterStatus('All')" class="filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition">All Orders</button>
+          <button onclick="filterStatus('Paid & Confirmed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Paid & Confirmed</button>
+          <button onclick="filterStatus('Completed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Completed</button>
+          <button onclick="filterStatus('Subscription')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-purple-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Subscriptions Only</button>
+        </div>
+        <span id="orderCount" class="text-gray-400 font-medium">Loading orders...</span>
+      </div>
+
+      <!-- Orders Table Container -->
+      <div class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-zinc-900 border-b border-zinc-800 text-gray-400 uppercase tracking-wider font-semibold">
+              <tr>
+                <th class="p-3">ID / Date Created</th>
+                <th class="p-3">Client Info</th>
+                <th class="p-3">Schedule Window</th>
+                <th class="p-3">Vehicle & Service</th>
+                <th class="p-3">Type</th>
+                <th class="p-3">Service Address</th>
+                <th class="p-3">Amount</th>
+                <th class="p-3">Status</th>
+              </tr>
+            </thead>
+            <tbody id="dispatchTableBody" class="divide-y divide-zinc-900">
+              <tr>
+                <td colspan="8" class="p-6 text-center text-gray-500">Loading bookings...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let allBookings = [];
+    let currentFilter = 'All';
+    let autoRefreshTimer = null;
+
+    // Check existing authentication session on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const isAuthenticated = sessionStorage.getItem('kw_auth') === 'true';
+      if (isAuthenticated) {
+        showDashboard();
+      }
+    });
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const errorEl = document.getElementById('loginError');
+      
+      errorEl.classList.add('hidden');
+
+      // 1. Try Supabase Auth
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password,
+        });
+
+        if (!error && data?.session) {
+          sessionStorage.setItem('kw_auth', 'true');
+          showDashboard();
+          return;
+        }
+      } catch (err) {
+        console.warn('Supabase Auth error, checking fallback passcodes...');
+      }
+
+      // 2. Fallback local passcodes for access
+      const validPasscodes = ['admin123', 'kwdetailing', 'kw2026'];
+      if (validPasscodes.includes(password) || (email === 'admin@kwdetailing.com' && password === 'admin123')) {
+        sessionStorage.setItem('kw_auth', 'true');
+        showDashboard();
+      } else {
+        errorEl.textContent = 'Invalid credentials. Check your password and try again.';
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('kw_auth');
+      if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+      
+      document.getElementById('portalDashboard').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.body.classList.add('flex', 'flex-col', 'justify-center', 'items-center');
+      document.getElementById('loginPassword').value = '';
+    }
+
+    function showDashboard() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.body.classList.remove('flex', 'flex-col', 'justify-center', 'items-center');
+      document.getElementById('portalDashboard').classList.remove('hidden');
+
+      fetchBookings();
+      if (!autoRefreshTimer) {
+        autoRefreshTimer = setInterval(fetchBookings, 30000);
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById('loginPassword');
+      pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
+    }
+
+    async function fetchBookings() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('bookings')
+          .select('*')
+          .order('id', { ascending: false });
+
+        if (error) throw error;
+        allBookings = data || [];
+        calculateAnalytics();
+        renderTable();
+      } catch (err) {
+        console.error('Error fetching bookings:', err);
+        document.getElementById('dispatchTableBody').innerHTML = `
+          <tr>
+            <td colspan="8" class="p-6 text-center text-red-500">
+              Failed to load bookings. Check Supabase RLS policies or database table permissions.
+            </td>
+          </tr>`;
+      }
+    }
+
+    function calculateAnalytics() {
+      const now = new Date();
+      
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      let revWeek = 0;
+      let revMonth = 0;
+      let revYear = 0;
+      let revTotal = 0;
+      let subscriptionsCount = 0;
+      let pendingCount = 0;
+
+      allBookings.forEach(b => {
+        if (b.payment_status === 'Cancelled') return;
+
+        const amount = parseFloat(b.amount_paid) || 0;
+        const bookingDate = new Date(b.created_at || b.service_date);
+
+        revTotal += amount;
+
+        if (bookingDate >= startOfWeek) {
+          revWeek += amount;
+        }
+        if (bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear) {
+          revMonth += amount;
+        }
+        if (bookingDate.getFullYear() === currentYear) {
+          revYear += amount;
+        }
+
+        if (b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'))) {
+          subscriptionsCount++;
+        }
+
+        if (b.payment_status === 'Paid & Confirmed' || b.payment_status === 'Dispatched') {
+          pendingCount++;
+        }
+      });
+
+      document.getElementById('revWeek').textContent = `$${revWeek.toFixed(2)}`;
+      document.getElementById('revMonth').textContent = `$${revMonth.toFixed(2)}`;
+      document.getElementById('revYear').textContent = `$${revYear.toFixed(2)}`;
+      document.getElementById('revTotal').textContent = `$${revTotal.toFixed(2)}`;
+      document.getElementById('subCount').textContent = subscriptionsCount;
+      document.getElementById('pendingCount').textContent = pendingCount;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('dispatchTableBody');
+      
+      let filtered = allBookings;
+      if (currentFilter === 'Subscription') {
+        filtered = allBookings.filter(b => b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub')));
+      } else if (currentFilter !== 'All') {
+        filtered = allBookings.filter(b => b.payment_status === currentFilter);
+      }
+
+      document.getElementById('orderCount').textContent = `Total Displayed: ${filtered.length}`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-6 text-center text-gray-500">No bookings found for this view.</td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(b => {
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.service_address || '')}`;
+        const isSub = b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'));
+        
+        return `
+          <tr class="hover:bg-zinc-900/50 transition">
+            <td class="p-3">
+              <span class="font-bold text-white">#${b.id}</span>
+              <div class="text-[10px] text-gray-500">${new Date(b.created_at).toLocaleDateString()} ${new Date(b.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+            </td>
+            <td class="p-3">
+              <div class="font-bold text-white">${escapeHtml(b.client_name)}</div>
+              <div class="text-gray-400"><a href="tel:${b.phone}" class="hover:underline text-red-400">${escapeHtml(b.phone)}</a></div>
+              <div class="text-[10px] text-gray-500">${escapeHtml(b.email)}</div>
+            </td>
+            <td class="p-3">
+              <div class="text-red-500 font-bold">${b.service_date || 'N/A'}</div>
+              <div class="text-gray-300">${escapeHtml(b.time_slot || 'Standard')}</div>
+            </td>
+            <td class="p-3">
+              <span class="inline-block bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-[11px] font-semibold text-gray-200 mb-1">
+                ${escapeHtml(b.vehicle_category || 'Vehicle')}
+              </span>
+              <div class="text-[11px] text-gray-400 max-w-xs truncate">${escapeHtml(b.service_type || '')}</div>
+            </td>
+            <td class="p-3">
+              ${isSub 
+                ? `<span class="bg-purple-900/40 text-purple-400 border border-purple-800 px-2 py-0.5 rounded text-[10px] font-bold">Subscription</span>` 
+                : `<span class="bg-zinc-900 text-gray-400 border border-zinc-800 px-2 py-0.5 rounded text-[10px]">One-Time</span>`}
+            </td>
+            <td class="p-3">
+              <div class="text-gray-300 max-w-xs truncate mb-1">${escapeHtml(b.service_address || 'N/A')}</div>
+              <a href="${mapsUrl}" target="_blank" class="inline-flex items-center gap-1 text-[10px] text-red-500 hover:text-red-400 font-bold">
+                🗺️ Navigate Maps
+              </a>
+            </td>
+            <td class="p-3">
+              <div class="font-bold text-green-400 text-sm">$${parseFloat(b.amount_paid || 0).toFixed(2)}</div>
+              <div class="text-[9px] text-gray-500 truncate w-20" title="${b.stripe_payment_id || ''}">${b.stripe_payment_id ? 'Stripe Paid' : 'Pending'}</div>
+            </td>
+            <td class="p-3">
+              <select onchange="updateStatus(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(b.payment_status)}">
+                <option value="Paid & Confirmed" ${b.payment_status === 'Paid & Confirmed' ? 'selected' : ''}>Paid & Confirmed</option>
+                <option value="Dispatched" ${b.payment_status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
+                <option value="In Progress" ${b.payment_status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                <option value="Completed" ${b.payment_status === 'Completed' ? 'selected' : ''}>Completed</option>
+                <option value="Cancelled" ${b.payment_status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function updateStatus(id, newStatus) {
+      try {
+        const { error } = await supabaseClient
+          .from('bookings')
+          .update({ payment_status: newStatus })
+          .eq('id', id);
+
+        if (error) throw error;
+        const item = allBookings.find(b => b.id === id);
+        if (item) item.payment_status = newStatus;
+        
+        calculateAnalytics();
+        renderTable();
+      } catch (err) {
+        alert('Failed to update status: ' + err.message);
+      }
+    }
+
+    function getStatusColorClass(status) {
+      switch(status) {
+        case 'Paid & Confirmed': return 'text-green-400';
+        case 'Dispatched': return 'text-yellow-400';
+        case 'In Progress': return 'text-blue-400';
+        case 'Completed': return 'text-gray-400';
+        case 'Cancelled': return 'text-red-500';
+        default: return 'text-gray-300';
+      }
+    }
+
+    function filterStatus(status) {
+      currentFilter = status;
+      renderTable();
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+  </script>
+</body>
+</html>
