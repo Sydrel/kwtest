@@ -9,6 +9,36 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Stripe JS Library -->
   <script src="https://js.stripe.com/v3/"></script>
+  <!-- Google Maps Places API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPdfr_haNgDJNCwqPT-dU31ANGmanphNA&libraries=places" defer async></script>
+  <style>
+    .pac-container { 
+      background-color: #09090b !important; 
+      color: #ffffff !important; 
+      border: 1px solid #27272a !important; 
+      font-family: inherit !important; 
+      border-radius: 0.5rem !important; 
+      margin-top: 4px !important; 
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important; 
+      z-index: 9999 !important; 
+    }
+    .pac-item { 
+      color: #a1a1aa !important; 
+      border-top: 1px solid #27272a !important; 
+      padding: 8px 12px !important; 
+      cursor: pointer; 
+    }
+    .pac-item:hover { 
+      background-color: #27272a !important; 
+      color: #ffffff !important; 
+    }
+    .pac-item-query { 
+      color: #ffffff !important; 
+    }
+    .pac-icon { 
+      filter: invert(1) brightness(2); 
+    }
+  </style>
 </head>
 <body class="bg-black text-white min-h-screen p-4 flex flex-col items-center justify-center">
 
@@ -134,11 +164,10 @@
           </div>
         </div>
 
-        <!-- 100% Free Address Input with Dropdown -->
-        <div class="relative">
+        <!-- Google Places Autocomplete Address Input -->
+        <div>
           <label class="block text-xs font-medium mb-1 text-gray-300">Mobile Service Address</label>
-          <input type="text" id="serviceAddress" placeholder="Start typing street address..." autocomplete="off" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
-          <div id="addressDropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl z-50 max-h-48 overflow-y-auto"></div>
+          <input type="text" id="serviceAddress" placeholder="Start typing street address..." required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
         </div>
 
         <input type="hidden" id="serviceDate" required>
@@ -179,10 +208,42 @@
     // Configured Supabase Credentials
     const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
-    const STRIPE_PUBLISHABLE_KEY = 'pk_live_YOUR_STRIPE_PUBLISHABLE_KEY'; // Replace with your Stripe Publishable Key
+    const STRIPE_PUBLISHABLE_KEY = 'pk_live_YOUR_STRIPE_PUBLISHABLE_KEY';
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Google Places Autocomplete Setup
+    function initGoogleAutocomplete() {
+      const input = document.getElementById('serviceAddress');
+      if (!input) return;
+
+      if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+        try {
+          const autocomplete = new google.maps.places.Autocomplete(input, {
+            componentRestrictions: { country: "us" },
+            fields: ["formatted_address"],
+            types: ["address"]
+          });
+
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          });
+        } catch (err) {
+          console.warn('Google Places Autocomplete failed to load:', err);
+        }
+      } else {
+        console.warn('Google Maps API key unverified or missing. Field remains standard input.');
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      initGoogleAutocomplete();
+    } else {
+      window.addEventListener('load', initGoogleAutocomplete);
+    }
 
     // Dynamic Price Calculator
     function calculateTotalPrice() {
@@ -223,60 +284,6 @@
         selectedTimeSlotStr = btn.getAttribute('data-time');
         document.getElementById('selectedTimeSlotValue').value = selectedTimeSlotStr;
       });
-    });
-
-    // Free OpenStreetMap Autocomplete
-    const addressInput = document.getElementById('serviceAddress');
-    const addressDropdown = document.getElementById('addressDropdown');
-    let debounceTimer;
-
-    addressInput.addEventListener('input', (e) => {
-      clearTimeout(debounceTimer);
-      const query = e.target.value.trim();
-
-      if (query.length < 3) {
-        addressDropdown.classList.add('hidden');
-        return;
-      }
-
-      debounceTimer = setTimeout(async () => {
-        try {
-          const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&lang=en`);
-          const data = await res.json();
-
-          addressDropdown.innerHTML = '';
-          if (data.features && data.features.length > 0) {
-            data.features.forEach(feature => {
-              const props = feature.properties;
-              const street = [props.housenumber, props.street || props.name].filter(Boolean).join(' ');
-              const cityState = [props.city || props.town, props.state, props.postcode].filter(Boolean).join(', ');
-              const fullAddress = [street, cityState].filter(Boolean).join(', ');
-
-              if (fullAddress) {
-                const item = document.createElement('div');
-                item.className = 'p-2.5 hover:bg-zinc-800 text-xs text-gray-200 cursor-pointer border-b border-zinc-800 last:border-0';
-                item.textContent = fullAddress;
-                item.addEventListener('click', () => {
-                  addressInput.value = fullAddress;
-                  addressDropdown.classList.add('hidden');
-                });
-                addressDropdown.appendChild(item);
-              }
-            });
-            addressDropdown.classList.remove('hidden');
-          } else {
-            addressDropdown.classList.add('hidden');
-          }
-        } catch (err) {
-          console.warn('Geocoding search failed:', err);
-        }
-      }, 300);
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!addressInput.contains(e.target) && !addressDropdown.contains(e.target)) {
-        addressDropdown.classList.add('hidden');
-      }
     });
 
     // Initialize Stripe & Elements
