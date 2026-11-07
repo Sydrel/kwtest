@@ -205,10 +205,10 @@
   </div>
 
   <script>
-    // Configured Supabase Credentials
+    // Fully Configured Project Keys
     const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
-    const STRIPE_PUBLISHABLE_KEY = 'pk_live_YOUR_STRIPE_PUBLISHABLE_KEY';
+    const STRIPE_PUBLISHABLE_KEY = 'pk_live_51UXoy841rEJafE4qq4lXTr2T0q0P6p4qglGVZjFR1X3TvEGwDlDQwQAIrtHoU2GpONiMDJM8K7vgdG338knTqVAF004qtQ3bG3';
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -245,27 +245,34 @@
       window.addEventListener('load', initGoogleAutocomplete);
     }
 
-    // Dynamic Price Calculator
+    // Dynamic Price Calculator with Safe Fallbacks
     function calculateTotalPrice() {
       const vehicleSelect = document.getElementById('vehicleCategory');
       const serviceSelect = document.getElementById('serviceType');
+      const payBtnAmount = document.getElementById('payBtnAmount');
       
+      if (!vehicleSelect || !serviceSelect) return 250;
+
       let basePrice = 0;
-      const packagePrice = parseInt(serviceSelect.options[serviceSelect.selectedIndex].getAttribute('data-price'), 10);
+      const packageOption = serviceSelect.options[serviceSelect.selectedIndex];
+      const packagePrice = parseInt(packageOption ? packageOption.getAttribute('data-price') : 0, 10);
       
       if (packagePrice > 0) {
         basePrice = packagePrice;
       } else {
-        basePrice = parseInt(vehicleSelect.options[vehicleSelect.selectedIndex].getAttribute('data-price'), 10);
+        const vehicleOption = vehicleSelect.options[vehicleSelect.selectedIndex];
+        basePrice = parseInt(vehicleOption ? vehicleOption.getAttribute('data-price') : 250, 10);
       }
 
       let addonTotal = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
-        addonTotal += parseInt(cb.getAttribute('data-price'), 10);
+        addonTotal += parseInt(cb.getAttribute('data-price') || 0, 10);
       });
 
       const finalTotal = basePrice + addonTotal;
-      document.getElementById('payBtnAmount').textContent = `$${finalTotal}`;
+      if (payBtnAmount) {
+        payBtnAmount.textContent = `$${finalTotal}`;
+      }
       return finalTotal;
     }
 
