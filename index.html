@@ -114,7 +114,7 @@
         .menu-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 5px; margin-left: auto;}
         .menu-toggle span { display: block; width: 24px; height: 2px; background: var(--kw-white); transition: 0.3s;}
 
-        /* --- HERO (Refined Cross-Platform Fluid Banner) --- */
+        /* --- HERO --- */
         .hero {
             min-height: calc(100vh - var(--header-height));
             height: auto;
@@ -379,8 +379,8 @@
             text-align: center;
             background: #121212;
         }
-        .v-price-side .price { font-size: 3.8rem; font-weight: 300; line-height: 1; letter-spacing: -2px; margin-bottom: 10px;}
-        .v-price-side .price span { font-size: 1.5rem; color: var(--kw-red); font-weight: 600; vertical-align: super;}
+        .v-price-side .price { font-size: 3.2rem; font-weight: 300; line-height: 1; letter-spacing: -2px; margin-bottom: 10px;}
+        .v-price-side .price span { font-size: 1.3rem; color: var(--kw-red); font-weight: 600; vertical-align: super;}
         .v-price-side .term { font-size: 0.9rem; color: var(--kw-gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;}
         
         .setup-tag { background: #1a1a1a; padding: 12px 18px; font-size: 0.85rem; color: var(--kw-light-gray); margin-bottom: 25px; border-left: 3px solid var(--kw-red); width: 100%; text-align: left; line-height: 1.6;}
@@ -444,10 +444,65 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 20px;
         }
         .member-banner span { font-size: 1rem; color: var(--kw-white); font-weight: 600; letter-spacing: 0.5px; }
         .member-banner strong { color: var(--kw-red); font-size: 1.1rem; }
+
+        /* TOGGLE SWITCH STYLING */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .toggle-label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--kw-white);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #262626;
+            transition: 0.3s;
+            border-radius: 28px;
+            border: 1px solid #444;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--kw-red);
+            border-color: var(--kw-red);
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
 
         /* HORIZONTAL ADD-ON CARDS GRID */
         .horizontal-addons-grid {
@@ -470,7 +525,7 @@
             transform: translateY(-3px);
         }
         .h-addon-name { font-size: 0.98rem; font-weight: 600; color: var(--kw-white); }
-        .h-addon-price { font-size: 1.05rem; font-weight: 700; color: var(--kw-red); }
+        .h-addon-price { font-size: 1.05rem; font-weight: 700; color: var(--kw-red); transition: color 0.2s ease; }
 
 
         /* --- VIDEO SHOWCASE SECTION --- */
@@ -559,14 +614,14 @@
             nav a { display: block; padding: 8px 20px; font-size: 0.95rem; }
             nav .nav-btn { display: inline-block; padding: 10px 22px; width: auto; margin-top: 8px; margin-right: 20px; }
 
-            /* Cross-Platform Mobile Hero Fix (Pixel & iPhone dynamic viewport sizing) */
+            /* Cross-Platform Mobile Hero Fix */
             .hero {
                 min-height: calc(100dvh - var(--header-height));
                 height: auto;
                 padding-top: calc(var(--header-height) + 12px);
                 padding-bottom: 30px;
                 background-attachment: scroll;
-                justify-content: flex-start; /* Forces content up, eliminating the gap */
+                justify-content: flex-start;
             }
             .hero-content {
                 padding-top: 5px;
@@ -579,6 +634,8 @@
 
             .hero-buttons { flex-direction: column; width: 100%; max-width: 280px; margin: 0 auto; gap: 10px;}
             .hero-buttons .btn { width: 100%; padding: 12px; font-size: 0.8rem; letter-spacing: 1.5px;}
+
+            .member-banner { flex-direction: column; align-items: flex-start; gap: 15px; }
 
             /* Section headers & cards */
             .section-header h2 { font-size: 2.1rem; }
@@ -593,7 +650,7 @@
             .vertical-plans-stack { gap: 30px; }
             .v-details-side { padding: 28px 22px; }
             .v-price-side { padding: 30px 20px; }
-            .v-price-side .price { font-size: 3.2rem; }
+            .v-price-side .price { font-size: 2.8rem; }
             .v-details-side h3 { font-size: 1.5rem; }
             .v-desc { font-size: 0.95rem; }
             .v-features { grid-template-columns: 1fr; gap: 18px;}
@@ -609,7 +666,6 @@
 
         @media (max-width: 480px) {
             .container { width: 92%; }
-            .v-price-side .price { font-size: 2.6rem; }
             .section-heading h2 { font-size: 1.8rem; }
             .section-header h2 { font-size: 1.6rem; }
             .service-info h3 { font-size: 1.3rem; }
@@ -636,7 +692,7 @@
             <nav id="mainNav">
                 <ul>
                     <li><a href="#services">Fleet Services</a></li>
-                    <li><a href="#membership">Membership & Add-Ons</a></li>
+                    <li><a href="#membership">Membership & Plans</a></li>
                     <li><a href="#location">Service Area</a></li>
                     <li><a onclick="openContactModal()">Contact Us</a></li>
                     <li><a href="tel:2398986008" class="nav-btn">Book Us</a></li>
@@ -645,7 +701,7 @@
         </div>
     </header>
 
-    <!-- HERO (Enhanced Proportioned Banner) -->
+    <!-- HERO -->
     <section class="hero">
         <div class="container hero-content">
             <div class="fade-in">
@@ -661,7 +717,7 @@
                 </div>
 
                 <div class="hero-buttons">
-                    <a href="#membership" class="btn btn-red">Month-to-Month Plans</a>
+                    <a href="#membership" class="btn btn-red">VIP & Monthly Plans</a>
                     <a href="#services" class="btn btn-outline">Explore Services</a>
                 </div>
             </div>
@@ -812,7 +868,7 @@
             </div>
             <div class="modal-footer">
                 <a href="tel:2398986008" class="btn btn-red" style="width:100%;">Book Us</a>
-                <p style="margin-top:15px; font-size:0.9rem; color:var(--kw-gray);">Want recurring cleanings? <a href="#membership" onclick="closeModal()" style="color:var(--kw-red); text-decoration:underline;">View Month-to-Month Plans</a></p>
+                <p style="margin-top:15px; font-size:0.9rem; color:var(--kw-gray);">Want recurring cleanings? <a href="#membership" onclick="closeModal()" style="color:var(--kw-red); text-decoration:underline;">View VIP Plans</a></p>
             </div>
         </div>
     </div>
@@ -862,16 +918,16 @@
     <section id="membership" class="master-membership-section">
         <div class="container">
             <div class="section-heading fade-in">
-                <h2><span class="text-red">MEMBERSHIP</span> & ADD-ONS</h2>
-                <p>Month-to-Month Recurring Plans & Professional Add-Ons</p>
+                <h2><span class="text-red">MEMBERSHIP</span> & VIP PLANS</h2>
+                <p>Recurring Packages & White-Glove Detailing</p>
             </div>
 
             <div class="membership-open-wrap fade-in">
                 
-                <!-- VERTICALLY STACKED PLANS -->
+                <!-- VERTICALLY STACKED PLANS (Organized Lowest to Highest Price) -->
                 <div class="vertical-plans-stack">
                     
-                    <!-- Plan 1: KW Signature Wash 365 -->
+                    <!-- Plan 1: KW Signature Wash 365 ($150+ / month) -->
                     <div class="vertical-plan-row">
                         <div class="v-price-side">
                             <div class="price"><span>$</span>150<span>+</span></div>
@@ -884,24 +940,6 @@
                             <h3>KW Signature Wash 365</h3>
                             <p class="v-desc">Convenient Basic Premium Wash service delivered directly to your home, workplace, or approved location.</p>
                             
-                            <!-- BENEFITS -->
-                            <div class="benefit-grid">
-                                <div class="benefit">
-                                    <div class="benefit-icon">✓</div>
-                                    <div class="benefit-text">
-                                        <h4>Twice-Monthly Mobile Service</h4>
-                                        <p>Two scheduled maintenance washes per month delivered right to your location.</p>
-                                    </div>
-                                </div>
-                                <div class="benefit">
-                                    <div class="benefit-icon">✓</div>
-                                    <div class="benefit-text">
-                                        <h4>Why Month-to-Month?</h4>
-                                        <p>Enjoy absolute consistency and guaranteed priority scheduling with total flexibility—no long-term lock-ins.</p>
-                                    </div>
-                                </div>
-                            </div>
-
                             <table class="mini-table">
                                 <thead>
                                     <tr>
@@ -940,7 +978,7 @@
                         </div>
                     </div>
 
-                    <!-- Plan 2: 365 AutoCare -->
+                    <!-- Plan 2: 365 AutoCare ($350 / month) -->
                     <div class="vertical-plan-row">
                         <div class="v-price-side">
                             <div class="price"><span>$</span>350</div>
@@ -952,24 +990,6 @@
                         <div class="v-details-side">
                             <h3><span class="text-red">365</span> AUTOCARE</h3>
                             <p class="v-desc">Concierge Detailing delivered to your door. Complete deep cleaning and exterior protection packages.</p>
-
-                            <!-- BENEFITS -->
-                            <div class="benefit-grid">
-                                <div class="benefit">
-                                    <div class="benefit-icon">✓</div>
-                                    <div class="benefit-text">
-                                        <h4>2 Full Luxury Premium Details</h4>
-                                        <p>Both deep Interior cleaning and Exterior detailing are included in every visit.</p>
-                                    </div>
-                                </div>
-                                <div class="benefit">
-                                    <div class="benefit-icon">✓</div>
-                                    <div class="benefit-text">
-                                        <h4>Fully Mobile Service</h4>
-                                        <p>We arrive at your home, work, or approved location with our own water and power.</p>
-                                    </div>
-                                </div>
-                            </div>
 
                             <div class="v-features">
                                 <div class="v-col">
@@ -994,6 +1014,80 @@
                         </div>
                     </div>
 
+                    <!-- Plan 3: Black Label 365 ($449 - $649 / month) -->
+                    <div class="vertical-plan-row" style="border-color: rgba(227, 27, 35, 0.4);">
+                        <div class="v-price-side" style="background: linear-gradient(135deg, #150505 0%, #0a0a0a 100%);">
+                            <div class="price" style="font-size:2.8rem; margin-top:15px;"><span>$</span>449 - $649</div>
+                            <div class="term">2 VIP Visits / Month</div>
+                            <div class="setup-tag">Multi-Vehicle: <span>10% OFF</span></div>
+                            <a href="tel:2398986008" class="btn btn-red">Secure Black Label</a>
+                            <div class="cancel-note">Month-to-Month • Cancel Anytime</div>
+                        </div>
+                        <div class="v-details-side">
+                            <div style="font-size: 0.8rem; letter-spacing: 3px; color: var(--kw-red); text-transform: uppercase; font-weight: 600; margin-bottom: 5px;">KW Signature Luxury Collection</div>
+                            <h3>BLACK LABEL 365</h3>
+                            <p class="v-desc">The Ultimate VIP Detailing Experience. Two premium scheduled detailing visits per month with complete white-glove care.</p>
+                            
+                            <table class="mini-table">
+                                <thead>
+                                    <tr>
+                                        <th>Vehicle Category</th>
+                                        <th class="hdr">Black Label Monthly (2 Services)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Sedan / Coupe</td><td class="val">$449 – $499</td></tr>
+                                    <tr><td>Small SUV / Crossover</td><td class="val">$549</td></tr>
+                                    <tr><td>Large SUV / Pickup Truck</td><td class="val">$599</td></tr>
+                                    <tr><td>Oversized Luxury SUV</td><td class="val">$649</td></tr>
+                                </tbody>
+                            </table>
+
+                            <div class="v-features">
+                                <div class="v-col">
+                                    <h5>Superior Exterior Care</h5>
+                                    <ul>
+                                        <li>Luxury foam hand wash & microfiber dry</li>
+                                        <li>Wheel, tire & wheel-well cleaning</li>
+                                        <li>Tire dress & trim protection</li>
+                                        <li>Bug & light tar removal</li>
+                                        <li>Exterior glass & mirror cleaning</li>
+                                        <li>Clay bar treatment</li>
+                                        <li>Hand wax application</li>
+                                        <li>Premium spray ceramic sealant</li>
+                                        <li>Door jamb detailing & gloss inspection</li>
+                                    </ul>
+                                </div>
+                                <div class="v-col">
+                                    <h5>Luxury Interior Care</h5>
+                                    <ul>
+                                        <li>Complete cabin & trunk vacuuming</li>
+                                        <li>Leather seat cleaning & conditioning</li>
+                                        <li>Seat shampoo & extraction</li>
+                                        <li>Dashboard, console & panel detailing</li>
+                                        <li>Interior glass cleaning</li>
+                                        <li>Air vent & tight-crevice detailing</li>
+                                        <li>Floor mat cleaning & UV protectant</li>
+                                        <li>Premium fragrance & odor neutralizer</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 25px; border-top: 1px solid #222; padding-top: 20px;">
+                                <h5 style="color: var(--kw-red); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 12px; font-weight: 600;">Exclusive Black Label Treatments</h5>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem; color: var(--kw-light-gray);">
+                                    <div>&bull; Initial interior steam detailing</div>
+                                    <div>&bull; Carpet & upholstery extraction</div>
+                                    <div>&bull; Stain spot treatment during visits</div>
+                                    <div>&bull; Priority scheduling & VIP status</div>
+                                    <div>&bull; Personalized vehicle care profile</div>
+                                    <div>&bull; Before-and-after quality check</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- ADD-ONS SECTION -->
@@ -1004,35 +1098,47 @@
                     </div>
 
                     <div class="member-banner">
-                        <span>Month-to-Month Member Benefit</span>
                         <span>Get <strong class="text-red">25% OFF</strong> any add-on after your 5th service!</span>
+                        
+                        <!-- SINGLE INTERACTIVE 25% OFF TOGGLE SWITCH -->
+                        <label class="toggle-container">
+                            <span class="toggle-label">Show Member 25% Off</span>
+                            <div class="switch">
+                                <input type="checkbox" id="discountToggle" onchange="toggleMemberDiscount()">
+                                <span class="slider"></span>
+                            </div>
+                        </label>
                     </div>
 
                     <!-- HORIZONTAL ADD-ON GRID -->
                     <div class="horizontal-addons-grid">
                         <div class="h-addon-card">
                             <span class="h-addon-name">Pet Hair Removal</span>
-                            <span class="h-addon-price">$50 - $90</span>
+                            <span class="h-addon-price" data-base="50 - 90" data-min="50" data-max="90">$50 - $90</span>
                         </div>
                         <div class="h-addon-card">
                             <span class="h-addon-name">Seat Shampoo / Extraction</span>
-                            <span class="h-addon-price">$100 - $140</span>
+                            <span class="h-addon-price" data-base="100 - 140" data-min="100" data-max="140">$100 - $140</span>
                         </div>
                         <div class="h-addon-card">
                             <span class="h-addon-name">Engine Bay Cleaning</span>
-                            <span class="h-addon-price">$100 - $150</span>
+                            <span class="h-addon-price" data-base="100 - 150" data-min="100" data-max="150">$100 - $150</span>
                         </div>
                         <div class="h-addon-card">
                             <span class="h-addon-name">Excessive Soil Removal</span>
-                            <span class="h-addon-price">$70 - $100</span>
+                            <span class="h-addon-price" data-base="70 - 100" data-min="70" data-max="100">$70 - $100</span>
+                        </div>
+                        <div class="h-addon-card">
+                            <span class="h-addon-name">Paint Polishing</span>
+                            <span class="h-addon-price" data-base="175 - 350" data-min="175" data-max="350">$175 - $350</span>
                         </div>
                         <div class="h-addon-card">
                             <span class="h-addon-name">Paint Correction</span>
-                            <span class="h-addon-price">$250 - $450</span>
+                            <span class="h-addon-price" data-base="250 - 450" data-min="250" data-max="450">$250 - $450</span>
                         </div>
                         <div class="h-addon-card">
                             <span class="h-addon-name">Ceramic Coatings</span>
-                            <span class="h-addon-price">$400 - $600</span>
+                            <span class="h-addon-price" data-base="400 - 600" data-min="400" data-max="600">$400 - $600</span>
                         </div>
                     </div>
                 </div>
@@ -1049,7 +1155,6 @@
                 <p>Professional Fleet Washing & Mobile Detailing Standards</p>
             </div>
             <div class="video-container fade-in">
-                <!-- Replace the src URL with your own YouTube/Vimeo embed link -->
                 <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="KW Commercial LLC Fleet Detailing in Action" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
@@ -1139,13 +1244,12 @@
         // --- LIVE OPERATING HOURS LOGIC (Mon-Sat 5AM-6PM) ---
         function updateBusinessStatus() {
             const now = new Date();
-            const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-            const hour = now.getHours(); // 0 - 23 format
+            const day = now.getDay();
+            const hour = now.getHours();
 
             const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
 
-            // Monday (1) through Saturday (6), between 5 AM (5) and 6 PM (18)
             const isWorkingDay = (day >= 1 && day <= 6);
             const isWorkingHour = (hour >= 5 && hour < 18);
 
@@ -1158,7 +1262,6 @@
             }
         }
 
-        // Run on load and check every minute
         updateBusinessStatus();
         setInterval(updateBusinessStatus, 60000);
 
@@ -1170,12 +1273,30 @@
             mainNav.classList.toggle('active');
         });
 
-        // Close menu when a link is clicked
         mainNav.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 mainNav.classList.remove('active');
             });
         });
+
+        // --- MEMBER 25% OFF TOGGLE LOGIC ---
+        function toggleMemberDiscount() {
+            const isChecked = document.getElementById('discountToggle').checked;
+            const priceElements = document.querySelectorAll('.h-addon-price');
+
+            priceElements.forEach(el => {
+                const min = parseFloat(el.getAttribute('data-min'));
+                const max = parseFloat(el.getAttribute('data-max'));
+
+                if (isChecked) {
+                    const discountedMin = Math.round(min * 0.75);
+                    const discountedMax = Math.round(max * 0.75);
+                    el.innerText = `$${discountedMin} - $${discountedMax}`;
+                } else {
+                    el.innerText = `$${min} - $${max}`;
+                }
+            });
+        }
 
         // --- VEHICLE MODAL LOGIC ---
         const modal = document.getElementById('pricingModal');
@@ -1243,7 +1364,7 @@
             { name: "Miami", region: "Miami-Dade County", desc: "Full coverage across Miami-Dade for commercial fleets, exotics, and daily drivers.", isPrimary: false }
         ];
 
-        let activeCityIndex = 0; // Default to Saint Petersburg (Primary Hub)
+        let activeCityIndex = 0;
 
         function renderCities() {
             const grid = document.getElementById('city-grid');
@@ -1298,7 +1419,6 @@
             }
         }
 
-        // Initial render for territory selector
         renderCities();
         updateDetails();
 
