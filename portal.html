@@ -17,6 +17,79 @@
   <!-- POPUP TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
+  <!-- ORDER DETAILS OVERVIEW MODAL (Tap to Open) -->
+  <div id="orderDetailsModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
+        <div>
+          <span id="detailOrderIdBadge" class="bg-red-950/60 border border-red-800 text-red-400 text-xs font-bold px-2.5 py-1 rounded-md">Order #--</span>
+          <h3 id="detailClientName" class="text-xl font-black text-white mt-2">--</h3>
+          <p id="detailCreatedDate" class="text-[11px] text-gray-400">Created: --</p>
+        </div>
+        <button onclick="closeOrderDetailsModal()" class="text-gray-400 hover:text-white text-xl p-1">✕</button>
+      </div>
+
+      <!-- Schedule & Address Card -->
+      <div class="bg-zinc-900/80 p-4 rounded-xl border border-zinc-800 space-y-3">
+        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">📅 Schedule & Location</h4>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div><span class="text-gray-400 block">Service Date:</span><span id="detailServiceDate" class="font-bold text-red-500">--</span></div>
+          <div><span class="text-gray-400 block">Time Slot:</span><span id="detailTimeSlot" class="font-bold text-white">--</span></div>
+        </div>
+        <div class="pt-2 border-t border-zinc-800/60">
+          <span class="text-gray-400 text-xs block mb-1">Service Address:</span>
+          <p id="detailServiceAddress" class="text-xs font-semibold text-gray-200">--</p>
+          <a id="detailMapsUrl" href="#" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-red-500 hover:text-red-400 font-bold mt-2">
+            🗺️ Navigate via Google Maps
+          </a>
+        </div>
+      </div>
+
+      <!-- Package & Add-Ons Work Breakdown Card -->
+      <div class="bg-zinc-900/80 p-4 rounded-xl border border-zinc-800 space-y-3">
+        <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">🛠️ Work Order: Package & Add-Ons</h4>
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-gray-400">Vehicle Category:</span>
+          <span id="detailVehicleCategory" class="bg-zinc-800 border border-zinc-700 text-gray-200 px-2.5 py-0.5 rounded font-bold">--</span>
+        </div>
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-gray-400">Primary Service Package:</span>
+          <span id="detailServiceType" class="font-bold text-white">--</span>
+        </div>
+
+        <div class="pt-2 border-t border-zinc-800/60">
+          <span class="text-xs font-bold text-gray-300 block mb-2">Active Service Add-Ons:</span>
+          <div id="detailAddOnsList" class="flex flex-wrap gap-1.5">
+            <span class="text-xs text-gray-500 italic">No add-ons selected for this order.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial & Contact Card -->
+      <div class="bg-zinc-900/80 p-4 rounded-xl border border-zinc-800 space-y-2 text-xs">
+        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">📞 Client Contact & Payment</h4>
+        <div class="flex justify-between"><span class="text-gray-400">Phone:</span><a id="detailPhone" href="#" class="text-red-400 font-bold hover:underline">--</a></div>
+        <div class="flex justify-between"><span class="text-gray-400">Email:</span><span id="detailEmail" class="font-mono text-gray-300">--</span></div>
+        <div class="flex justify-between pt-2 border-t border-zinc-800/60"><span class="text-gray-400">Total Amount Paid:</span><span id="detailAmountPaid" class="font-extrabold text-green-400 text-sm">$0.00</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">Payment Method:</span><span id="detailPaymentMethod" class="font-semibold text-gray-300">--</span></div>
+      </div>
+
+      <!-- Signature Section -->
+      <div id="detailSignatureContainer" class="bg-zinc-900/80 p-4 rounded-xl border border-zinc-800 text-xs hidden">
+        <span class="text-gray-400 block mb-2 font-bold">Client Completion Signature:</span>
+        <div class="bg-white p-2 rounded-lg flex justify-center">
+          <img id="detailSignatureImg" src="" alt="Client Signature" class="h-20 object-contain">
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeOrderDetailsModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2.5 px-5 rounded-xl transition">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- DIGITAL SIGNATURE MODAL -->
   <div id="signatureModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
@@ -238,10 +311,8 @@
           </div>
         </div>
 
-        <!-- VISUAL WIDGET CHARTS GRID -->
+        <!-- CHARTS GRID -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          <!-- Monthly Revenue Trend (Bar/Line Chart) -->
           <div class="lg:col-span-2 bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
               <div>
@@ -255,7 +326,6 @@
             </div>
           </div>
 
-          <!-- Revenue Mix Breakdown (Doughnut Chart) -->
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
             <div class="mb-4">
               <h3 class="text-xs font-bold text-white uppercase tracking-wider">Revenue Stream Mix</h3>
@@ -265,13 +335,10 @@
               <canvas id="revenueMixChart"></canvas>
             </div>
           </div>
-
         </div>
 
         <!-- ADD-ONS PERFORMANCE CHART & TABLE -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          <!-- Widget: Individual Add-On Revenue Distribution Chart -->
           <div class="lg:col-span-1 bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
             <div class="mb-4">
               <h3 class="text-xs font-bold text-white uppercase tracking-wider">Top Add-On Revenue</h3>
@@ -282,7 +349,6 @@
             </div>
           </div>
 
-          <!-- Add-On Service Revenue Breakdown Table -->
           <div class="lg:col-span-2 bg-zinc-950 rounded-xl border border-zinc-800 p-4">
             <div class="flex justify-between items-center mb-3">
               <h3 class="text-xs font-bold text-amber-400 uppercase">Individual Add-On Revenue Breakdown</h3>
@@ -308,10 +374,8 @@
               </table>
             </div>
           </div>
-
         </div>
 
-        <!-- Base Revenue Breakdown Table -->
         <div class="bg-zinc-950 rounded-xl border border-zinc-800 p-4">
           <h3 class="text-xs font-bold text-gray-300 uppercase mb-3">Revenue Breakdown by Booking Type</h3>
           <div class="overflow-x-auto">
@@ -347,6 +411,9 @@
 
       <!-- ORDERS TABLE CONTAINER -->
       <div id="ordersTableSection" class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
+        <div class="p-3 bg-zinc-900/50 border-b border-zinc-800 text-gray-400 text-[11px] flex items-center justify-between">
+          <span>💡 <strong>Tip:</strong> Tap any order row or click <strong>🔍 View Order</strong> to expand full package & add-on details.</span>
+        </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead class="bg-zinc-900 border-b border-zinc-800 text-gray-400 uppercase tracking-wider font-semibold">
@@ -390,12 +457,10 @@
     let pendingCompletionBookingId = null;
     let pendingSignatureDataUrl = null;
 
-    // Chart.js Instances
     let monthlyRevenueChartInstance = null;
     let revenueMixChartInstance = null;
     let addOnsChartInstance = null;
 
-    // Standardized Add-On Pricing Map
     const ADD_ON_PRICING = [
       { key: 'pet hair', name: 'Pet Hair Removal', price: 70, range: '$50 - $90' },
       { key: 'seat', name: 'Seat Shampoo / Extraction', price: 120, range: '$100 - $140' },
@@ -426,6 +491,60 @@
       }
       initSignaturePad();
     });
+
+    function openOrderDetailsModal(bookingId) {
+      const b = allBookings.find(item => item.id === bookingId);
+      if (!b) return;
+
+      document.getElementById('detailOrderIdBadge').textContent = `Order #${b.id}`;
+      document.getElementById('detailClientName').textContent = b.client_name || 'Client';
+      document.getElementById('detailCreatedDate').textContent = `Created: ${new Date(b.created_at).toLocaleDateString()} ${new Date(b.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+      document.getElementById('detailServiceDate').textContent = b.service_date || 'N/A';
+      document.getElementById('detailTimeSlot').textContent = b.time_slot || 'Standard Window';
+      document.getElementById('detailServiceAddress').textContent = b.service_address || 'Address Not Provided';
+      
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.service_address || '')}`;
+      document.getElementById('detailMapsUrl').href = mapsUrl;
+
+      document.getElementById('detailVehicleCategory').textContent = b.vehicle_category || 'Vehicle';
+      document.getElementById('detailServiceType').textContent = b.service_type || 'Detailing Package';
+
+      // Parse and display add-ons badges
+      const addOnsContainer = document.getElementById('detailAddOnsList');
+      const addOnText = (b.add_ons || b.service_type || '').toLowerCase();
+      const matchedAddOns = ADD_ON_PRICING.filter(item => addOnText.includes(item.key));
+
+      if (matchedAddOns.length > 0) {
+        addOnsContainer.innerHTML = matchedAddOns.map(item => `
+          <span class="bg-amber-950/70 text-amber-300 border border-amber-700/80 px-2.5 py-1 rounded-md text-xs font-extrabold flex items-center gap-1 shadow-sm">
+            ✨ ${escapeHtml(item.name)} <span class="text-[10px] text-amber-400/80 font-normal">(${item.range})</span>
+          </span>
+        `).join('');
+      } else {
+        addOnsContainer.innerHTML = `<span class="text-xs text-gray-500 italic">No add-ons selected for this order.</span>`;
+      }
+
+      document.getElementById('detailPhone').textContent = b.phone || 'N/A';
+      document.getElementById('detailPhone').href = b.phone ? `tel:${b.phone}` : '#';
+      document.getElementById('detailEmail').textContent = b.email || 'N/A';
+      document.getElementById('detailAmountPaid').textContent = `$${parseFloat(b.amount_paid || 0).toFixed(2)}`;
+      document.getElementById('detailPaymentMethod').textContent = b.stripe_payment_id ? 'Stripe Online Checkout' : 'Pay in Person / Zelle';
+
+      // Signature Display
+      const signatureContainer = document.getElementById('detailSignatureContainer');
+      if (b.client_signature) {
+        document.getElementById('detailSignatureImg').src = b.client_signature;
+        signatureContainer.classList.remove('hidden');
+      } else {
+        signatureContainer.classList.add('hidden');
+      }
+
+      document.getElementById('orderDetailsModal').classList.remove('hidden');
+    }
+
+    function closeOrderDetailsModal() {
+      document.getElementById('orderDetailsModal').classList.add('hidden');
+    }
 
     function initSignaturePad() {
       const canvas = document.getElementById('signatureCanvas');
@@ -895,7 +1014,6 @@
       renderCharts();
     }
 
-    // Process & Extract Add-Ons Data
     function calculateAddOnsData() {
       const stats = {};
       ADD_ON_PRICING.forEach(item => {
@@ -923,7 +1041,6 @@
       return stats;
     }
 
-    // Render All Visual Widget Charts using Chart.js
     function renderCharts() {
       if (document.getElementById('revenueReportsSection').classList.contains('hidden')) return;
 
@@ -932,7 +1049,6 @@
       const monthlyRevenueData = [];
       const now = new Date();
 
-      // 1. Build Monthly Revenue Trend Data
       for (let i = timeframeMonths - 1; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const monthLabel = d.toLocaleString('default', { month: 'short', year: '2-digit' });
@@ -949,7 +1065,6 @@
         monthlyRevenueData.push(monthlyTotal);
       }
 
-      // Widget Chart 1: Bar Chart (Monthly Revenue)
       const ctx1 = document.getElementById('monthlyRevenueChart')?.getContext('2d');
       if (ctx1) {
         if (monthlyRevenueChartInstance) monthlyRevenueChartInstance.destroy();
@@ -997,7 +1112,6 @@
         });
       }
 
-      // 2. Build Revenue Mix Data (Doughnut Chart)
       let subTotal = 0;
       let oneTimeTotal = 0;
       allBookings.forEach(b => {
@@ -1008,7 +1122,6 @@
         else oneTimeTotal += amt;
       });
 
-      // Widget Chart 2: Doughnut Chart (Revenue Streams)
       const ctx2 = document.getElementById('revenueMixChart')?.getContext('2d');
       if (ctx2) {
         if (revenueMixChartInstance) revenueMixChartInstance.destroy();
@@ -1044,7 +1157,6 @@
         });
       }
 
-      // 3. Build Add-Ons Data & Render Table + Horizontal Bar Chart
       const addOnsData = calculateAddOnsData();
       renderAddOnsReport(addOnsData);
     }
@@ -1071,7 +1183,6 @@
         </tr>
       `).join('');
 
-      // Widget Chart 3: Horizontal Bar Chart (Add-On Revenue Distribution)
       const ctx3 = document.getElementById('addOnsChart')?.getContext('2d');
       if (ctx3) {
         if (addOnsChartInstance) addOnsChartInstance.destroy();
@@ -1280,14 +1391,17 @@
         const status = b.payment_status || 'Pending';
 
         return `
-          <tr class="hover:bg-zinc-900/50 transition ${isDiscountEligible ? 'bg-amber-950/20' : ''}">
+          <tr onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer hover:bg-zinc-900/80 transition group ${isDiscountEligible ? 'bg-amber-950/20' : ''}">
             <td class="p-3">
-              <span class="font-bold text-white">#${b.id}</span>
+              <div class="flex items-center gap-1.5">
+                <span class="font-bold text-white group-hover:text-red-400 transition">#${b.id}</span>
+                <span class="bg-zinc-900 border border-zinc-800 text-[9px] text-gray-400 px-1.5 py-0.5 rounded font-bold group-hover:border-red-600 transition">🔍 View Order</span>
+              </div>
               <div class="text-[10px] text-gray-500">${new Date(b.created_at).toLocaleDateString()} ${new Date(b.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
             </td>
             <td class="p-3">
               <div class="font-bold text-white">${escapeHtml(b.client_name)}</div>
-              <div class="text-gray-400"><a href="tel:${b.phone}" class="hover:underline text-red-400">${escapeHtml(b.phone)}</a></div>
+              <div class="text-gray-400" onclick="event.stopPropagation()"><a href="tel:${b.phone}" class="hover:underline text-red-400">${escapeHtml(b.phone)}</a></div>
               <div class="text-[10px] text-gray-500">${escapeHtml(b.email)}</div>
             </td>
             <td class="p-3">
@@ -1318,7 +1432,7 @@
             </td>
             <td class="p-3">
               <div class="text-gray-300 max-w-xs truncate mb-1">${escapeHtml(b.service_address || 'N/A')}</div>
-              <a href="${mapsUrl}" target="_blank" class="inline-flex items-center gap-1 text-[10px] text-red-500 hover:text-red-400 font-bold">
+              <a href="${mapsUrl}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-[10px] text-red-500 hover:text-red-400 font-bold">
                 🗺️ Navigate Maps
               </a>
             </td>
@@ -1326,7 +1440,7 @@
               <div class="font-bold text-green-400 text-sm">$${parseFloat(b.amount_paid || 0).toFixed(2)}</div>
               <div class="text-[9px] text-gray-500 truncate w-20" title="${b.stripe_payment_id || ''}">${b.stripe_payment_id ? 'Stripe Paid' : 'Pending'}</div>
             </td>
-            <td class="p-3 space-y-1">
+            <td class="p-3 space-y-1" onclick="event.stopPropagation()">
               <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(status)}">
                 <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
                 <option value="Paid & Confirmed" ${status === 'Paid & Confirmed' ? 'selected' : ''}>Paid & Confirmed</option>
