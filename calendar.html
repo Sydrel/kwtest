@@ -104,7 +104,7 @@
         <div id="calendarDaysGrid" class="grid grid-cols-7 gap-2 text-center"></div>
 
         <div class="mt-3 pt-3 border-t border-zinc-900 text-xs text-gray-400 text-center">
-          Selected Date: <span id="selectedDateDisplay" class="text-red-500 font-bold text-sm">None selected</span>
+          Selected Date : <span id="selectedDateDisplay" class="text-red-500 font-bold text-sm">None selected</span>
         </div>
       </div>
 
@@ -176,22 +176,24 @@
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Vehicle Category</label>
             <select id="vehicleCategory" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
-              <option value="Sedan / Coupe" data-price="150">Sedan / Coupe</option>
-              <option value="Small SUV / Crossover" data-price="180">Small SUV / Crossover</option>
-              <option value="Pickup Truck" data-price="200">Pickup Truck</option>
-              <option value="Large SUV" data-price="220">Large SUV</option>
+              <option value="Coupe" data-price="250">Coupe</option>
+              <option value="Sedan" data-price="290">Sedan</option>
+              <option value="Midsize SUV / Crossover" data-price="330">Midsize SUV / Crossover</option>
+              <option value="Pickup Truck" data-price="350">Pickup Truck</option>
+              <option value="Large SUV" data-price="350">Large SUV</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Package / Plan</label>
             <select id="serviceType" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
               <option value="Full Luxury Detail" data-price="0" data-is-subscription="false">Full Luxury Detail (Standard One-Time)</option>
-              <option value="KW Signature Wash 365" data-price="150" data-is-subscription="true">KW Signature Wash 365 ($150/mo Auto-Pay)</option>
-              <option value="365 AUTOCARE" data-price="350" data-is-subscription="true">365 AUTOCARE ($350/mo Auto-Pay)</option>
-              <option value="Signature Wash 365" data-price="449" data-is-subscription="true">Signature Wash 365 ($449/mo Auto-Pay)</option>
+              <option value="KW Signature Wash 365" data-price="220" data-is-subscription="true">KW Signature Wash 365 ($220/mo Auto-Pay)</option>
+              <option value="Black Label 365 ($449)" data-price="449" data-is-subscription="true">Black Label 365 ($449/mo Auto-Pay)</option>
+              <option value="Black Label 365 ($499)" data-price="499" data-is-subscription="true">Black Label 365 ($499/mo Auto-Pay)</option>
               <option value="Black Label 365 ($549)" data-price="549" data-is-subscription="true">Black Label 365 ($549/mo Auto-Pay)</option>
               <option value="Black Label 365 ($599)" data-price="599" data-is-subscription="true">Black Label 365 ($599/mo Auto-Pay)</option>
               <option value="Black Label 365 ($649)" data-price="649" data-is-subscription="true">Black Label 365 ($649/mo Auto-Pay)</option>
+              <option value="Black Label 365 ($700)" data-price="700" data-is-subscription="true">Black Label 365 ($700/mo Auto-Pay)</option>
             </select>
           </div>
         </div>
@@ -390,7 +392,7 @@
         </div>
 
         <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
-          Confirm Booking (<span id="payBtnAmount">$175</span>)
+          Confirm Booking (<span id="payBtnAmount">$275</span>)
         </button>
       </form>
       
@@ -566,7 +568,7 @@
       const basePriceSelect = document.getElementById('basePriceSelect');
       const payBtnAmount = document.getElementById('payBtnAmount');
       
-      let basePrice = 150;
+      let basePrice = 250;
       if (basePriceSelect && basePriceSelect.value) {
         basePrice = parseInt(basePriceSelect.value, 10);
       }
@@ -667,7 +669,7 @@
 
     // Initialize Stripe & Elements
     const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    const elements = stripe.elements({ mode: 'payment', amount: 17500, currency: 'usd' });
+    const elements = stripe.elements({ mode: 'payment', amount: 27500, currency: 'usd' });
 
     // Express Checkout
     const expressCheckoutElement = elements.create('expressCheckout', {
@@ -775,7 +777,7 @@
     let selectedDateStr = '';
     let currentMonthBookings = [];
 
-    // Expanded Calendar Renderer with Capacity Enforcement (DAILY_MAX_LIMIT = 4)
+    // Expanded Calendar Renderer with Capacity Enforcement (DAILY_MAX_LIMIT = 4) & DD:MM:YYYY Format
     async function renderCalendar() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
@@ -830,7 +832,10 @@
           dayDiv.addEventListener('click', () => {
             selectedDateStr = dateStr;
             document.getElementById('serviceDate').value = selectedDateStr;
-            document.getElementById('selectedDateDisplay').textContent = selectedDateStr;
+            
+            // Format to DD:MM:YYYY for display label
+            const formattedDisplayDate = `${formattedDay}:${formattedMonth}:${year}`;
+            document.getElementById('selectedDateDisplay').textContent = formattedDisplayDate;
 
             updateTimeSlotAvailability(selectedDateStr, currentMonthBookings);
             renderCalendar();
