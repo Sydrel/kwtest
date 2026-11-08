@@ -129,13 +129,13 @@
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Package / Plan</label>
             <select id="serviceType" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
-              <option value="Full Luxury Detail" data-price="0">Full Luxury Detail (Standard)</option>
-              <option value="KW Signature Wash 365" data-price="150">KW Signature Wash 365 ($150/mo)</option>
-              <option value="365 AUTOCARE" data-price="350">365 AUTOCARE ($350/mo)</option>
-              <option value="Signature Wash 365" data-price="449">Signature Wash 365 ($449/mo)</option>
-              <option value="Black Label 365 ($549)" data-price="549">Black Label 365 ($549/mo)</option>
-              <option value="Black Label 365 ($599)" data-price="599">Black Label 365 ($599/mo)</option>
-              <option value="Black Label 365 ($649)" data-price="649">Black Label 365 ($649/mo)</option>
+              <option value="Full Luxury Detail" data-price="0" data-is-subscription="false">Full Luxury Detail (Standard One-Time)</option>
+              <option value="KW Signature Wash 365" data-price="150" data-is-subscription="true">KW Signature Wash 365 ($150/mo Auto-Pay)</option>
+              <option value="365 AUTOCARE" data-price="350" data-is-subscription="true">365 AUTOCARE ($350/mo Auto-Pay)</option>
+              <option value="Signature Wash 365" data-price="449" data-is-subscription="true">Signature Wash 365 ($449/mo Auto-Pay)</option>
+              <option value="Black Label 365 ($549)" data-price="549" data-is-subscription="true">Black Label 365 ($549/mo Auto-Pay)</option>
+              <option value="Black Label 365 ($599)" data-price="599" data-is-subscription="true">Black Label 365 ($599/mo Auto-Pay)</option>
+              <option value="Black Label 365 ($649)" data-price="649" data-is-subscription="true">Black Label 365 ($649/mo Auto-Pay)</option>
             </select>
           </div>
         </div>
@@ -148,10 +148,21 @@
           </select>
         </div>
 
-        <!-- Permanent Setup Fee Mandatory Row (No Checkbox) -->
+        <!-- Permanent Setup Fee Mandatory Row -->
         <div class="p-3 bg-zinc-900/90 border border-red-900/50 rounded-lg flex items-center justify-between">
           <span class="text-xs font-semibold text-gray-200">Setup Fee <span class="text-red-500 font-bold">(Non-refundable)</span></span>
           <span class="text-xs font-bold text-red-500">+$100</span>
+        </div>
+
+        <!-- Auto-Pay Recurring Plan Disclaimer (Appears when a plan is selected) -->
+        <div id="subscriptionDisclaimer" class="p-3 bg-red-950/30 border border-red-800/60 rounded-lg text-xs text-gray-300 hidden space-y-1">
+          <p class="font-bold text-red-400 flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            Recurring Monthly Membership Agreement:
+          </p>
+          <p class="leading-relaxed text-[11px] text-gray-400">
+            By booking a monthly plan, you authorize <strong class="text-white">KW Commercial Fleet Washing & Mobile Detailing</strong> to bill your card today for month 1 + setup fee/add-ons, and automatically renew your subscription every 30 days. Cancel anytime.
+          </p>
         </div>
 
         <!-- Add-ons Selection Section (2 Price Options Per Service) -->
@@ -341,8 +352,6 @@
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Constant Mandatory Setup Fee
     const SETUP_FEE = 100;
 
     // Payment Option Tab Toggle Logic
@@ -424,23 +433,31 @@
       const basePriceSelect = document.getElementById('basePriceSelect');
       const vehicleSelect = document.getElementById('vehicleCategory');
       const serviceSelect = document.getElementById('serviceType');
+      const subscriptionDisclaimer = document.getElementById('subscriptionDisclaimer');
       if (!basePriceSelect || !vehicleSelect || !serviceSelect) return;
 
       basePriceSelect.innerHTML = '';
 
-      // Check if a membership plan is selected
       const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
       const planPrice = parseInt(selectedPlanOpt ? selectedPlanOpt.getAttribute('data-price') : 0, 10);
+      const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
+
+      // Show subscription disclaimer if a plan is chosen
+      if (subscriptionDisclaimer) {
+        if (isSubscription) {
+          subscriptionDisclaimer.classList.remove('hidden');
+        } else {
+          subscriptionDisclaimer.classList.add('hidden');
+        }
+      }
 
       if (planPrice > 0) {
-        // Membership plan option
         const opt = document.createElement('option');
         opt.value = planPrice;
         opt.setAttribute('data-source', 'plan');
-        opt.textContent = `$${planPrice} - Base Rate (${selectedPlanOpt.value})`;
+        opt.textContent = `$${planPrice} - Monthly Plan Base Rate (${selectedPlanOpt.value})`;
         basePriceSelect.appendChild(opt);
       } else {
-        // Vehicle Category options
         Array.from(vehicleSelect.options).forEach(vOpt => {
           const opt = document.createElement('option');
           const price = vOpt.getAttribute('data-price');
@@ -487,7 +504,6 @@
         addonTotal += parseInt(cb.getAttribute('data-price') || 0, 10);
       });
 
-      // Permanent $100 Setup Fee inclusion
       const finalTotal = basePrice + SETUP_FEE + addonTotal;
       if (payBtnAmount) {
         payBtnAmount.textContent = `$${finalTotal}`;
@@ -538,6 +554,9 @@
       }
 
       const totalAmount = calculateTotalPrice();
+      const serviceSelect = document.getElementById('serviceType');
+      const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
+      const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
 
       try {
         const response = await fetch(EDGE_FUNCTION_URL, {
@@ -546,7 +565,13 @@
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
           },
-          body: JSON.stringify({ amount: totalAmount * 100 })
+          body: JSON.stringify({
+            amount: totalAmount * 100,
+            isSubscription: isSubscription,
+            packageName: serviceSelect.value,
+            clientName: document.getElementById('clientName').value,
+            email: document.getElementById('email').value
+          })
         });
 
         const resData = await response.json();
@@ -562,7 +587,8 @@
         if (error) {
           document.getElementById('card-errors').textContent = error.message;
         } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-          await saveBookingToSupabase(totalAmount, paymentIntent.id, 'Paid & Confirmed (Express Wallet)');
+          const statusLabel = isSubscription ? 'Active Subscription (Express Wallet Monthly Auto-Pay)' : 'Paid & Confirmed (Express Wallet One-Time)';
+          await saveBookingToSupabase(totalAmount, paymentIntent.id, statusLabel, isSubscription);
         }
       } catch (err) {
         document.getElementById('card-errors').textContent = err.message;
@@ -663,16 +689,20 @@
       const cardErrors = document.getElementById('card-errors');
       submitBtn.disabled = true;
       const totalAmount = calculateTotalPrice();
+      const serviceSelect = document.getElementById('serviceType');
+      const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
+      const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
 
       // Path A: Pay in Person / Zelle
       if (currentPaymentMethod === 'in_person') {
         submitBtn.textContent = 'Saving Booking...';
-        await saveBookingToSupabase(totalAmount, 'IN_PERSON_ZELLE', 'Pending - Pay in Person / Zelle');
+        const statusLabel = isSubscription ? 'Active Subscription (Pending - Pay in Person / Zelle)' : 'Pending - Pay in Person / Zelle';
+        await saveBookingToSupabase(totalAmount, 'IN_PERSON_ZELLE', statusLabel, isSubscription);
         return;
       }
 
-      // Path B: Online Card Payment via Stripe
-      submitBtn.textContent = 'Processing Payment...';
+      // Path B: Online Card / Subscription Payment via Stripe
+      submitBtn.textContent = isSubscription ? 'Setting Up Monthly Auto-Pay...' : 'Processing Payment...';
       if (cardErrors) cardErrors.textContent = '';
 
       try {
@@ -682,7 +712,13 @@
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
           },
-          body: JSON.stringify({ amount: totalAmount * 100 })
+          body: JSON.stringify({
+            amount: totalAmount * 100,
+            isSubscription: isSubscription,
+            packageName: serviceSelect.value,
+            clientName: document.getElementById('clientName').value,
+            email: document.getElementById('email').value
+          })
         });
 
         const resData = await response.json();
@@ -707,7 +743,8 @@
         }
 
         if (paymentResult.paymentIntent.status === 'succeeded') {
-          await saveBookingToSupabase(totalAmount, paymentResult.paymentIntent.id, 'Paid & Confirmed (Stripe Card)');
+          const statusLabel = isSubscription ? 'Active Subscription (Stripe Monthly Auto-Pay)' : 'Paid & Confirmed (Stripe Card)';
+          await saveBookingToSupabase(totalAmount, paymentResult.paymentIntent.id, statusLabel, isSubscription);
         }
       } catch (err) {
         console.error(err);
@@ -718,7 +755,7 @@
     });
 
     // Write Record to Supabase
-    async function saveBookingToSupabase(amountPaid, stripePaymentId, paymentStatus) {
+    async function saveBookingToSupabase(amountPaid, stripePaymentId, paymentStatus, isSubscription) {
       const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
       const packageSelected = document.getElementById('serviceType').value;
 
@@ -737,7 +774,8 @@
           service_address: document.getElementById('serviceAddress').value,
           payment_status: paymentStatus,
           stripe_payment_id: stripePaymentId,
-          amount_paid: amountPaid
+          amount_paid: amountPaid,
+          is_subscription: isSubscription
         }])
         .select();
 
