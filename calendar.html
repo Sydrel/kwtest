@@ -137,31 +137,16 @@
           </div>
         </div>
 
-        <!-- Add-ons Selection Section -->
-        <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
-          <label class="block text-xs font-medium text-gray-300">Select Add-On Services</label>
-          <div class="grid grid-cols-2 gap-2 text-xs text-gray-300">
-            <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-              <input type="checkbox" class="addon-checkbox accent-red-600" value="Ceramic Coating" data-price="150" onchange="calculateTotalPrice()">
-              <span>Ceramic Coating (+$150)</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-              <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay Detailing" data-price="60" onchange="calculateTotalPrice()">
-              <span>Engine Bay (+$60)</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-              <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal" data-price="50" onchange="calculateTotalPrice()">
-              <span>Pet Hair Removal (+$50)</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-              <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction" data-price="200" onchange="calculateTotalPrice()">
-              <span>Paint Correction (+$200)</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700 col-span-2">
-              <input type="checkbox" class="addon-checkbox accent-red-600" value="Headlight Restoration" data-price="75" onchange="calculateTotalPrice()">
-              <span>Headlight Restoration (+$75)</span>
-            </label>
-          </div>
+        <!-- Add-ons Selection Section (Drop Box / Multi-Select) -->
+        <div>
+          <label class="block text-xs font-medium mb-1 text-gray-300">Add-On Services (Hold Ctrl / Cmd to select multiple)</label>
+          <select id="addonsSelect" multiple onchange="calculateTotalPrice()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-red-600 h-28 space-y-1">
+            <option value="Ceramic Coating" data-price="150" class="p-1 hover:bg-zinc-800 rounded">Ceramic Coating (+$150)</option>
+            <option value="Engine Bay Detailing" data-price="60" class="p-1 hover:bg-zinc-800 rounded">Engine Bay Detailing (+$60)</option>
+            <option value="Pet Hair Removal" data-price="50" class="p-1 hover:bg-zinc-800 rounded">Pet Hair Removal (+$50)</option>
+            <option value="Paint Correction" data-price="200" class="p-1 hover:bg-zinc-800 rounded">Paint Correction (+$200)</option>
+            <option value="Headlight Restoration" data-price="75" class="p-1 hover:bg-zinc-800 rounded">Headlight Restoration (+$75)</option>
+          </select>
         </div>
 
         <!-- Google Places Autocomplete Address Input -->
@@ -313,10 +298,11 @@
       window.addEventListener('load', initGoogleAutocomplete);
     }
 
-    // Dynamic Price Calculator
+    // Dynamic Price Calculator (Handles Drop Box Multi-Select Add-ons)
     function calculateTotalPrice() {
       const vehicleSelect = document.getElementById('vehicleCategory');
       const serviceSelect = document.getElementById('serviceType');
+      const addonsSelect = document.getElementById('addonsSelect');
       const payBtnAmount = document.getElementById('payBtnAmount');
       
       if (!vehicleSelect || !serviceSelect) return 250;
@@ -333,9 +319,11 @@
       }
 
       let addonTotal = 0;
-      document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
-        addonTotal += parseInt(cb.getAttribute('data-price') || 0, 10);
-      });
+      if (addonsSelect) {
+        Array.from(addonsSelect.selectedOptions).forEach(option => {
+          addonTotal += parseInt(option.getAttribute('data-price') || 0, 10);
+        });
+      }
 
       const finalTotal = basePrice + addonTotal;
       if (payBtnAmount) {
@@ -565,11 +553,12 @@
 
     // Write Record to Supabase
     async function saveBookingToSupabase(amountPaid, stripePaymentId, paymentStatus) {
-      const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
+      const addonsSelect = document.getElementById('addonsSelect');
+      const selectedAddons = addonsSelect ? Array.from(addonsSelect.selectedOptions).map(opt => opt.value).join(', ') : '';
       const packageSelected = document.getElementById('serviceType').value;
       const fullServiceDescription = selectedAddons ? `${packageSelected} + Addons: [${selectedAddons}]` : packageSelected;
 
-      const { error: dbError } = await supabaseClient
+      const { data, error: dbError } = await supabaseClient
         .from('bookings')
         .insert([{
           client_name: document.getElementById('clientName').value,
@@ -583,10 +572,15 @@
           payment_status: paymentStatus,
           stripe_payment_id: stripePaymentId,
           amount_paid: amountPaid
-        }]);
+        }])
+        .select();
 
       if (dbError) {
-        console.error('Supabase record failed:', dbError);
+        console.error('Supabase DB Insert Error:', dbError);
+        alert('Booking error: ' + dbError.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Retry Confirmation';
+        return;
       }
 
       document.getElementById('bookingForm').classList.add('hidden');
