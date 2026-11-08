@@ -9,13 +9,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Signature Pad Library -->
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+  <!-- Chart.js Engine for Visual Widgets -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-black text-white min-h-screen p-4 sm:p-6 font-sans flex flex-col justify-center items-center">
 
   <!-- POPUP TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
-  <!-- DIGITAL SIGNATURE MODAL (Step 1) -->
+  <!-- DIGITAL SIGNATURE MODAL -->
   <div id="signatureModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
       <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
@@ -49,7 +51,7 @@
     </div>
   </div>
 
-  <!-- COMPLETION CONFIRMATION MODAL (Step 2) -->
+  <!-- COMPLETION CONFIRMATION MODAL -->
   <div id="confirmationModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
       <div class="pb-3 border-b border-zinc-800 text-center">
@@ -192,13 +194,23 @@
         </div>
       </div>
 
-      <!-- REVENUE REPORTS TAB VIEW -->
+      <!-- REVENUE REPORTS TAB VIEW WITH VISUAL WIDGET CHARTS -->
       <div id="revenueReportsSection" class="hidden space-y-6">
-        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-          <h2 class="text-base font-bold text-white mb-1">Financial & Revenue Summary</h2>
-          <p class="text-xs text-gray-400">Track earnings, active subscriptions, and pending volume over time.</p>
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-base font-bold text-white mb-1">Financial & Revenue Visual Analytics</h2>
+            <p class="text-xs text-gray-400">Track visual revenue trajectories, monthly performance, and revenue mix.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-400">Chart Range:</span>
+            <select id="chartTimeframeSelect" onchange="renderCharts()" class="bg-black border border-zinc-800 text-xs text-white rounded-lg px-2 py-1 focus:outline-none focus:border-red-600">
+              <option value="6">Last 6 Months</option>
+              <option value="12" selected>Last 12 Months</option>
+            </select>
+          </div>
         </div>
 
+        <!-- Metric KPI Cards -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
             <p class="text-[11px] font-semibold text-gray-400 uppercase">This Week</p>
@@ -226,24 +238,37 @@
           </div>
         </div>
 
-        <!-- REVENUE METRIC CHART WIDGET -->
-        <div class="bg-zinc-950 rounded-xl border border-zinc-800 p-4 shadow-2xl">
-          <h3 class="text-xs font-bold text-gray-300 uppercase mb-3">Revenue Metrics Visualizer</h3>
-          <GenerateWidget type="inline_visualization" height="600px">
-          <skills>chart</skills>
+        <!-- VISUAL WIDGET CHARTS GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Widget 1: Monthly Revenue Trend (Bar/Line Chart) -->
+          <div class="lg:col-span-2 bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-4">
+              <div>
+                <h3 class="text-xs font-bold text-white uppercase tracking-wider">Monthly Revenue Trend</h3>
+                <p class="text-[11px] text-gray-500">Gross revenue generated per month</p>
+              </div>
+              <span class="bg-red-950/60 border border-red-800 text-red-400 text-[10px] px-2 py-0.5 rounded font-bold">Live Visual Widget</span>
+            </div>
+            <div class="h-64 relative w-full">
+              <canvas id="monthlyRevenueChart"></canvas>
+            </div>
+          </div>
 
-          **Idea:** Interactive bar and line chart displaying revenue breakdown by timeframe (Week, Month, Year, Total) and service category (Subscriptions vs One-Time Details).
-          **Visual type:** Multi-bar metric chart with hover analytics.
-          **Data specification:**
-          - **Data structure:** Category metric array with revenue values ($ USD) and order counts.
-          - **Initial values:** Week = 0, Month = 0, Year = 0, Total = 0, Subscriptions = 0, One-Time = 0.
-          - **Mapping:** Category names on X-axis, Dollar Amounts ($) on Y-axis.
-          **User controls:** Hover tooltips to view precise order counts and revenue figures.
-          **Interactivity:** Click series toggles to filter between recurring subscriptions and one-time detailing revenues.
-          **Animation:** Smooth animated bar growth on load.
-          </GenerateWidget>
+          <!-- Widget 2: Revenue Mix Breakdown (Doughnut Chart) -->
+          <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
+            <div class="mb-4">
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider">Revenue Stream Mix</h3>
+              <p class="text-[11px] text-gray-500">Subscriptions vs. One-Time Detailing Services</p>
+            </div>
+            <div class="h-64 relative w-full flex items-center justify-center">
+              <canvas id="revenueMixChart"></canvas>
+            </div>
+          </div>
+
         </div>
 
+        <!-- Revenue Breakdown Table -->
         <div class="bg-zinc-950 rounded-xl border border-zinc-800 p-4">
           <h3 class="text-xs font-bold text-gray-300 uppercase mb-3">Revenue Breakdown by Booking Type</h3>
           <div class="overflow-x-auto">
@@ -321,6 +346,10 @@
     let signaturePad = null;
     let pendingCompletionBookingId = null;
     let pendingSignatureDataUrl = null;
+
+    // Chart.js Widget Instances
+    let monthlyRevenueChartInstance = null;
+    let revenueMixChartInstance = null;
 
     window.addEventListener('click', initAudioContext, { once: true });
     window.addEventListener('touchstart', initAudioContext, { once: true });
@@ -807,6 +836,130 @@
       document.getElementById('reportOneTimeRev').textContent = `$${oneTimeOrdersRev.toFixed(2)}`;
       document.getElementById('reportTotalOrders').textContent = subOrdersCount + oneTimeOrdersCount;
       document.getElementById('reportCombinedRev').textContent = `$${revTotal.toFixed(2)}`;
+
+      renderCharts();
+    }
+
+    // Render Visual Widget Charts using Chart.js
+    function renderCharts() {
+      if (document.getElementById('revenueReportsSection').classList.contains('hidden')) return;
+
+      const timeframeMonths = parseInt(document.getElementById('chartTimeframeSelect')?.value || 12);
+      const labels = [];
+      const monthlyRevenueData = [];
+      const now = new Date();
+
+      // 1. Build Monthly Revenue Trend Data
+      for (let i = timeframeMonths - 1; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthLabel = d.toLocaleString('default', { month: 'short', year: '2-digit' });
+        labels.push(monthLabel);
+
+        let monthlyTotal = 0;
+        allBookings.forEach(b => {
+          if (b.payment_status === 'Cancelled') return;
+          const bDate = new Date(b.created_at || b.service_date);
+          if (bDate.getMonth() === d.getMonth() && bDate.getFullYear() === d.getFullYear()) {
+            monthlyTotal += parseFloat(b.amount_paid) || 0;
+          }
+        });
+        monthlyRevenueData.push(monthlyTotal);
+      }
+
+      // Widget Chart 1: Bar Chart
+      const ctx1 = document.getElementById('monthlyRevenueChart')?.getContext('2d');
+      if (ctx1) {
+        if (monthlyRevenueChartInstance) monthlyRevenueChartInstance.destroy();
+        
+        monthlyRevenueChartInstance = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Gross Revenue ($)',
+              data: monthlyRevenueData,
+              backgroundColor: 'rgba(239, 68, 68, 0.65)',
+              borderColor: 'rgba(239, 68, 68, 1)',
+              borderWidth: 2,
+              borderRadius: 6,
+              hoverBackgroundColor: 'rgba(239, 68, 68, 0.9)'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` Revenue: $${ctx.raw.toFixed(2)}`
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(39, 39, 42, 0.6)' },
+                ticks: { color: '#9ca3af', font: { size: 10 } }
+              },
+              y: {
+                grid: { color: 'rgba(39, 39, 42, 0.6)' },
+                ticks: {
+                  color: '#9ca3af',
+                  font: { size: 10 },
+                  callback: (value) => `$${value}`
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Build Revenue Mix Data (Doughnut Chart)
+      let subTotal = 0;
+      let oneTimeTotal = 0;
+      allBookings.forEach(b => {
+        if (b.payment_status === 'Cancelled') return;
+        const amt = parseFloat(b.amount_paid) || 0;
+        const isSub = b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'));
+        if (isSub) subTotal += amt;
+        else oneTimeTotal += amt;
+      });
+
+      // Widget Chart 2: Doughnut Chart
+      const ctx2 = document.getElementById('revenueMixChart')?.getContext('2d');
+      if (ctx2) {
+        if (revenueMixChartInstance) revenueMixChartInstance.destroy();
+
+        revenueMixChartInstance = new Chart(ctx2, {
+          type: 'doughnut',
+          data: {
+            labels: ['Subscriptions', 'One-Time Services'],
+            datasets: [{
+              data: [subTotal, oneTimeTotal],
+              backgroundColor: ['#c084fc', '#ef4444'],
+              borderColor: '#09090b',
+              borderWidth: 3,
+              hoverOffset: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: '#d4d4d8', font: { size: 11 }, boxWidth: 12 }
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` ${ctx.label}: $${ctx.raw.toFixed(2)}`
+                }
+              }
+            },
+            cutout: '70%'
+          }
+        });
+      }
     }
 
     function renderContactsTable() {
@@ -925,6 +1078,7 @@
         contactsSection.classList.add('hidden');
         reportsSection.classList.remove('hidden');
         document.getElementById('orderCount').textContent = `Report View Active`;
+        renderCharts();
         return;
       } else if (currentFilter === 'Contacts') {
         tableSection.classList.add('hidden');
