@@ -120,11 +120,10 @@
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Vehicle Category</label>
             <select id="vehicleCategory" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
-              <option value="Coupe" data-price="250">Coupe</option>
-              <option value="Sedan" data-price="290">Sedan</option>
-              <option value="Midsize SUV" data-price="330">Midsize SUV</option>
-              <option value="SUV" data-price="350">SUV</option>
-              <option value="Pick-Up Truck" data-price="350">Pick-Up Truck</option>
+              <option value="Sedan / Coupe" data-price="150">Sedan / Coupe</option>
+              <option value="Small SUV / Crossover" data-price="180">Small SUV / Crossover</option>
+              <option value="Pickup Truck" data-price="200">Pickup Truck</option>
+              <option value="Large SUV" data-price="220">Large SUV</option>
             </select>
           </div>
           <div>
@@ -318,7 +317,7 @@
         </div>
 
         <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
-          Confirm Booking (<span id="payBtnAmount">$250</span>)
+          Confirm Booking (<span id="payBtnAmount">$150</span>)
         </button>
       </form>
       
@@ -469,7 +468,7 @@
       const basePriceSelect = document.getElementById('basePriceSelect');
       const payBtnAmount = document.getElementById('payBtnAmount');
       
-      let basePrice = 250;
+      let basePrice = 150;
       if (basePriceSelect && basePriceSelect.value) {
         basePrice = parseInt(basePriceSelect.value, 10);
       }
@@ -508,7 +507,7 @@
 
     // Initialize Stripe & Elements
     const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    const elements = stripe.elements({ mode: 'payment', amount: 25000, currency: 'usd' });
+    const elements = stripe.elements({ mode: 'payment', amount: 15000, currency: 'usd' });
 
     // Express Checkout
     const expressCheckoutElement = elements.create('expressCheckout', {
