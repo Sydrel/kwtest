@@ -226,6 +226,24 @@
           </div>
         </div>
 
+        <!-- REVENUE METRIC CHART WIDGET -->
+        <div class="bg-zinc-950 rounded-xl border border-zinc-800 p-4 shadow-2xl">
+          <h3 class="text-xs font-bold text-gray-300 uppercase mb-3">Revenue Metrics Visualizer</h3>
+          <GenerateWidget type="inline_visualization" height="600px">
+          <skills>chart</skills>
+
+          **Idea:** Interactive bar and line chart displaying revenue breakdown by timeframe (Week, Month, Year, Total) and service category (Subscriptions vs One-Time Details).
+          **Visual type:** Multi-bar metric chart with hover analytics.
+          **Data specification:**
+          - **Data structure:** Category metric array with revenue values ($ USD) and order counts.
+          - **Initial values:** Week = 0, Month = 0, Year = 0, Total = 0, Subscriptions = 0, One-Time = 0.
+          - **Mapping:** Category names on X-axis, Dollar Amounts ($) on Y-axis.
+          **User controls:** Hover tooltips to view precise order counts and revenue figures.
+          **Interactivity:** Click series toggles to filter between recurring subscriptions and one-time detailing revenues.
+          **Animation:** Smooth animated bar growth on load.
+          </GenerateWidget>
+        </div>
+
         <div class="bg-zinc-950 rounded-xl border border-zinc-800 p-4">
           <h3 class="text-xs font-bold text-gray-300 uppercase mb-3">Revenue Breakdown by Booking Type</h3>
           <div class="overflow-x-auto">
@@ -606,7 +624,6 @@
           }
           allBookings.unshift(newBooking);
 
-          // Auto-Sync Contact to Supabase 'contacts' table
           await autoSaveContact(newBooking);
 
           buildClientUsageMap();
@@ -660,7 +677,6 @@
       }
     }
 
-    // Fetch separate Contacts Table from Supabase
     async function fetchContacts() {
       try {
         const { data, error } = await supabaseClient
@@ -676,7 +692,6 @@
       }
     }
 
-    // Automatically extract & upsert new contacts into separate 'contacts' table
     async function autoSaveContact(b) {
       if (!b.email && !b.phone && !b.client_name) return;
 
@@ -798,10 +813,8 @@
       const tbody = document.getElementById('contactsTableBody');
       const searchVal = (document.getElementById('contactSearchInput')?.value || '').toLowerCase().trim();
 
-      // Combine direct Supabase contacts table + dynamically extracted booking contacts
       const contactMap = {};
 
-      // 1. Process all bookings to extract client contact info
       allBookings.forEach(b => {
         const rawName = (b.client_name || '').trim();
         const nameParts = rawName.split(' ');
@@ -830,7 +843,6 @@
         }
       });
 
-      // 2. Merge records from dedicated Supabase 'contacts' table if present
       allContacts.forEach(c => {
         const key = (c.email || c.phone || `${c.first_name}_${c.last_name}`).toLowerCase().trim();
         if (!key) return;
@@ -908,7 +920,6 @@
       const reportsSection = document.getElementById('revenueReportsSection');
       const contactsSection = document.getElementById('contactsSection');
 
-      // Routing between Views
       if (currentFilter === 'Reports') {
         tableSection.classList.add('hidden');
         contactsSection.classList.add('hidden');
