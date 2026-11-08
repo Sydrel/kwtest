@@ -148,6 +148,12 @@
           </select>
         </div>
 
+        <!-- Permanent Setup Fee Mandatory Row (No Checkbox) -->
+        <div class="p-3 bg-zinc-900/90 border border-red-900/50 rounded-lg flex items-center justify-between">
+          <span class="text-xs font-semibold text-gray-200">Setup Fee <span class="text-red-500 font-bold">(Non-refundable)</span></span>
+          <span class="text-xs font-bold text-red-500">+$100</span>
+        </div>
+
         <!-- Add-ons Selection Section (2 Price Options Per Service) -->
         <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
           <label class="block text-xs font-medium text-gray-300">Select Add-On Services</label>
@@ -317,7 +323,7 @@
         </div>
 
         <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
-          Confirm Booking (<span id="payBtnAmount">$150</span>)
+          Confirm Booking (<span id="payBtnAmount">$250</span>)
         </button>
       </form>
       
@@ -335,6 +341,9 @@
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Constant Mandatory Setup Fee
+    const SETUP_FEE = 100;
 
     // Payment Option Tab Toggle Logic
     let currentPaymentMethod = 'online';
@@ -478,7 +487,8 @@
         addonTotal += parseInt(cb.getAttribute('data-price') || 0, 10);
       });
 
-      const finalTotal = basePrice + addonTotal;
+      // Permanent $100 Setup Fee inclusion
+      const finalTotal = basePrice + SETUP_FEE + addonTotal;
       if (payBtnAmount) {
         payBtnAmount.textContent = `$${finalTotal}`;
       }
@@ -507,7 +517,7 @@
 
     // Initialize Stripe & Elements
     const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    const elements = stripe.elements({ mode: 'payment', amount: 15000, currency: 'usd' });
+    const elements = stripe.elements({ mode: 'payment', amount: 25000, currency: 'usd' });
 
     // Express Checkout
     const expressCheckoutElement = elements.create('expressCheckout', {
@@ -711,7 +721,8 @@
     async function saveBookingToSupabase(amountPaid, stripePaymentId, paymentStatus) {
       const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
       const packageSelected = document.getElementById('serviceType').value;
-      const fullServiceDescription = selectedAddons ? `${packageSelected} + Addons: [${selectedAddons}]` : packageSelected;
+
+      const fullServiceDescription = `${packageSelected} + $100 Setup Fee` + (selectedAddons ? ` + Addons: [${selectedAddons}]` : '');
 
       const { data, error: dbError } = await supabaseClient
         .from('bookings')
