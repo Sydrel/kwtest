@@ -28,7 +28,6 @@
 
       <p class="text-xs text-gray-300">Have the client sign below to acknowledge completion of service.</p>
 
-      <!-- Canvas Signature Pad -->
       <div class="border border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative">
         <canvas id="signatureCanvas" class="w-full h-44 cursor-crosshair"></canvas>
         <span class="absolute bottom-2 right-3 text-[10px] text-zinc-400 pointer-events-none">Sign Above</span>
@@ -145,26 +144,61 @@
 
     <main class="space-y-6">
 
-      <!-- Filter / Navigation Bar -->
+      <!-- Navigation & Filter Bar -->
       <div class="flex flex-wrap gap-2 items-center justify-between bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
         <div class="flex flex-wrap gap-2">
           <button id="filterUpcoming" onclick="filterStatus('Upcoming')" class="filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition">Upcoming Orders</button>
           <button id="filterPending" onclick="filterStatus('Pending')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-yellow-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Pending Only</button>
           <button id="filterSub" onclick="filterStatus('Subscription')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-purple-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Subscriptions Only</button>
           <button id="filterCompleted" onclick="filterStatus('Completed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-green-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Completed</button>
+          <button id="filterContacts" onclick="filterStatus('Contacts')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-cyan-400 font-bold py-1.5 px-3 rounded-lg border border-zinc-800 transition">📇 Client Contacts</button>
           <button id="filterReports" onclick="filterStatus('Reports')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-blue-400 font-bold py-1.5 px-3 rounded-lg border border-zinc-800 transition">📊 Revenue Reports</button>
         </div>
-        <span id="orderCount" class="text-gray-400 font-medium">Loading orders...</span>
+        <span id="orderCount" class="text-gray-400 font-medium">Loading...</span>
       </div>
 
-      <!-- REVENUE REPORTS TAB VIEW (Hidden by default, shown when Revenue Reports is clicked) -->
+      <!-- CLIENT CONTACTS TAB VIEW -->
+      <div id="contactsSection" class="hidden space-y-4">
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h2 class="text-base font-bold text-white mb-1">Client Directory & Contact Records</h2>
+            <p class="text-xs text-gray-400">Track client names, contact info, and home service addresses saved in Supabase.</p>
+          </div>
+          <input type="text" id="contactSearchInput" oninput="renderContactsTable()" placeholder="🔍 Search name, email, phone, or address..."
+            class="bg-black border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white w-full md:w-72 focus:outline-none focus:border-cyan-500 transition">
+        </div>
+
+        <div class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-zinc-900 border-b border-zinc-800 text-gray-400 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="p-3">First Name</th>
+                  <th class="p-3">Last Name</th>
+                  <th class="p-3">Phone Number</th>
+                  <th class="p-3">Email Address</th>
+                  <th class="p-3">Home Address</th>
+                  <th class="p-3">Total Services</th>
+                  <th class="p-3">Quick Actions</th>
+                </tr>
+              </thead>
+              <tbody id="contactsTableBody" class="divide-y divide-zinc-900">
+                <tr>
+                  <td colspan="7" class="p-6 text-center text-gray-500">Loading client contacts...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVENUE REPORTS TAB VIEW -->
       <div id="revenueReportsSection" class="hidden space-y-6">
         <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
           <h2 class="text-base font-bold text-white mb-1">Financial & Revenue Summary</h2>
           <p class="text-xs text-gray-400">Track earnings, active subscriptions, and pending volume over time.</p>
         </div>
 
-        <!-- Metric KPI Cards -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
             <p class="text-[11px] font-semibold text-gray-400 uppercase">This Week</p>
@@ -192,7 +226,6 @@
           </div>
         </div>
 
-        <!-- Revenue Breakdown Table -->
         <div class="bg-zinc-950 rounded-xl border border-zinc-800 p-4">
           <h3 class="text-xs font-bold text-gray-300 uppercase mb-3">Revenue Breakdown by Booking Type</h3>
           <div class="overflow-x-auto">
@@ -226,7 +259,7 @@
         </div>
       </div>
 
-      <!-- ORDERS TABLE CONTAINER (Shown for Upcoming, Pending, Subscription, and Completed views) -->
+      <!-- ORDERS TABLE CONTAINER -->
       <div id="ordersTableSection" class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
@@ -260,6 +293,7 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let allBookings = [];
+    let allContacts = [];
     let clientUsageMap = {};
     let currentFilter = 'Upcoming';
     let autoRefreshTimer = null;
@@ -554,6 +588,7 @@
       document.getElementById('portalDashboard').classList.remove('hidden');
 
       fetchBookings();
+      fetchContacts();
       setupRealtimeSubscription();
 
       if (!autoRefreshTimer) {
@@ -564,12 +599,16 @@
     function setupRealtimeSubscription() {
       supabaseClient
         .channel('public:bookings')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bookings' }, payload => {
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bookings' }, async payload => {
           const newBooking = payload.new;
           if (!newBooking.payment_status) {
             newBooking.payment_status = 'Pending';
           }
           allBookings.unshift(newBooking);
+
+          // Auto-Sync Contact to Supabase 'contacts' table
+          await autoSaveContact(newBooking);
+
           buildClientUsageMap();
           calculateAnalytics();
           renderTable();
@@ -618,6 +657,48 @@
               Failed to load bookings. Check Supabase RLS policies or database table permissions.
             </td>
           </tr>`;
+      }
+    }
+
+    // Fetch separate Contacts Table from Supabase
+    async function fetchContacts() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('contacts')
+          .select('*')
+          .order('id', { ascending: false });
+
+        if (!error && data) {
+          allContacts = data;
+        }
+      } catch (err) {
+        console.warn('Contacts table load issue:', err);
+      }
+    }
+
+    // Automatically extract & upsert new contacts into separate 'contacts' table
+    async function autoSaveContact(b) {
+      if (!b.email && !b.phone && !b.client_name) return;
+
+      const rawName = (b.client_name || '').trim();
+      const nameParts = rawName.split(' ');
+      const firstName = nameParts[0] || 'Client';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      const contactPayload = {
+        first_name: firstName,
+        last_name: lastName,
+        phone: b.phone || '',
+        email: b.email || '',
+        home_address: b.service_address || '',
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        await supabaseClient.from('contacts').upsert(contactPayload, { onConflict: 'email' });
+        fetchContacts();
+      } catch (e) {
+        console.warn('Auto contact save exception:', e);
       }
     }
 
@@ -698,7 +779,6 @@
         }
       });
 
-      // Update Top KPI Cards inside Revenue Reports
       document.getElementById('revWeek').textContent = `$${revWeek.toFixed(2)}`;
       document.getElementById('revMonth').textContent = `$${revMonth.toFixed(2)}`;
       document.getElementById('revYear').textContent = `$${revYear.toFixed(2)}`;
@@ -706,7 +786,6 @@
       document.getElementById('subCount').textContent = subscriptionsCount;
       document.getElementById('pendingCount').textContent = pendingCount;
 
-      // Update Breakdown Table inside Revenue Reports
       document.getElementById('reportSubOrders').textContent = subOrdersCount;
       document.getElementById('reportSubRev').textContent = `$${subOrdersRev.toFixed(2)}`;
       document.getElementById('reportOneTimeOrders').textContent = oneTimeOrdersCount;
@@ -715,19 +794,136 @@
       document.getElementById('reportCombinedRev').textContent = `$${revTotal.toFixed(2)}`;
     }
 
+    function renderContactsTable() {
+      const tbody = document.getElementById('contactsTableBody');
+      const searchVal = (document.getElementById('contactSearchInput')?.value || '').toLowerCase().trim();
+
+      // Combine direct Supabase contacts table + dynamically extracted booking contacts
+      const contactMap = {};
+
+      // 1. Process all bookings to extract client contact info
+      allBookings.forEach(b => {
+        const rawName = (b.client_name || '').trim();
+        const nameParts = rawName.split(' ');
+        const first = nameParts[0] || 'Client';
+        const last = nameParts.slice(1).join(' ') || '';
+        const key = (b.email || b.phone || rawName).toLowerCase().trim();
+
+        if (!key) return;
+
+        if (!contactMap[key]) {
+          contactMap[key] = {
+            firstName: first,
+            lastName: last,
+            phone: b.phone || 'N/A',
+            email: b.email || 'N/A',
+            address: b.service_address || 'N/A',
+            serviceCount: 0
+          };
+        }
+
+        if (b.payment_status !== 'Cancelled') {
+          contactMap[key].serviceCount += 1;
+        }
+        if (b.service_address && contactMap[key].address === 'N/A') {
+          contactMap[key].address = b.service_address;
+        }
+      });
+
+      // 2. Merge records from dedicated Supabase 'contacts' table if present
+      allContacts.forEach(c => {
+        const key = (c.email || c.phone || `${c.first_name}_${c.last_name}`).toLowerCase().trim();
+        if (!key) return;
+
+        if (!contactMap[key]) {
+          contactMap[key] = {
+            firstName: c.first_name || 'Client',
+            lastName: c.last_name || '',
+            phone: c.phone || 'N/A',
+            email: c.email || 'N/A',
+            address: c.home_address || 'N/A',
+            serviceCount: 0
+          };
+        } else {
+          if (c.first_name) contactMap[key].firstName = c.first_name;
+          if (c.last_name) contactMap[key].lastName = c.last_name;
+          if (c.home_address) contactMap[key].address = c.home_address;
+        }
+      });
+
+      let contactList = Object.values(contactMap);
+
+      if (searchVal) {
+        contactList = contactList.filter(c => 
+          c.firstName.toLowerCase().includes(searchVal) ||
+          c.lastName.toLowerCase().includes(searchVal) ||
+          c.phone.toLowerCase().includes(searchVal) ||
+          c.email.toLowerCase().includes(searchVal) ||
+          c.address.toLowerCase().includes(searchVal)
+        );
+      }
+
+      document.getElementById('orderCount').textContent = `Total Contacts: ${contactList.length}`;
+
+      if (contactList.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="p-6 text-center text-gray-500">No client contact records found.</td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = contactList.map(c => {
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address || '')}`;
+        return `
+          <tr class="hover:bg-zinc-900/50 transition">
+            <td class="p-3 font-bold text-white">${escapeHtml(c.firstName)}</td>
+            <td class="p-3 font-semibold text-gray-200">${escapeHtml(c.lastName || '-')}</td>
+            <td class="p-3">
+              <a href="tel:${c.phone}" class="text-red-400 hover:underline font-semibold">${escapeHtml(c.phone)}</a>
+            </td>
+            <td class="p-3 text-gray-400 font-mono text-[11px]">${escapeHtml(c.email)}</td>
+            <td class="p-3">
+              <div class="text-gray-300 max-w-xs truncate mb-1">${escapeHtml(c.address)}</div>
+              ${c.address !== 'N/A' ? `<a href="${mapsUrl}" target="_blank" class="text-[10px] text-red-500 hover:text-red-400 font-bold">🗺️ Open Map</a>` : ''}
+            </td>
+            <td class="p-3">
+              <span class="bg-zinc-900 border border-zinc-800 text-gray-300 px-2 py-0.5 rounded text-[11px] font-bold">
+                ${c.serviceCount} Order(s)
+              </span>
+            </td>
+            <td class="p-3">
+              <a href="mailto:${c.email}" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-gray-300 px-2 py-1 rounded text-[10px] font-bold">
+                ✉️ Email Client
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
     function renderTable() {
       const tbody = document.getElementById('dispatchTableBody');
       const tableSection = document.getElementById('ordersTableSection');
       const reportsSection = document.getElementById('revenueReportsSection');
+      const contactsSection = document.getElementById('contactsSection');
 
-      // Toggle between Revenue Reports View and Table Views
+      // Routing between Views
       if (currentFilter === 'Reports') {
         tableSection.classList.add('hidden');
+        contactsSection.classList.add('hidden');
         reportsSection.classList.remove('hidden');
         document.getElementById('orderCount').textContent = `Report View Active`;
         return;
+      } else if (currentFilter === 'Contacts') {
+        tableSection.classList.add('hidden');
+        reportsSection.classList.add('hidden');
+        contactsSection.classList.remove('hidden');
+        renderContactsTable();
+        return;
       } else {
         reportsSection.classList.add('hidden');
+        contactsSection.classList.add('hidden');
         tableSection.classList.remove('hidden');
       }
 
@@ -854,6 +1050,8 @@
         document.getElementById('filterSub').className = 'filter-btn bg-purple-900/60 text-purple-300 border border-purple-700 font-bold py-1.5 px-3 rounded-lg transition';
       } else if (status === 'Completed') {
         document.getElementById('filterCompleted').className = 'filter-btn bg-green-900/60 text-green-300 border border-green-700 font-bold py-1.5 px-3 rounded-lg transition';
+      } else if (status === 'Contacts') {
+        document.getElementById('filterContacts').className = 'filter-btn bg-cyan-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
       } else if (status === 'Reports') {
         document.getElementById('filterReports').className = 'filter-btn bg-blue-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
       }
