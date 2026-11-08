@@ -81,7 +81,7 @@
             </span>
             <div class="space-y-1">
               <div class="flex justify-between"><span class="text-zinc-500">Total Charged:</span><span id="detailAmountPaid" class="font-extrabold text-green-400">$0.00</span></div>
-              <div class="flex justify-between"><span class="text-zinc-500">Payment Type:</span><span id="detailPaymentMethod" class="font-semibold text-zinc-300">--</span></div>
+              <div class="flex justify-between"><span class="text-zinc-500">Payment Type:</span><span id="detailPaymentMethod" class="font-bold text-amber-400">--</span></div>
             </div>
           </div>
 
@@ -536,18 +536,20 @@
       initSignaturePad();
     });
 
-    // Helper function to resolve payment label across portal
-    function getPaymentMethodLabel(booking) {
-      if (booking.stripe_payment_id) {
+    // Enhanced helper function to accurately detect Cash / Zelle vs Stripe
+    function getPaymentMethodLabel(b) {
+      const pStatus = (b.payment_status || '').toLowerCase();
+      const pMethod = (b.payment_method || '').toLowerCase();
+      
+      if (pStatus.includes('cash_zelle') || pStatus.includes('cash') || pStatus.includes('zelle') ||
+          pMethod.includes('zelle') || pMethod.includes('cash') || pMethod.includes('person')) {
+        return 'Cash / Zelle';
+      }
+
+      if (b.stripe_payment_id && b.stripe_payment_id.trim() !== '') {
         return 'Stripe Online Checkout';
       }
-      if (booking.payment_method) {
-        const pm = booking.payment_method.toLowerCase();
-        if (pm.includes('zelle') || pm.includes('cash') || pm.includes('person')) {
-          return 'Cash / Zelle';
-        }
-        return booking.payment_method;
-      }
+
       return 'Cash / Zelle';
     }
 
@@ -589,8 +591,11 @@
       document.getElementById('detailEmail').textContent = b.email || 'N/A';
       document.getElementById('detailAmountPaid').textContent = `$${parseFloat(b.amount_paid || 0).toFixed(2)}`;
       
-      // Updated payment method text logic
-      document.getElementById('detailPaymentMethod').textContent = getPaymentMethodLabel(b);
+      // Updated payment text
+      const pmLabel = getPaymentMethodLabel(b);
+      const pmEl = document.getElementById('detailPaymentMethod');
+      pmEl.textContent = pmLabel;
+      pmEl.className = pmLabel === 'Cash / Zelle' ? 'font-bold text-amber-400' : 'font-semibold text-green-400';
 
       const signatureContainer = document.getElementById('detailSignatureContainer');
       if (b.client_signature) {
@@ -1451,6 +1456,7 @@
         const hasSignature = !!b.client_signature;
         const status = b.payment_status || 'Pending';
         const paymentLabel = getPaymentMethodLabel(b);
+        const isCashZelle = paymentLabel === 'Cash / Zelle';
 
         return `
           <tr onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer hover:bg-zinc-900/80 transition group ${isDiscountEligible ? 'bg-amber-950/20' : ''}">
@@ -1500,7 +1506,9 @@
             </td>
             <td class="p-3">
               <div class="font-bold text-green-400 text-sm">$${parseFloat(b.amount_paid || 0).toFixed(2)}</div>
-              <div class="text-[9px] ${b.stripe_payment_id ? 'text-gray-400 font-semibold' : 'text-amber-400 font-bold'} truncate w-24" title="${paymentLabel}">${paymentLabel}</div>
+              <div class="text-[9px] ${isCashZelle ? 'text-amber-400 font-bold' : 'text-gray-400 font-semibold'} truncate w-24" title="${paymentLabel}">
+                ${paymentLabel}
+              </div>
             </td>
             <td class="p-3 space-y-1" onclick="event.stopPropagation()">
               <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(status)}">
