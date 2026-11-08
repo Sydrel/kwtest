@@ -7,11 +7,48 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS Client Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Signature Pad Library for clean digital signatures -->
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 </head>
 <body class="bg-black text-white min-h-screen p-4 sm:p-6 font-sans flex flex-col justify-center items-center">
 
   <!-- POPUP TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+  <!-- DIGITAL SIGNATURE MODAL -->
+  <div id="signatureModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
+        <div>
+          <h3 class="text-lg font-bold text-white">Complete Order & Client Signature</h3>
+          <p id="modalClientInfo" class="text-xs text-gray-400">Order # -- | Client</p>
+        </div>
+        <button onclick="closeSignatureModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <p class="text-xs text-gray-300">Please have the client sign below to acknowledge job completion and authorize automated receipt delivery.</p>
+
+      <!-- Canvas Signature Pad -->
+      <div class="border border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative">
+        <canvas id="signatureCanvas" class="w-full h-44 cursor-crosshair"></canvas>
+        <span class="absolute bottom-2 right-3 text-[10px] text-zinc-400 pointer-events-none">Sign Above</span>
+      </div>
+
+      <div class="flex justify-between items-center pt-2">
+        <button onclick="clearSignature()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-400 font-bold py-2 px-3 rounded-lg transition">
+          🗑️ Clear Signature
+        </button>
+        <div class="flex gap-2">
+          <button onclick="closeSignatureModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2 px-4 rounded-lg transition">
+            Cancel
+          </button>
+          <button onclick="saveSignatureAndComplete()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-lg shadow-red-900/30">
+            Sign & Send Email 📩
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- LOGIN SCREEN CONTAINER -->
   <div id="loginScreen" class="w-full max-w-md bg-zinc-950 p-8 rounded-2xl border border-zinc-800 shadow-2xl my-auto">
@@ -47,7 +84,7 @@
     </form>
   </div>
 
-  <!-- MAIN PORTAL DASHBOARD (Hidden until authenticated) -->
+  <!-- MAIN PORTAL DASHBOARD -->
   <div id="portalDashboard" class="w-full max-w-7xl mx-auto hidden space-y-6">
 
     <!-- Header Section -->
@@ -77,7 +114,7 @@
     </header>
 
     <main class="space-y-6">
-      <!-- KPI Metric Cards / Analytics Dashboard -->
+      <!-- KPI Metric Cards -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
           <p class="text-[11px] font-semibold text-gray-400 uppercase">This Week</p>
@@ -130,7 +167,7 @@
                 <th class="p-3">Type</th>
                 <th class="p-3">Service Address</th>
                 <th class="p-3">Amount</th>
-                <th class="p-3">Status</th>
+                <th class="p-3">Status / Signature</th>
               </tr>
             </thead>
             <tbody id="dispatchTableBody" class="divide-y divide-zinc-900">
@@ -150,18 +187,151 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let allBookings = [];
-    let clientUsageMap = {}; // Key: email/phone, Value: count of bookings
+    let clientUsageMap = {};
     let currentFilter = 'All';
     let autoRefreshTimer = null;
     let audioEnabled = false;
     let initialLoadComplete = false;
+    
+    let signaturePad = null;
+    let pendingCompletionBookingId = null;
 
     window.addEventListener('DOMContentLoaded', () => {
       const isAuthenticated = sessionStorage.getItem('kw_auth') === 'true';
       if (isAuthenticated) {
         showDashboard();
       }
+      initSignaturePad();
     });
+
+    function initSignaturePad() {
+      const canvas = document.getElementById('signatureCanvas');
+      signaturePad = new SignaturePad(canvas, {
+        backgroundColor: 'rgb(255, 255, 255)',
+        penColor: 'rgb(0, 0, 0)'
+      });
+    }
+
+    function resizeCanvas() {
+      const canvas = document.getElementById('signatureCanvas');
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+      if (signaturePad) signaturePad.clear();
+    }
+
+    function openSignatureModal(bookingId) {
+      pendingCompletionBookingId = bookingId;
+      const booking = allBookings.find(b => b.id === bookingId);
+      if (booking) {
+        document.getElementById('modalClientInfo').textContent = `Order #${booking.id} | ${booking.client_name || 'Client'}`;
+      }
+      document.getElementById('signatureModal').classList.remove('hidden');
+      setTimeout(resizeCanvas, 100);
+    }
+
+    function closeSignatureModal() {
+      document.getElementById('signatureModal').classList.add('hidden');
+      if (signaturePad) signaturePad.clear();
+      pendingCompletionBookingId = null;
+      renderTable(); // Reset dropdown if cancelled
+    }
+
+    function clearSignature() {
+      if (signaturePad) signaturePad.clear();
+    }
+
+    async function saveSignatureAndComplete() {
+      if (signaturePad.isEmpty()) {
+        alert('Please collect client signature before completing the job.');
+        return;
+      }
+
+      const signatureDataUrl = signaturePad.toDataURL(); // Base64 signature image
+      const booking = allBookings.find(b => b.id === pendingCompletionBookingId);
+
+      try {
+        // 1. Update Supabase record with signature and status
+        const { error } = await supabaseClient
+          .from('bookings')
+          .update({ 
+            payment_status: 'Completed',
+            client_signature: signatureDataUrl,
+            completed_at: new Date().toISOString()
+          })
+          .eq('id', pendingCompletionBookingId);
+
+        if (error) throw error;
+
+        // Update local object state
+        if (booking) {
+          booking.payment_status = 'Completed';
+          booking.client_signature = signatureDataUrl;
+        }
+
+        // 2. Trigger Completion Email via Supabase Function / API
+        await sendJobCompletedEmail(booking, signatureDataUrl);
+
+        showToast('Job Completed & Email Sent 📩', `Completion receipt emailed to ${booking?.email || 'client'}.`);
+        closeSignatureModal();
+        buildClientUsageMap();
+        calculateAnalytics();
+        renderTable();
+      } catch (err) {
+        alert('Failed to complete order: ' + err.message);
+      }
+    }
+
+    // Call your Supabase Edge Function to dispatch the receipt email
+    async function sendJobCompletedEmail(booking, signatureImg) {
+      try {
+        await fetch(`${SUPABASE_URL}/functions/v1/send-completion-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({
+            bookingId: booking.id,
+            clientName: booking.client_name,
+            clientEmail: booking.email,
+            serviceType: booking.service_type,
+            amountPaid: booking.amount_paid,
+            signature: signatureImg
+          })
+        });
+      } catch (err) {
+        console.warn('Completion email request issue:', err);
+      }
+    }
+
+    function handleStatusDropdownChange(id, value) {
+      if (value === 'Completed') {
+        openSignatureModal(id);
+      } else {
+        updateStatus(id, value);
+      }
+    }
+
+    async function updateStatus(id, newStatus) {
+      try {
+        const { error } = await supabaseClient
+          .from('bookings')
+          .update({ payment_status: newStatus })
+          .eq('id', id);
+
+        if (error) throw error;
+        const item = allBookings.find(b => b.id === id);
+        if (item) item.payment_status = newStatus;
+        
+        buildClientUsageMap();
+        calculateAnalytics();
+        renderTable();
+      } catch (err) {
+        alert('Failed to update status: ' + err.message);
+      }
+    }
 
     function playNotificationSound() {
       if (!audioEnabled) return;
@@ -346,10 +516,8 @@
       }
     }
 
-    // Build chronological usage count per client (by email or phone)
     function buildClientUsageMap() {
       clientUsageMap = {};
-      // Process chronologically (oldest to newest) to get accurate sequence numbers
       const sortedChronological = [...allBookings].reverse();
 
       sortedChronological.forEach(b => {
@@ -446,13 +614,11 @@
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.service_address || '')}`;
         const isSub = b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'));
         
-        // Lookup Client Usage Sequence Number
         const clientKey = (b.email || b.phone || b.client_name || '').toLowerCase().trim();
         const clientStats = clientUsageMap[clientKey];
         const serviceNum = clientStats && clientStats.bookingSequence[b.id] ? clientStats.bookingSequence[b.id] : 1;
-        
-        // 5th Service (or multiples of 5: 5th, 10th, 15th...) qualifies for 25% Off Add-Ons
         const isDiscountEligible = serviceNum > 0 && serviceNum % 5 === 0;
+        const hasSignature = !!b.client_signature;
 
         return `
           <tr class="hover:bg-zinc-900/50 transition ${isDiscountEligible ? 'bg-amber-950/20' : ''}">
@@ -501,37 +667,19 @@
               <div class="font-bold text-green-400 text-sm">$${parseFloat(b.amount_paid || 0).toFixed(2)}</div>
               <div class="text-[9px] text-gray-500 truncate w-20" title="${b.stripe_payment_id || ''}">${b.stripe_payment_id ? 'Stripe Paid' : 'Pending'}</div>
             </td>
-            <td class="p-3">
-              <select onchange="updateStatus(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(b.payment_status)}">
+            <td class="p-3 space-y-1">
+              <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(b.payment_status)}">
                 <option value="Paid & Confirmed" ${b.payment_status === 'Paid & Confirmed' ? 'selected' : ''}>Paid & Confirmed</option>
                 <option value="Dispatched" ${b.payment_status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
                 <option value="In Progress" ${b.payment_status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                 <option value="Completed" ${b.payment_status === 'Completed' ? 'selected' : ''}>Completed</option>
                 <option value="Cancelled" ${b.payment_status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
               </select>
+              ${hasSignature ? `<div class="text-[10px] text-green-400 font-semibold flex items-center gap-1">✍️ Signed & Emailed</div>` : ''}
             </td>
           </tr>
         `;
       }).join('');
-    }
-
-    async function updateStatus(id, newStatus) {
-      try {
-        const { error } = await supabaseClient
-          .from('bookings')
-          .update({ payment_status: newStatus })
-          .eq('id', id);
-
-        if (error) throw error;
-        const item = allBookings.find(b => b.id === id);
-        if (item) item.payment_status = newStatus;
-        
-        buildClientUsageMap();
-        calculateAnalytics();
-        renderTable();
-      } catch (err) {
-        alert('Failed to update status: ' + err.message);
-      }
     }
 
     function getStatusColorClass(status) {
