@@ -157,17 +157,17 @@
       <form id="bookingForm" class="space-y-3">
         <div>
           <label class="block text-xs font-medium mb-1 text-gray-300">Full Name</label>
-          <input type="text" id="clientName" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+          <input type="text" id="clientName" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Phone Number</label>
-            <input type="tel" id="phone" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+            <input type="tel" id="phone" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Email Address</label>
-            <input type="email" id="email" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+            <input type="email" id="email" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
           </div>
         </div>
 
@@ -336,11 +336,11 @@
         <!-- Google Places Autocomplete Address Input -->
         <div>
           <label class="block text-xs font-medium mb-1 text-gray-300">Mobile Service Address</label>
-          <input type="text" id="serviceAddress" placeholder="Start typing street address..." required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+          <input type="text" id="serviceAddress" placeholder="Start typing street address..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
         </div>
 
-        <input type="hidden" id="serviceDate" required>
-        <input type="hidden" id="selectedTimeSlotValue" required>
+        <input type="hidden" id="serviceDate">
+        <input type="hidden" id="selectedTimeSlotValue">
 
         <!-- Payment Method Choice Selector -->
         <div class="mt-4">
@@ -510,7 +510,6 @@
       const planPrice = parseInt(selectedPlanOpt ? selectedPlanOpt.getAttribute('data-price') : 0, 10);
       const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
 
-      // Show subscription disclaimer if a plan is chosen
       if (subscriptionDisclaimer) {
         if (isSubscription) {
           subscriptionDisclaimer.classList.remove('hidden');
@@ -572,7 +571,6 @@
         addonTotal += parseInt(cb.getAttribute('data-price') || 0, 10);
       });
 
-      // Permanent $25 Setup Fee inclusion
       const finalTotal = basePrice + SETUP_FEE + addonTotal;
       if (payBtnAmount) {
         payBtnAmount.textContent = `$${finalTotal}`;
@@ -580,7 +578,6 @@
       return finalTotal;
     }
 
-    // Initialize Base Price Drop-Box on page load
     populateBasePriceDropBox();
 
     // Time Slot Grid Selection Setup
@@ -612,13 +609,16 @@
     });
     expressCheckoutElement.mount('#express-checkout-element');
 
+    // Express Checkout Event Handler (Apple Pay / Google Pay)
     expressCheckoutElement.on('confirm', async (event) => {
       if (!selectedDateStr) {
         alert('Please select a date from the calendar grid before paying.');
+        event.decline();
         return;
       }
       if (!selectedTimeSlotStr) {
         alert('Please select a time slot from the grid under the calendar.');
+        event.decline();
         return;
       }
 
@@ -626,6 +626,20 @@
       const serviceSelect = document.getElementById('serviceType');
       const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
       const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
+
+      // Extract client details from wallet or form fields
+      const billingDetails = event.billingDetails || {};
+      const clientName = billingDetails.name || document.getElementById('clientName').value || 'Express Checkout Customer';
+      const clientEmail = billingDetails.email || document.getElementById('email').value || 'express@checkout.com';
+      const clientPhone = billingDetails.phone || document.getElementById('phone').value || 'N/A';
+      
+      // Extract service address from form field or wallet address
+      let serviceAddress = document.getElementById('serviceAddress').value;
+      if (!serviceAddress && billingDetails.address) {
+        const addr = billingDetails.address;
+        serviceAddress = `${addr.line1 || ''} ${addr.city || ''}, ${addr.state || ''} ${addr.postal_code || ''}`.trim();
+      }
+      if (!serviceAddress) serviceAddress = 'Service Address Provided via Mobile Unit';
 
       try {
         const response = await fetch(EDGE_FUNCTION_URL, {
@@ -638,8 +652,8 @@
             amount: totalAmount * 100,
             isSubscription: isSubscription,
             packageName: serviceSelect.value,
-            clientName: document.getElementById('clientName').value,
-            email: document.getElementById('email').value
+            clientName: clientName,
+            email: clientEmail
           })
         });
 
@@ -655,12 +669,28 @@
 
         if (error) {
           document.getElementById('card-errors').textContent = error.message;
+          event.decline();
         } else if (paymentIntent && paymentIntent.status === 'succeeded') {
           const statusLabel = isSubscription ? 'Active Subscription (Express Wallet Monthly Auto-Pay)' : 'Paid & Confirmed (Express Wallet One-Time)';
-          await saveBookingToSupabase(totalAmount, paymentIntent.id, statusLabel, isSubscription);
+          
+          // Write directly to Supabase so it pops up on the Admin Dispatch Portal
+          await saveBookingToSupabaseWithDetails({
+            clientName,
+            phone: clientPhone,
+            email: clientEmail,
+            serviceAddress,
+            amountPaid: totalAmount,
+            stripePaymentId: paymentIntent.id,
+            paymentStatus: statusLabel,
+            isSubscription
+          });
+
+          event.complete('success');
         }
       } catch (err) {
+        console.error('Express Checkout Error:', err);
         document.getElementById('card-errors').textContent = err.message;
+        event.decline();
       }
     });
 
@@ -711,7 +741,7 @@
 
         if (dateStr < todayStr) {
           dayDiv.classList.add('text-zinc-700', 'cursor-not-allowed');
-        } else if (dayOfWeek === 0) { // Closed on Sundays
+        } else if (dayOfWeek === 0) {
           dayDiv.classList.add('text-zinc-700', 'line-through', 'cursor-not-allowed');
           dayDiv.title = 'Closed on Sundays';
         } else {
@@ -725,7 +755,6 @@
             document.getElementById('serviceDate').value = selectedDateStr;
             document.getElementById('selectedDateDisplay').textContent = selectedDateStr;
 
-            // Enable Time Slot Grid
             const timeGrid = document.getElementById('timeSlotGrid');
             const timePrompt = document.getElementById('timeSlotPrompt');
             timeGrid.classList.remove('opacity-50', 'pointer-events-none');
@@ -762,15 +791,24 @@
       const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
       const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
 
-      // Path A: Pay in Person / Zelle (Updated Label to Pending - Cash_Zelle)
+      // Path A: Pay in Person / Zelle
       if (currentPaymentMethod === 'in_person') {
         submitBtn.textContent = 'Saving Booking...';
         const statusLabel = isSubscription ? 'Active Subscription (Pending - Cash_Zelle)' : 'Pending - Cash_Zelle';
-        await saveBookingToSupabase(totalAmount, 'IN_PERSON_ZELLE', statusLabel, isSubscription);
+        await saveBookingToSupabaseWithDetails({
+          clientName: document.getElementById('clientName').value,
+          phone: document.getElementById('phone').value,
+          email: document.getElementById('email').value,
+          serviceAddress: document.getElementById('serviceAddress').value,
+          amountPaid: totalAmount,
+          stripePaymentId: 'IN_PERSON_ZELLE',
+          paymentStatus: statusLabel,
+          isSubscription
+        });
         return;
       }
 
-      // Path B: Online Card / Subscription Payment via Stripe
+      // Path B: Online Card Payment via Stripe
       submitBtn.textContent = isSubscription ? 'Setting Up Monthly Auto-Pay...' : 'Processing Payment...';
       if (cardErrors) cardErrors.textContent = '';
 
@@ -813,7 +851,16 @@
 
         if (paymentResult.paymentIntent.status === 'succeeded') {
           const statusLabel = isSubscription ? 'Active Subscription (Stripe Monthly Auto-Pay)' : 'Paid & Confirmed (Stripe Card)';
-          await saveBookingToSupabase(totalAmount, paymentResult.paymentIntent.id, statusLabel, isSubscription);
+          await saveBookingToSupabaseWithDetails({
+            clientName: document.getElementById('clientName').value,
+            phone: document.getElementById('phone').value,
+            email: document.getElementById('email').value,
+            serviceAddress: document.getElementById('serviceAddress').value,
+            amountPaid: totalAmount,
+            stripePaymentId: paymentResult.paymentIntent.id,
+            paymentStatus: statusLabel,
+            isSubscription
+          });
         }
       } catch (err) {
         console.error(err);
@@ -823,8 +870,8 @@
       }
     });
 
-    // Write Record to Supabase
-    async function saveBookingToSupabase(amountPaid, stripePaymentId, paymentStatus, isSubscription) {
+    // Write Record to Supabase (Used by standard card, Express Checkout, and Cash/Zelle)
+    async function saveBookingToSupabaseWithDetails({ clientName, phone, email, serviceAddress, amountPaid, stripePaymentId, paymentStatus, isSubscription }) {
       const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
       const packageSelected = document.getElementById('serviceType').value;
 
@@ -833,14 +880,14 @@
       const { data, error: dbError } = await supabaseClient
         .from('bookings')
         .insert([{
-          client_name: document.getElementById('clientName').value,
-          phone: document.getElementById('phone').value,
-          email: document.getElementById('email').value,
+          client_name: clientName,
+          phone: phone,
+          email: email,
           vehicle_category: document.getElementById('vehicleCategory').value,
           service_type: fullServiceDescription,
           service_date: selectedDateStr,
           time_slot: selectedTimeSlotStr,
-          service_address: document.getElementById('serviceAddress').value,
+          service_address: serviceAddress,
           payment_status: paymentStatus,
           stripe_payment_id: stripePaymentId,
           amount_paid: amountPaid,
