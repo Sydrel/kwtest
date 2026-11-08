@@ -119,7 +119,7 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Vehicle Category</label>
-            <select id="vehicleCategory" onchange="calculateTotalPrice()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+            <select id="vehicleCategory" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
               <option value="Coupe" data-price="250">Coupe</option>
               <option value="Sedan" data-price="290">Sedan</option>
               <option value="Midsize SUV" data-price="330">Midsize SUV</option>
@@ -129,7 +129,7 @@
           </div>
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Package / Plan</label>
-            <select id="serviceType" onchange="calculateTotalPrice()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+            <select id="serviceType" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
               <option value="Full Luxury Detail" data-price="0">Full Luxury Detail (Standard)</option>
               <option value="KW Signature Wash 365" data-price="150">KW Signature Wash 365 ($150/mo)</option>
               <option value="365 AUTOCARE" data-price="350">365 AUTOCARE ($350/mo)</option>
@@ -141,9 +141,13 @@
           </div>
         </div>
 
-        <p id="pricingInfoNotice" class="text-[11px] text-gray-400 italic">
-          Pricing based on <span id="pricingSourceLabel" class="text-red-400 font-bold">Vehicle Category</span>.
-        </p>
+        <!-- Selected Selection Base Price Drop-Box -->
+        <div>
+          <label class="block text-xs font-medium mb-1 text-gray-300">Selected Selection Base Price</label>
+          <select id="basePriceSelect" onchange="syncFromBasePriceSelect()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600 font-bold">
+            <!-- Dynamically Populated via JS -->
+          </select>
+        </div>
 
         <!-- Add-ons Selection Section (2 Price Options Per Service) -->
         <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
@@ -407,28 +411,67 @@
       window.addEventListener('load', initGoogleAutocomplete);
     }
 
-    // Dynamic Price Calculator
-    function calculateTotalPrice() {
+    // Dynamic Price Calculator & Drop-Box Syncing
+    function populateBasePriceDropBox() {
+      const basePriceSelect = document.getElementById('basePriceSelect');
       const vehicleSelect = document.getElementById('vehicleCategory');
       const serviceSelect = document.getElementById('serviceType');
-      const payBtnAmount = document.getElementById('payBtnAmount');
-      const pricingSourceLabel = document.getElementById('pricingSourceLabel');
-      
-      if (!vehicleSelect || !serviceSelect) return 250;
+      if (!basePriceSelect || !vehicleSelect || !serviceSelect) return;
 
-      let basePrice = 0;
-      const packageOption = serviceSelect.options[serviceSelect.selectedIndex];
-      const packagePrice = parseInt(packageOption ? packageOption.getAttribute('data-price') : 0, 10);
-      
-      if (packagePrice > 0) {
-        // Membership Package Plan Selected
-        basePrice = packagePrice;
-        if (pricingSourceLabel) pricingSourceLabel.textContent = `Selected Plan (${packageOption.value})`;
+      basePriceSelect.innerHTML = '';
+
+      // Check if a membership plan is selected
+      const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
+      const planPrice = parseInt(selectedPlanOpt ? selectedPlanOpt.getAttribute('data-price') : 0, 10);
+
+      if (planPrice > 0) {
+        // Membership plan option
+        const opt = document.createElement('option');
+        opt.value = planPrice;
+        opt.setAttribute('data-source', 'plan');
+        opt.textContent = `$${planPrice} - Base Rate (${selectedPlanOpt.value})`;
+        basePriceSelect.appendChild(opt);
       } else {
-        // Standard Detail Selected -> Base on Vehicle Category
-        const vehicleOption = vehicleSelect.options[vehicleSelect.selectedIndex];
-        basePrice = parseInt(vehicleOption ? vehicleOption.getAttribute('data-price') : 250, 10);
-        if (pricingSourceLabel) pricingSourceLabel.textContent = `Vehicle Category (${vehicleOption.value})`;
+        // Vehicle Category options
+        Array.from(vehicleSelect.options).forEach(vOpt => {
+          const opt = document.createElement('option');
+          const price = vOpt.getAttribute('data-price');
+          opt.value = price;
+          opt.setAttribute('data-source', 'vehicle');
+          opt.setAttribute('data-vehicle', vOpt.value);
+          opt.textContent = `$${price} - Base Rate (${vOpt.value})`;
+          if (vOpt.value === vehicleSelect.value) {
+            opt.selected = true;
+          }
+          basePriceSelect.appendChild(opt);
+        });
+      }
+    }
+
+    function syncFromCategoryOrPlan() {
+      populateBasePriceDropBox();
+      calculateTotalPrice();
+    }
+
+    function syncFromBasePriceSelect() {
+      const basePriceSelect = document.getElementById('basePriceSelect');
+      const vehicleSelect = document.getElementById('vehicleCategory');
+      const selectedOpt = basePriceSelect.options[basePriceSelect.selectedIndex];
+
+      if (selectedOpt && selectedOpt.getAttribute('data-source') === 'vehicle') {
+        const vehicleVal = selectedOpt.getAttribute('data-vehicle');
+        if (vehicleVal) vehicleSelect.value = vehicleVal;
+      }
+      calculateTotalPrice();
+    }
+
+    function calculateTotalPrice() {
+      const basePriceSelect = document.getElementById('basePriceSelect');
+      const payBtnAmount = document.getElementById('payBtnAmount');
+      
+      let basePrice = 250;
+      if (basePriceSelect && basePriceSelect.value) {
+        basePrice = parseInt(basePriceSelect.value, 10);
       }
 
       let addonTotal = 0;
@@ -442,6 +485,9 @@
       }
       return finalTotal;
     }
+
+    // Initialize Base Price Drop-Box on page load
+    populateBasePriceDropBox();
 
     // Time Slot Grid Selection Setup
     let selectedTimeSlotStr = '';
