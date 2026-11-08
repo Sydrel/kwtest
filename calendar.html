@@ -120,11 +120,11 @@
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Vehicle Category</label>
             <select id="vehicleCategory" onchange="calculateTotalPrice()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
-              <option value="Coupe" data-price="250">Coupe ($250)</option>
-              <option value="Sedan" data-price="290">Sedan ($290)</option>
-              <option value="Midsize SUV" data-price="330">Midsize SUV ($330)</option>
-              <option value="SUV" data-price="350">SUV ($350)</option>
-              <option value="Pick-Up Truck" data-price="350">Pick-Up Truck ($350)</option>
+              <option value="Coupe" data-price="250">Coupe</option>
+              <option value="Sedan" data-price="290">Sedan</option>
+              <option value="Midsize SUV" data-price="330">Midsize SUV</option>
+              <option value="SUV" data-price="350">SUV</option>
+              <option value="Pick-Up Truck" data-price="350">Pick-Up Truck</option>
             </select>
           </div>
           <div>
@@ -140,6 +140,10 @@
             </select>
           </div>
         </div>
+
+        <p id="pricingInfoNotice" class="text-[11px] text-gray-400 italic">
+          Pricing based on <span id="pricingSourceLabel" class="text-red-400 font-bold">Vehicle Category</span>.
+        </p>
 
         <!-- Add-ons Selection Section (2 Price Options Per Service) -->
         <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
@@ -408,6 +412,7 @@
       const vehicleSelect = document.getElementById('vehicleCategory');
       const serviceSelect = document.getElementById('serviceType');
       const payBtnAmount = document.getElementById('payBtnAmount');
+      const pricingSourceLabel = document.getElementById('pricingSourceLabel');
       
       if (!vehicleSelect || !serviceSelect) return 250;
 
@@ -416,10 +421,14 @@
       const packagePrice = parseInt(packageOption ? packageOption.getAttribute('data-price') : 0, 10);
       
       if (packagePrice > 0) {
+        // Membership Package Plan Selected
         basePrice = packagePrice;
+        if (pricingSourceLabel) pricingSourceLabel.textContent = `Selected Plan (${packageOption.value})`;
       } else {
+        // Standard Detail Selected -> Base on Vehicle Category
         const vehicleOption = vehicleSelect.options[vehicleSelect.selectedIndex];
         basePrice = parseInt(vehicleOption ? vehicleOption.getAttribute('data-price') : 250, 10);
+        if (pricingSourceLabel) pricingSourceLabel.textContent = `Vehicle Category (${vehicleOption.value})`;
       }
 
       let addonTotal = 0;
