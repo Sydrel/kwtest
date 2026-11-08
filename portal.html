@@ -36,7 +36,7 @@
 
       <div class="flex justify-between items-center pt-2">
         <button onclick="clearSignature()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-400 font-bold py-2 px-3 rounded-lg transition">
-          🗑️ Clear
+          Clear
         </button>
         <div class="flex gap-2">
           <button onclick="closeSignatureModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2 px-4 rounded-lg transition">
@@ -78,7 +78,7 @@
           ← Back to Sign
         </button>
         <button onclick="confirmAndMoveToComplete()" class="w-1/2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2.5 rounded-lg transition shadow-lg shadow-green-900/30 flex items-center justify-center gap-1">
-          ✅ Confirm & Move Order
+          Confirm & Move Order
         </button>
       </div>
     </div>
@@ -179,10 +179,10 @@
       <!-- Filter Bar -->
       <div class="flex flex-wrap gap-2 items-center justify-between bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
         <div class="flex flex-wrap gap-2">
-          <button id="filterUpcoming" onclick="filterStatus('Upcoming')" class="filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition">⏳ Upcoming Orders</button>
+          <button id="filterUpcoming" onclick="filterStatus('Upcoming')" class="filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition">Upcoming Orders</button>
           <button id="filterPending" onclick="filterStatus('Pending')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-yellow-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Pending Only</button>
           <button id="filterSub" onclick="filterStatus('Subscription')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-purple-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Subscriptions Only</button>
-          <button id="filterCompleted" onclick="filterStatus('Completed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-green-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">📁 Completed Tab</button>
+          <button id="filterCompleted" onclick="filterStatus('Completed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-green-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Completed</button>
         </div>
         <span id="orderCount" class="text-gray-400 font-medium">Loading orders...</span>
       </div>
@@ -309,7 +309,7 @@
       if (!booking) return;
 
       try {
-        const { error } = await supabaseClient
+        let { error } = await supabaseClient
           .from('bookings')
           .update({ 
             payment_status: 'Completed',
@@ -318,7 +318,15 @@
           })
           .eq('id', pendingCompletionBookingId);
 
-        if (error) throw error;
+        if (error) {
+          console.warn('Full update failed, attempting status-only fallback:', error.message);
+          const fallback = await supabaseClient
+            .from('bookings')
+            .update({ payment_status: 'Completed' })
+            .eq('id', pendingCompletionBookingId);
+            
+          if (fallback.error) throw fallback.error;
+        }
 
         booking.payment_status = 'Completed';
         booking.client_signature = pendingSignatureDataUrl;
@@ -326,7 +334,7 @@
         await sendJobCompletedEmail(booking, pendingSignatureDataUrl);
 
         document.getElementById('confirmationModal').classList.add('hidden');
-        showToast('Moved to Completed Tab 📁', `Order #${booking.id} has been moved to the Completed tab.`);
+        showToast('Moved to Completed Tab', `Order #${booking.id} has been moved to Completed.`);
         
         pendingCompletionBookingId = null;
         pendingSignatureDataUrl = null;
@@ -522,7 +530,6 @@
         .channel('public:bookings')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bookings' }, payload => {
           const newBooking = payload.new;
-          // Ensure new bookings start as Pending if no status specified
           if (!newBooking.payment_status) {
             newBooking.payment_status = 'Pending';
           }
@@ -657,7 +664,6 @@
       
       let filtered = allBookings;
 
-      // Filter Routing
       if (currentFilter === 'Upcoming') {
         filtered = allBookings.filter(b => b.payment_status !== 'Completed' && b.payment_status !== 'Cancelled');
       } else if (currentFilter === 'Pending') {
@@ -706,7 +712,7 @@
                   Service #${serviceNum}
                 </span>
                 ${isDiscountEligible 
-                  ? `<span class="bg-amber-500/20 text-amber-300 border border-amber-600 px-2 py-0.5 rounded text-[10px] font-extrabold animate-pulse">⭐ 25% OFF Add-Ons!</span>`
+                  ? `<span class="bg-amber-500/20 text-amber-300 border border-amber-600 px-2 py-0.5 rounded text-[10px] font-extrabold animate-pulse">25% OFF Add-Ons!</span>`
                   : `<span class="text-[10px] text-zinc-500">${5 - (serviceNum % 5)} more till discount</span>`
                 }
               </div>
@@ -738,14 +744,14 @@
             </td>
             <td class="p-3 space-y-1">
               <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(status)}">
-                <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
+                <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
                 <option value="Paid & Confirmed" ${status === 'Paid & Confirmed' ? 'selected' : ''}>Paid & Confirmed</option>
                 <option value="Dispatched" ${status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
                 <option value="In Progress" ${status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                 <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
                 <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
               </select>
-              ${hasSignature ? `<div class="text-[10px] text-green-400 font-semibold flex items-center gap-1">✍️ Signed & Completed</div>` : ''}
+              ${hasSignature ? `<div class="text-[10px] text-green-400 font-semibold flex items-center gap-1">Signed & Completed</div>` : ''}
             </td>
           </tr>
         `;
