@@ -412,7 +412,7 @@
     const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
     const STRIPE_PUBLISHABLE_KEY = 'pk_live_51UXoy841rEJafE4qq4lXTr2T0q0P6p4qglGVZjFR1X3TvEGwDlDQwQAIrtHoU2GpONiMDJM8K7vgdG338knTqVAF004qtQ3bG3';
-    const LOCATIONIQ_API_KEY = 'pk.8621415053070b47124f0c43666b6c0e'; // Enterprise OpenStreetMap Autocomplete Access
+    const LOCATIONIQ_API_KEY = 'pk.6aed632131158f485c9b1b025bfc45d2'; // Updated LocationIQ Key
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -420,7 +420,7 @@
     // Hardcoded Permanent Setup Fee ($25)
     const SETUP_FEE = 25;
 
-    // LocationIQ Address Autocomplete Implementation
+    // LocationIQ Address Autocomplete Implementation with Safe Error Catching
     const addressInput = document.getElementById('serviceAddress');
     const addressSuggestions = document.getElementById('addressSuggestions');
     let debounceTimer;
@@ -439,16 +439,19 @@
 
         debounceTimer = setTimeout(async () => {
           try {
-            const url = `https://api.locationiq.com/v1/autocomplete?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(query)}&limit=5&countrycodes=us&tag=place:house,place:building,highway:residential`;
+            const url = `https://api.locationiq.com/v1/autocomplete?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(query)}&limit=5&countrycodes=us`;
             const res = await fetch(url);
             
-            if (!res.ok) throw new Error('Autocomplete request failed');
+            if (!res.ok) {
+              addressSuggestions.classList.add('hidden');
+              return;
+            }
+            
             const data = await res.json();
-
             addressSuggestions.innerHTML = '';
             selectedIndex = -1;
 
-            if (data && data.length > 0) {
+            if (Array.isArray(data) && data.length > 0) {
               data.forEach((item) => {
                 const li = document.createElement('li');
                 li.className = 'p-2.5 text-xs text-gray-300 hover:bg-zinc-800 hover:text-white cursor-pointer transition flex items-center gap-2';
@@ -473,7 +476,6 @@
               addressSuggestions.classList.add('hidden');
             }
           } catch (err) {
-            console.warn('LocationIQ Autocomplete error:', err);
             addressSuggestions.classList.add('hidden');
           }
         }, 300);
