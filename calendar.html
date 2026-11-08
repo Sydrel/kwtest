@@ -40,7 +40,51 @@
     }
   </style>
 </head>
-<body class="bg-black text-white min-h-screen p-4 flex flex-col items-center justify-center">
+<body class="bg-black text-white min-h-screen p-4 flex flex-col items-center justify-center relative">
+
+  <!-- Beta Notification Modal Popup -->
+  <div id="notificationModal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300">
+    <div class="bg-zinc-950 border border-red-600/60 max-w-md w-full rounded-xl p-6 shadow-2xl relative transform transition-all scale-100">
+      
+      <!-- Close X Button -->
+      <button type="button" onclick="closeNotificationModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold transition">&times;</button>
+      
+      <!-- Icon & Header -->
+      <div class="flex items-center gap-3 mb-3">
+        <div class="relative flex h-4 w-4">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-4 w-4 bg-red-600"></span>
+        </div>
+        <h3 class="text-base font-bold text-white tracking-wide uppercase">System Notification</h3>
+      </div>
+      
+      <!-- Message Content -->
+      <div class="space-y-2 text-xs text-gray-300 leading-relaxed border-t border-b border-zinc-800 py-4 my-2">
+        <p class="font-semibold text-red-400 text-sm">We are currently in Beta Testing!</p>
+        <p>
+          Welcome to <strong class="text-white">KW Commercial Fleet Washing & Mobile Detailing</strong>. Our online booking portal is currently undergoing beta testing to give you the fastest, smoothest experience possible.
+        </p>
+        <p class="text-gray-400">
+          All appointments, pricing calculations, and payment options (Online Card & In-Person/Zelle) are fully active and 100% secure!
+        </p>
+      </div>
+
+      <!-- Action Button -->
+      <div class="mt-4 flex justify-end">
+        <button type="button" onclick="closeNotificationModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition duration-200 shadow-lg shadow-red-900/40 uppercase tracking-wider">
+          Got It, Continue to Booking
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Re-Open Notification Bell Badge (Bottom Right) -->
+  <button type="button" onclick="openNotificationModal()" title="View System Notification" class="fixed bottom-4 right-4 z-[9999] bg-zinc-900 border border-red-600 text-red-500 hover:text-white hover:bg-red-600 p-3 rounded-full shadow-xl transition-all duration-300 flex items-center gap-2 text-xs font-bold">
+    <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+    </svg>
+    <span class="hidden sm:inline">Beta Notice</span>
+  </button>
 
   <!-- Logo Header -->
   <div class="mb-6 text-center">
@@ -94,7 +138,7 @@
 
     <!-- Right Column: Booking & Payment Form -->
     <div>
-      <!-- Beta Testing Notification Banner -->
+      <!-- Inline Beta Testing Notification Banner -->
       <div class="mb-4 p-3 bg-red-950/40 border border-red-600/60 rounded-lg flex items-start gap-2.5 shadow-md">
         <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -359,6 +403,23 @@
   </div>
 
   <script>
+    // Popup Notification Controls
+    function closeNotificationModal() {
+      const modal = document.getElementById('notificationModal');
+      if (modal) {
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+      }
+    }
+
+    function openNotificationModal() {
+      const modal = document.getElementById('notificationModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.remove('opacity-0', 'pointer-events-none'), 10);
+      }
+    }
+
     // Fully Configured Project Keys
     const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
