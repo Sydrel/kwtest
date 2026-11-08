@@ -137,16 +137,151 @@
           </div>
         </div>
 
-        <!-- Add-ons Selection Section (Drop Box / Multi-Select) -->
-        <div>
-          <label class="block text-xs font-medium mb-1 text-gray-300">Add-On Services (Hold Ctrl / Cmd to select multiple)</label>
-          <select id="addonsSelect" multiple onchange="calculateTotalPrice()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-red-600 h-28 space-y-1">
-            <option value="Ceramic Coating" data-price="150" class="p-1 hover:bg-zinc-800 rounded">Ceramic Coating (+$150)</option>
-            <option value="Engine Bay Detailing" data-price="60" class="p-1 hover:bg-zinc-800 rounded">Engine Bay Detailing (+$60)</option>
-            <option value="Pet Hair Removal" data-price="50" class="p-1 hover:bg-zinc-800 rounded">Pet Hair Removal (+$50)</option>
-            <option value="Paint Correction" data-price="200" class="p-1 hover:bg-zinc-800 rounded">Paint Correction (+$200)</option>
-            <option value="Headlight Restoration" data-price="75" class="p-1 hover:bg-zinc-800 rounded">Headlight Restoration (+$75)</option>
-          </select>
+        <!-- Add-ons Selection Section (Tap-To-Open Multi-Select Dropdown) -->
+        <div class="relative">
+          <label class="block text-xs font-medium mb-1 text-gray-300">Add-On Services</label>
+          <button type="button" id="addonsDropdownToggle" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs text-white text-left flex justify-between items-center focus:outline-none focus:border-red-600 hover:border-zinc-700">
+            <span id="addonsDropdownLabel" class="text-gray-400">Tap to Select Add-On Services...</span>
+            <span class="text-red-500 font-bold ml-2">▼</span>
+          </button>
+
+          <!-- Dropdown Options Box -->
+          <div id="addonsDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-1 bg-zinc-950 border border-zinc-800 rounded-lg p-3 z-50 max-h-60 overflow-y-auto space-y-3 shadow-2xl border-t-red-600">
+            
+            <!-- Pet Hair Removal -->
+            <div>
+              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Pet Hair Removal</p>
+              <div class="grid grid-cols-3 gap-1 text-xs">
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal (Light - $50)" data-price="50" onchange="updateAddonsSummary()">
+                  <span>Light ($50)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal (Moderate - $70)" data-price="70" onchange="updateAddonsSummary()">
+                  <span>Mod ($70)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal (Heavy - $90)" data-price="90" onchange="updateAddonsSummary()">
+                  <span>Heavy ($90)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Seat Shampoo / Extraction -->
+            <div>
+              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Seat Shampoo / Extraction</p>
+              <div class="grid grid-cols-3 gap-1 text-xs">
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Seat Shampoo (Basic - $100)" data-price="100" onchange="updateAddonsSummary()">
+                  <span>Basic ($100)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Seat Shampoo (Deep - $120)" data-price="120" onchange="updateAddonsSummary()">
+                  <span>Deep ($120)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Seat Shampoo (Full Extraction - $140)" data-price="140" onchange="updateAddonsSummary()">
+                  <span>Full ($140)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Engine Bay Cleaning -->
+            <div>
+              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Engine Bay Cleaning</p>
+              <div class="grid grid-cols-3 gap-1 text-xs">
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay (Standard - $100)" data-price="100" onchange="updateAddonsSummary()">
+                  <span>Std ($100)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay (Pro Detail - $125)" data-price="125" onchange="updateAddonsSummary()">
+                  <span>Pro ($125)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay (Showroom - $150)" data-price="150" onchange="updateAddonsSummary()">
+                  <span>Show ($150)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Excessive Soil Removal -->
+            <div>
+              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Excessive Soil Removal</p>
+              <div class="grid grid-cols-3 gap-1 text-xs">
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Excessive Soil (Light - $70)" data-price="70" onchange="updateAddonsSummary()">
+                  <span>Light ($70)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Excessive Soil (Moderate - $85)" data-price="85" onchange="updateAddonsSummary()">
+                  <span>Mod ($85)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Excessive Soil (Severe - $100)" data-price="100" onchange="updateAddonsSummary()">
+                  <span>Heavy ($100)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Paint Polishing -->
+            <div>
+              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Paint Polishing</p>
+              <div class="grid grid-cols-3 gap-1 text-xs">
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Polishing (Gloss Enhancement - $175)" data-price="175" onchange="updateAddonsSummary()">
+                  <span>Gloss ($175)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Polishing (Single-Stage - $250)" data-price="250" onchange="updateAddonsSummary()">
+                  <span>1-Stage ($250)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Polishing (Ultra Gloss - $350)" data-price="350" onchange="updateAddonsSummary()">
+                  <span>Ultra ($350)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Paint Correction -->
+            <div>
+              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Paint Correction</p>
+              <div class="grid grid-cols-3 gap-1 text-xs">
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (Minor Scratch - $250)" data-price="250" onchange="updateAddonsSummary()">
+                  <span>Minor ($250)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (2-Stage Cut - $350)" data-price="350" onchange="updateAddonsSummary()">
+                  <span>2-Stage ($350)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (Multi-Stage Restoration - $450)" data-price="450" onchange="updateAddonsSummary()">
+                  <span>Full ($450)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Ceramic Coatings -->
+            <div>
+              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Ceramic Coatings</p>
+              <div class="grid grid-cols-3 gap-1 text-xs">
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Ceramic Coating (1-Year Armor - $400)" data-price="400" onchange="updateAddonsSummary()">
+                  <span>1-Yr ($400)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Ceramic Coating (3-Year Shield - $500)" data-price="500" onchange="updateAddonsSummary()">
+                  <span>3-Yr ($500)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-1.5 bg-black border border-zinc-800 rounded cursor-pointer hover:border-red-600">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Ceramic Coating (5-Year Pro Protection - $600)" data-price="600" onchange="updateAddonsSummary()">
+                  <span>5-Yr ($600)</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
         </div>
 
         <!-- Google Places Autocomplete Address Input -->
@@ -224,6 +359,34 @@
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Tap to Open Add-ons Dropdown Toggle
+    const addonsDropdownToggle = document.getElementById('addonsDropdownToggle');
+    const addonsDropdownMenu = document.getElementById('addonsDropdownMenu');
+    const addonsDropdownLabel = document.getElementById('addonsDropdownLabel');
+
+    addonsDropdownToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      addonsDropdownMenu.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!addonsDropdownMenu.contains(e.target) && !addonsDropdownToggle.contains(e.target)) {
+        addonsDropdownMenu.classList.add('hidden');
+      }
+    });
+
+    function updateAddonsSummary() {
+      const selected = document.querySelectorAll('.addon-checkbox:checked');
+      if (selected.length === 0) {
+        addonsDropdownLabel.textContent = 'Tap to Select Add-On Services...';
+        addonsDropdownLabel.className = 'text-gray-400';
+      } else {
+        addonsDropdownLabel.textContent = `${selected.length} Add-On Service${selected.length > 1 ? 's' : ''} Selected`;
+        addonsDropdownLabel.className = 'text-white font-bold';
+      }
+      calculateTotalPrice();
+    }
+
     // Payment Option Tab Toggle Logic
     let currentPaymentMethod = 'online';
     const payOnlineTab = document.getElementById('payOnlineTab');
@@ -298,11 +461,10 @@
       window.addEventListener('load', initGoogleAutocomplete);
     }
 
-    // Dynamic Price Calculator (Handles Drop Box Multi-Select Add-ons)
+    // Dynamic Price Calculator
     function calculateTotalPrice() {
       const vehicleSelect = document.getElementById('vehicleCategory');
       const serviceSelect = document.getElementById('serviceType');
-      const addonsSelect = document.getElementById('addonsSelect');
       const payBtnAmount = document.getElementById('payBtnAmount');
       
       if (!vehicleSelect || !serviceSelect) return 250;
@@ -319,11 +481,9 @@
       }
 
       let addonTotal = 0;
-      if (addonsSelect) {
-        Array.from(addonsSelect.selectedOptions).forEach(option => {
-          addonTotal += parseInt(option.getAttribute('data-price') || 0, 10);
-        });
-      }
+      document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+        addonTotal += parseInt(cb.getAttribute('data-price') || 0, 10);
+      });
 
       const finalTotal = basePrice + addonTotal;
       if (payBtnAmount) {
@@ -553,8 +713,7 @@
 
     // Write Record to Supabase
     async function saveBookingToSupabase(amountPaid, stripePaymentId, paymentStatus) {
-      const addonsSelect = document.getElementById('addonsSelect');
-      const selectedAddons = addonsSelect ? Array.from(addonsSelect.selectedOptions).map(opt => opt.value).join(', ') : '';
+      const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
       const packageSelected = document.getElementById('serviceType').value;
       const fullServiceDescription = selectedAddons ? `${packageSelected} + Addons: [${selectedAddons}]` : packageSelected;
 
