@@ -267,6 +267,7 @@
       <div class="flex flex-wrap gap-2 items-center justify-between bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
         <div class="flex flex-wrap gap-2">
           <button id="filterUpcoming" onclick="filterStatus('Upcoming')" class="filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition">Upcoming Orders</button>
+          <button id="filterCalendar" onclick="filterStatus('Calendar')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-red-400 font-bold py-1.5 px-3 rounded-lg border border-zinc-800 transition">📅 Work Calendar</button>
           <button id="filterPending" onclick="filterStatus('Pending')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-yellow-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Pending Only</button>
           <button id="filterSub" onclick="filterStatus('Subscription')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-purple-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Subscriptions Only</button>
           <button id="filterCompleted" onclick="filterStatus('Completed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-green-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Completed</button>
@@ -274,6 +275,53 @@
           <button id="filterReports" onclick="filterStatus('Reports')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-blue-400 font-bold py-1.5 px-3 rounded-lg border border-zinc-800 transition">📊 Revenue Reports</button>
         </div>
         <span id="orderCount" class="text-gray-400 font-medium">Loading...</span>
+      </div>
+
+      <!-- WORK CALENDAR TAB VIEW -->
+      <div id="calendarSection" class="hidden space-y-4">
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              📅 Fleet Detailing Schedule
+            </h2>
+            <p class="text-xs text-gray-400">View upcoming bookings organized day-by-day. Tap any booking card to open details.</p>
+          </div>
+          
+          <!-- Month Control Bar -->
+          <div class="flex items-center gap-2 bg-zinc-900 p-1.5 rounded-xl border border-zinc-800">
+            <button onclick="changeCalendarMonth(-1)" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-3 py-1 rounded-lg text-xs transition border border-zinc-800">
+              ← Prev
+            </button>
+            <span id="calendarMonthTitle" class="text-xs font-extrabold text-white px-3 tracking-wider min-w-[130px] text-center">
+              -- 2026
+            </span>
+            <button onclick="changeCalendarMonth(1)" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-3 py-1 rounded-lg text-xs transition border border-zinc-800">
+              Next →
+            </button>
+            <button onclick="resetCalendarToToday()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs transition ml-1">
+              Today
+            </button>
+          </div>
+        </div>
+
+        <!-- CALENDAR GRID -->
+        <div class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl p-4 overflow-x-auto">
+          <!-- Day Name Headers -->
+          <div class="grid grid-cols-7 gap-2 min-w-[750px] mb-2 text-center text-xs font-bold text-zinc-400 uppercase tracking-wider">
+            <div class="p-2 bg-zinc-900/60 rounded-lg text-red-500">Sun</div>
+            <div class="p-2 bg-zinc-900/60 rounded-lg">Mon</div>
+            <div class="p-2 bg-zinc-900/60 rounded-lg">Tue</div>
+            <div class="p-2 bg-zinc-900/60 rounded-lg">Wed</div>
+            <div class="p-2 bg-zinc-900/60 rounded-lg">Thu</div>
+            <div class="p-2 bg-zinc-900/60 rounded-lg">Fri</div>
+            <div class="p-2 bg-zinc-900/60 rounded-lg text-red-500">Sat</div>
+          </div>
+
+          <!-- Calendar Days Box Grid -->
+          <div id="calendarDaysGrid" class="grid grid-cols-7 gap-2 min-w-[750px] auto-rows-fr">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
       </div>
 
       <!-- CLIENT CONTACTS TAB VIEW -->
@@ -500,6 +548,8 @@
     let signaturePad = null;
     let pendingCompletionBookingId = null;
     let pendingSignatureDataUrl = null;
+
+    let calendarCurrentDate = new Date();
 
     let monthlyRevenueChartInstance = null;
     let revenueMixChartInstance = null;
@@ -1302,6 +1352,125 @@
       }
     }
 
+    /* ----------------------------------------------------
+       ORGANIZED WORK CALENDAR ENGINE
+    ---------------------------------------------------- */
+    function changeCalendarMonth(offset) {
+      calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + offset);
+      renderCalendarView();
+    }
+
+    function resetCalendarToToday() {
+      calendarCurrentDate = new Date();
+      renderCalendarView();
+    }
+
+    function renderCalendarView() {
+      const monthTitleEl = document.getElementById('calendarMonthTitle');
+      const gridEl = document.getElementById('calendarDaysGrid');
+
+      const year = calendarCurrentDate.getFullYear();
+      const month = calendarCurrentDate.getMonth();
+
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+
+      const monthName = firstDay.toLocaleString('default', { month: 'long' });
+      monthTitleEl.textContent = `${monthName} ${year}`;
+
+      const startingDayIndex = firstDay.getDay(); // 0 = Sunday
+      const totalDaysInMonth = lastDay.getDate();
+
+      const today = new Date();
+      const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+      const todayDateNumber = today.getDate();
+
+      // Group bookings by day key YYYY-MM-DD or YYYY-M-D
+      const bookingsByDay = {};
+      allBookings.forEach(b => {
+        if (b.payment_status === 'Cancelled') return;
+        const dateStr = b.service_date || (b.created_at ? b.created_at.split('T')[0] : '');
+        if (!dateStr) return;
+
+        // Standardize YYYY-MM-DD parsing
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+          const bYear = parseInt(parts[0]);
+          const bMonth = parseInt(parts[1]) - 1; // 0 index
+          const bDay = parseInt(parts[2]);
+
+          if (bYear === year && bMonth === month) {
+            if (!bookingsByDay[bDay]) bookingsByDay[bDay] = [];
+            bookingsByDay[bDay].push(b);
+          }
+        }
+      });
+
+      let html = '';
+
+      // Blank slots before first day of month
+      for (let i = 0; i < startingDayIndex; i++) {
+        html += `<div class="bg-zinc-950/40 border border-zinc-900 rounded-xl p-2 min-h-[110px]"></div>`;
+      }
+
+      // Days of the month
+      for (let day = 1; day <= totalDaysInMonth; day++) {
+        const isToday = isCurrentMonth && day === todayDateNumber;
+        const dayBookings = bookingsByDay[day] || [];
+        
+        // Sort day bookings by time slot if available
+        dayBookings.sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
+
+        html += `
+          <div class="bg-zinc-900/40 border ${isToday ? 'border-red-600 bg-red-950/10' : 'border-zinc-800/80'} rounded-xl p-2 min-h-[120px] flex flex-col justify-start transition hover:border-zinc-700">
+            <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-zinc-800/60">
+              <span class="text-xs font-black ${isToday ? 'bg-red-600 text-white px-2 py-0.5 rounded-full' : 'text-zinc-300'}">
+                ${day}
+              </span>
+              ${dayBookings.length > 0 ? `<span class="text-[10px] font-bold text-red-400 bg-red-950/60 px-1.5 py-0.5 rounded-md border border-red-900/50">${dayBookings.length} job(s)</span>` : ''}
+            </div>
+
+            <div class="space-y-1.5 overflow-y-auto max-h-[140px] pr-0.5">
+              ${dayBookings.map(b => {
+                const pmLabel = getPaymentMethodLabel(b);
+                const isCashZelle = pmLabel === 'Cash / Zelle';
+                const isSub = getIsSubscription(b);
+
+                let badgeColor = 'bg-yellow-500/20 text-yellow-300 border-yellow-600/50';
+                if (b.payment_status === 'Completed') {
+                  badgeColor = 'bg-zinc-800 text-zinc-400 border-zinc-700';
+                } else if (b.payment_status === 'Paid & Confirmed') {
+                  badgeColor = 'bg-green-500/20 text-green-300 border-green-600/50';
+                } else if (isSub) {
+                  badgeColor = 'bg-purple-500/20 text-purple-300 border-purple-600/50';
+                } else if (isCashZelle) {
+                  badgeColor = 'bg-amber-500/20 text-amber-300 border-amber-600/50';
+                }
+
+                return `
+                  <div onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer bg-zinc-950 hover:bg-zinc-900 border ${badgeColor} p-1.5 rounded-lg text-[10px] space-y-0.5 transition shadow-sm">
+                    <div class="flex justify-between font-bold truncate">
+                      <span class="text-white truncate">${escapeHtml(b.client_name || 'Client')}</span>
+                      <span class="text-red-400 font-extrabold ml-1">#${b.id}</span>
+                    </div>
+                    <div class="text-zinc-400 truncate text-[9px] flex items-center justify-between">
+                      <span>⏰ ${escapeHtml(b.time_slot || 'Standard')}</span>
+                      <span class="font-extrabold text-green-400">$${parseFloat(b.amount_paid || 0).toFixed(0)}</span>
+                    </div>
+                    <div class="text-[9px] font-semibold text-zinc-400 truncate">
+                      🚗 ${escapeHtml(b.vehicle_category || 'Vehicle')}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      gridEl.innerHTML = html;
+    }
+
     function renderContactsTable() {
       const tbody = document.getElementById('contactsTableBody');
       const searchVal = (document.getElementById('contactSearchInput')?.value || '').toLowerCase().trim();
@@ -1412,10 +1581,20 @@
       const tableSection = document.getElementById('ordersTableSection');
       const reportsSection = document.getElementById('revenueReportsSection');
       const contactsSection = document.getElementById('contactsSection');
+      const calendarSection = document.getElementById('calendarSection');
 
-      if (currentFilter === 'Reports') {
+      if (currentFilter === 'Calendar') {
         tableSection.classList.add('hidden');
         contactsSection.classList.add('hidden');
+        reportsSection.classList.add('hidden');
+        calendarSection.classList.remove('hidden');
+        document.getElementById('orderCount').textContent = `Work Calendar View`;
+        renderCalendarView();
+        return;
+      } else if (currentFilter === 'Reports') {
+        tableSection.classList.add('hidden');
+        contactsSection.classList.add('hidden');
+        calendarSection.classList.add('hidden');
         reportsSection.classList.remove('hidden');
         document.getElementById('orderCount').textContent = `Report View Active`;
         renderCharts();
@@ -1423,12 +1602,14 @@
       } else if (currentFilter === 'Contacts') {
         tableSection.classList.add('hidden');
         reportsSection.classList.add('hidden');
+        calendarSection.classList.add('hidden');
         contactsSection.classList.remove('hidden');
         renderContactsTable();
         return;
       } else {
         reportsSection.classList.add('hidden');
         contactsSection.classList.add('hidden');
+        calendarSection.classList.add('hidden');
         tableSection.classList.remove('hidden');
       }
 
@@ -1556,6 +1737,8 @@
 
       if (status === 'Upcoming') {
         document.getElementById('filterUpcoming').className = 'filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
+      } else if (status === 'Calendar') {
+        document.getElementById('filterCalendar').className = 'filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
       } else if (status === 'Pending') {
         document.getElementById('filterPending').className = 'filter-btn bg-yellow-900/60 text-yellow-300 border border-yellow-700 font-bold py-1.5 px-3 rounded-lg transition';
       } else if (status === 'Subscription') {
