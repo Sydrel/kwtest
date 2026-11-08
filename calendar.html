@@ -762,10 +762,10 @@
       const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
       const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
 
-      // Path A: Pay in Person / Zelle
+      // Path A: Pay in Person / Zelle (Updated Label to Pending - Cash_Zelle)
       if (currentPaymentMethod === 'in_person') {
         submitBtn.textContent = 'Saving Booking...';
-        const statusLabel = isSubscription ? 'Active Subscription (Pending - Pay in Person / Zelle)' : 'Pending - Pay in Person / Zelle';
+        const statusLabel = isSubscription ? 'Active Subscription (Pending - Cash_Zelle)' : 'Pending - Cash_Zelle';
         await saveBookingToSupabase(totalAmount, 'IN_PERSON_ZELLE', statusLabel, isSubscription);
         return;
       }
