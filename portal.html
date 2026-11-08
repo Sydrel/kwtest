@@ -55,7 +55,7 @@
     <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
       <div class="pb-3 border-b border-zinc-800 text-center">
         <h3 class="text-lg font-bold text-white">Confirm Job Completion</h3>
-        <p class="text-xs text-gray-400">Review details before sending receipt & archiving order</p>
+        <p class="text-xs text-gray-400">Review details before moving order to Completed Tab</p>
       </div>
 
       <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2 text-xs">
@@ -179,8 +179,8 @@
       <!-- Filter Bar -->
       <div class="flex flex-wrap gap-2 items-center justify-between bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
         <div class="flex flex-wrap gap-2">
-          <button id="filterAll" onclick="filterStatus('All')" class="filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition">All Active Orders</button>
-          <button id="filterPaid" onclick="filterStatus('Paid & Confirmed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Paid & Confirmed</button>
+          <button id="filterUpcoming" onclick="filterStatus('Upcoming')" class="filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition">⏳ Upcoming Orders</button>
+          <button id="filterPending" onclick="filterStatus('Pending')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-yellow-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Pending Only</button>
           <button id="filterSub" onclick="filterStatus('Subscription')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-purple-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Subscriptions Only</button>
           <button id="filterCompleted" onclick="filterStatus('Completed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-green-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">📁 Completed Tab</button>
         </div>
@@ -222,7 +222,7 @@
 
     let allBookings = [];
     let clientUsageMap = {};
-    let currentFilter = 'All';
+    let currentFilter = 'Upcoming';
     let autoRefreshTimer = null;
     let audioEnabled = false;
     let initialLoadComplete = false;
@@ -309,7 +309,6 @@
       if (!booking) return;
 
       try {
-        // 1. Update database record to 'Completed' and attach signature
         const { error } = await supabaseClient
           .from('bookings')
           .update({ 
@@ -324,11 +323,10 @@
         booking.payment_status = 'Completed';
         booking.client_signature = pendingSignatureDataUrl;
 
-        // 2. Dispatch job completion email payload
         await sendJobCompletedEmail(booking, pendingSignatureDataUrl);
 
         document.getElementById('confirmationModal').classList.add('hidden');
-        showToast('Order Completed & Moved 📁', `Order #${booking.id} is moved to Completed Tab. Receipt sent to ${booking.email || 'client'}.`);
+        showToast('Moved to Completed Tab 📁', `Order #${booking.id} has been moved to the Completed tab.`);
         
         pendingCompletionBookingId = null;
         pendingSignatureDataUrl = null;
@@ -524,12 +522,16 @@
         .channel('public:bookings')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bookings' }, payload => {
           const newBooking = payload.new;
+          // Ensure new bookings start as Pending if no status specified
+          if (!newBooking.payment_status) {
+            newBooking.payment_status = 'Pending';
+          }
           allBookings.unshift(newBooking);
           buildClientUsageMap();
           calculateAnalytics();
           renderTable();
           playNotificationSound();
-          showToast('New Order Received!', `${newBooking.client_name || 'Client'} booked ${newBooking.service_type || 'a service'} ($${newBooking.amount_paid || 0})`);
+          showToast('New Pending Order Received!', `${newBooking.client_name || 'Client'} booked ${newBooking.service_type || 'a service'} ($${newBooking.amount_paid || 0})`);
         })
         .subscribe();
     }
@@ -549,12 +551,15 @@
         if (error) throw error;
         
         const previousCount = allBookings.length;
-        const freshData = data || [];
+        const freshData = (data || []).map(b => ({
+          ...b,
+          payment_status: b.payment_status || 'Pending'
+        }));
 
         if (initialLoadComplete && freshData.length > previousCount) {
           const newCount = freshData.length - previousCount;
           playNotificationSound();
-          showToast('New Order Update', `${newCount} new booking(s) detected.`);
+          showToast('New Order Update', `${newCount} new pending booking(s) detected.`);
         }
 
         allBookings = freshData;
@@ -634,7 +639,7 @@
           subscriptionsCount++;
         }
 
-        if (b.payment_status === 'Paid & Confirmed' || b.payment_status === 'Dispatched' || b.payment_status === 'In Progress') {
+        if (b.payment_status !== 'Completed') {
           pendingCount++;
         }
       });
@@ -652,15 +657,15 @@
       
       let filtered = allBookings;
 
-      // Filter Logic: Default "All" hides Completed orders to keep pending queue clean
-      if (currentFilter === 'All') {
-        filtered = allBookings.filter(b => b.payment_status !== 'Completed');
+      // Filter Routing
+      if (currentFilter === 'Upcoming') {
+        filtered = allBookings.filter(b => b.payment_status !== 'Completed' && b.payment_status !== 'Cancelled');
+      } else if (currentFilter === 'Pending') {
+        filtered = allBookings.filter(b => b.payment_status === 'Pending' || b.payment_status === 'Paid & Confirmed');
       } else if (currentFilter === 'Completed') {
         filtered = allBookings.filter(b => b.payment_status === 'Completed');
       } else if (currentFilter === 'Subscription') {
         filtered = allBookings.filter(b => (b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'))) && b.payment_status !== 'Completed');
-      } else {
-        filtered = allBookings.filter(b => b.payment_status === currentFilter);
       }
 
       document.getElementById('orderCount').textContent = `Total Displayed: ${filtered.length}`;
@@ -668,7 +673,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="9" class="p-6 text-center text-gray-500">No ${currentFilter === 'Completed' ? 'completed' : 'active'} bookings found in this view.</td>
+            <td colspan="9" class="p-6 text-center text-gray-500">No ${currentFilter.toLowerCase()} orders found in this view.</td>
           </tr>`;
         return;
       }
@@ -682,6 +687,7 @@
         const serviceNum = clientStats && clientStats.bookingSequence[b.id] ? clientStats.bookingSequence[b.id] : 1;
         const isDiscountEligible = serviceNum > 0 && serviceNum % 5 === 0;
         const hasSignature = !!b.client_signature;
+        const status = b.payment_status || 'Pending';
 
         return `
           <tr class="hover:bg-zinc-900/50 transition ${isDiscountEligible ? 'bg-amber-950/20' : ''}">
@@ -731,14 +737,15 @@
               <div class="text-[9px] text-gray-500 truncate w-20" title="${b.stripe_payment_id || ''}">${b.stripe_payment_id ? 'Stripe Paid' : 'Pending'}</div>
             </td>
             <td class="p-3 space-y-1">
-              <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(b.payment_status)}">
-                <option value="Paid & Confirmed" ${b.payment_status === 'Paid & Confirmed' ? 'selected' : ''}>Paid & Confirmed</option>
-                <option value="Dispatched" ${b.payment_status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
-                <option value="In Progress" ${b.payment_status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                <option value="Completed" ${b.payment_status === 'Completed' ? 'selected' : ''}>Completed</option>
-                <option value="Cancelled" ${b.payment_status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+              <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(status)}">
+                <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
+                <option value="Paid & Confirmed" ${status === 'Paid & Confirmed' ? 'selected' : ''}>Paid & Confirmed</option>
+                <option value="Dispatched" ${status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
+                <option value="In Progress" ${status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
+                <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
               </select>
-              ${hasSignature ? `<div class="text-[10px] text-green-400 font-semibold flex items-center gap-1">✍️ Signed & Emailed</div>` : ''}
+              ${hasSignature ? `<div class="text-[10px] text-green-400 font-semibold flex items-center gap-1">✍️ Signed & Completed</div>` : ''}
             </td>
           </tr>
         `;
@@ -747,27 +754,27 @@
 
     function getStatusColorClass(status) {
       switch(status) {
+        case 'Pending': return 'text-yellow-400 font-bold';
         case 'Paid & Confirmed': return 'text-green-400';
-        case 'Dispatched': return 'text-yellow-400';
+        case 'Dispatched': return 'text-amber-300';
         case 'In Progress': return 'text-blue-400';
         case 'Completed': return 'text-gray-400';
         case 'Cancelled': return 'text-red-500';
-        default: return 'text-gray-300';
+        default: return 'text-yellow-400';
       }
     }
 
     function filterStatus(status) {
       currentFilter = status;
 
-      // Highlight Active Filter Button
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.className = 'filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-1.5 px-3 rounded-lg border border-zinc-800 transition';
       });
 
-      if (status === 'All') {
-        document.getElementById('filterAll').className = 'filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
-      } else if (status === 'Paid & Confirmed') {
-        document.getElementById('filterPaid').className = 'filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
+      if (status === 'Upcoming') {
+        document.getElementById('filterUpcoming').className = 'filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
+      } else if (status === 'Pending') {
+        document.getElementById('filterPending').className = 'filter-btn bg-yellow-900/60 text-yellow-300 border border-yellow-700 font-bold py-1.5 px-3 rounded-lg transition';
       } else if (status === 'Subscription') {
         document.getElementById('filterSub').className = 'filter-btn bg-purple-900/60 text-purple-300 border border-purple-700 font-bold py-1.5 px-3 rounded-lg transition';
       } else if (status === 'Completed') {
