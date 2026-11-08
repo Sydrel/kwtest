@@ -536,7 +536,17 @@
       initSignaturePad();
     });
 
-    // Enhanced helper function to accurately detect Cash / Zelle vs Stripe
+    // Helper to strictly classify Subscription vs One-Time Order Type
+    function getIsSubscription(b) {
+      if (b.is_subscription === true) return true;
+      const sType = (b.service_type || '').toLowerCase();
+      if (sType.includes('monthly subscription') || sType.includes('recurring subscription') || sType.includes('sub plan')) {
+        return true;
+      }
+      return false;
+    }
+
+    // Helper function to accurately detect Cash / Zelle vs Stripe
     function getPaymentMethodLabel(b) {
       const pStatus = (b.payment_status || '').toLowerCase();
       const pMethod = (b.payment_method || '').toLowerCase();
@@ -591,7 +601,6 @@
       document.getElementById('detailEmail').textContent = b.email || 'N/A';
       document.getElementById('detailAmountPaid').textContent = `$${parseFloat(b.amount_paid || 0).toFixed(2)}`;
       
-      // Updated payment text
       const pmLabel = getPaymentMethodLabel(b);
       const pmEl = document.getElementById('detailPaymentMethod');
       pmEl.textContent = pmLabel;
@@ -1035,7 +1044,7 @@
 
         const amount = parseFloat(b.amount_paid) || 0;
         const bookingDate = new Date(b.created_at || b.service_date);
-        const isSub = b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'));
+        const isSub = getIsSubscription(b);
 
         revTotal += amount;
 
@@ -1183,7 +1192,7 @@
       allBookings.forEach(b => {
         if (b.payment_status === 'Cancelled') return;
         const amt = parseFloat(b.amount_paid) || 0;
-        const isSub = b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'));
+        const isSub = getIsSubscription(b);
         if (isSub) subTotal += amt;
         else oneTimeTotal += amt;
       });
@@ -1432,7 +1441,7 @@
       } else if (currentFilter === 'Completed') {
         filtered = allBookings.filter(b => b.payment_status === 'Completed');
       } else if (currentFilter === 'Subscription') {
-        filtered = allBookings.filter(b => (b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'))) && b.payment_status !== 'Completed');
+        filtered = allBookings.filter(b => getIsSubscription(b) && b.payment_status !== 'Completed');
       }
 
       document.getElementById('orderCount').textContent = `Total Displayed: ${filtered.length}`;
@@ -1447,7 +1456,7 @@
 
       tbody.innerHTML = filtered.map(b => {
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.service_address || '')}`;
-        const isSub = b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'));
+        const isSub = getIsSubscription(b);
         
         const clientKey = (b.email || b.phone || b.client_name || '').toLowerCase().trim();
         const clientStats = clientUsageMap[clientKey];
