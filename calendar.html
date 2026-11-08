@@ -148,13 +148,13 @@
           </select>
         </div>
 
-        <!-- Permanent Setup Fee Mandatory Row -->
+        <!-- Permanent Setup Fee Mandatory Row ($25) -->
         <div class="p-3 bg-zinc-900/90 border border-red-900/50 rounded-lg flex items-center justify-between">
           <span class="text-xs font-semibold text-gray-200">Setup Fee <span class="text-red-500 font-bold">(Non-refundable)</span></span>
-          <span class="text-xs font-bold text-red-500">+$100</span>
+          <span class="text-xs font-bold text-red-500">+$25</span>
         </div>
 
-        <!-- Auto-Pay Recurring Plan Disclaimer (Appears when a plan is selected) -->
+        <!-- Auto-Pay Recurring Plan Disclaimer -->
         <div id="subscriptionDisclaimer" class="p-3 bg-red-950/30 border border-red-800/60 rounded-lg text-xs text-gray-300 hidden space-y-1">
           <p class="font-bold text-red-400 flex items-center gap-1.5">
             <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
@@ -334,7 +334,7 @@
         </div>
 
         <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
-          Confirm Booking (<span id="payBtnAmount">$250</span>)
+          Confirm Booking (<span id="payBtnAmount">$175</span>)
         </button>
       </form>
       
@@ -352,7 +352,9 @@
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const SETUP_FEE = 100;
+    
+    // Hardcoded Permanent Setup Fee ($25)
+    const SETUP_FEE = 25;
 
     // Payment Option Tab Toggle Logic
     let currentPaymentMethod = 'online';
@@ -504,6 +506,7 @@
         addonTotal += parseInt(cb.getAttribute('data-price') || 0, 10);
       });
 
+      // Permanent $25 Setup Fee inclusion
       const finalTotal = basePrice + SETUP_FEE + addonTotal;
       if (payBtnAmount) {
         payBtnAmount.textContent = `$${finalTotal}`;
@@ -533,7 +536,7 @@
 
     // Initialize Stripe & Elements
     const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    const elements = stripe.elements({ mode: 'payment', amount: 25000, currency: 'usd' });
+    const elements = stripe.elements({ mode: 'payment', amount: 17500, currency: 'usd' });
 
     // Express Checkout
     const expressCheckoutElement = elements.create('expressCheckout', {
@@ -759,7 +762,7 @@
       const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
       const packageSelected = document.getElementById('serviceType').value;
 
-      const fullServiceDescription = `${packageSelected} + $100 Setup Fee` + (selectedAddons ? ` + Addons: [${selectedAddons}]` : '');
+      const fullServiceDescription = `${packageSelected} + $25 Setup Fee` + (selectedAddons ? ` + Addons: [${selectedAddons}]` : '');
 
       const { data, error: dbError } = await supabaseClient
         .from('bookings')
