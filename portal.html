@@ -131,10 +131,6 @@
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-3">
-        <button id="audioToggleBtn" onclick="toggleAudioAlerts()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-400 font-bold py-2 px-3 rounded-lg transition flex items-center gap-2">
-          <span>🔔</span> Audio Alerts: <span id="audioStatusText" class="text-red-500">OFF</span>
-        </button>
-
         <button onclick="fetchBookings()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2 px-3 rounded-lg transition">
           🔄 Refresh Data
         </button>
@@ -224,12 +220,26 @@
     let clientUsageMap = {};
     let currentFilter = 'Upcoming';
     let autoRefreshTimer = null;
-    let audioEnabled = false;
+    let audioContext = null;
     let initialLoadComplete = false;
     
     let signaturePad = null;
     let pendingCompletionBookingId = null;
     let pendingSignatureDataUrl = null;
+
+    // Global listener to unlock WebAudio on user interaction
+    window.addEventListener('click', initAudioContext, { once: true });
+    window.addEventListener('touchstart', initAudioContext, { once: true });
+
+    function initAudioContext() {
+      if (!audioContext) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioCtx();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       const isAuthenticated = sessionStorage.getItem('kw_auth') === 'true';
@@ -396,53 +406,37 @@
       }
     }
 
+    // Permanently Active Synthesized Audio Chime
     function playNotificationSound() {
-      if (!audioEnabled) return;
+      initAudioContext();
       try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const ctx = new AudioContext();
-        
-        const osc1 = ctx.createOscillator();
-        const gain1 = ctx.createGain();
+        const osc1 = audioContext.createOscillator();
+        const gain1 = audioContext.createGain();
         osc1.type = 'sine';
         osc1.frequency.value = 880;
         osc1.connect(gain1);
-        gain1.connect(ctx.destination);
+        gain1.connect(audioContext.destination);
         
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
+        const osc2 = audioContext.createOscillator();
+        const gain2 = audioContext.createGain();
         osc2.type = 'sine';
         osc2.frequency.value = 1174.66;
         osc2.connect(gain2);
-        gain2.connect(ctx.destination);
+        gain2.connect(audioContext.destination);
 
-        const now = ctx.currentTime;
+        const now = audioContext.currentTime;
         
-        gain1.gain.setValueAtTime(0.15, now);
+        gain1.gain.setValueAtTime(0.2, now);
         gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
         osc1.start(now);
         osc1.stop(now + 0.3);
 
-        gain2.gain.setValueAtTime(0.2, now + 0.15);
+        gain2.gain.setValueAtTime(0.25, now + 0.15);
         gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
         osc2.start(now + 0.15);
         osc2.stop(now + 0.6);
       } catch (e) {
-        console.warn('Audio play error:', e);
-      }
-    }
-
-    function toggleAudioAlerts() {
-      audioEnabled = !audioEnabled;
-      const textEl = document.getElementById('audioStatusText');
-      if (audioEnabled) {
-        textEl.textContent = 'ON';
-        textEl.className = 'text-green-400 font-bold';
-        playNotificationSound();
-        showToast('Notification Sound Enabled 🔔', 'Alert chimes will play when new orders arrive.');
-      } else {
-        textEl.textContent = 'OFF';
-        textEl.className = 'text-red-500 font-bold';
+        console.warn('Audio chime playback error:', e);
       }
     }
 
@@ -471,6 +465,7 @@
 
     async function handleLogin(e) {
       e.preventDefault();
+      initAudioContext();
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
       const errorEl = document.getElementById('loginError');
