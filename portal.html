@@ -60,7 +60,6 @@
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-3">
-        <!-- Audio Alert Toggle Button -->
         <button id="audioToggleBtn" onclick="toggleAudioAlerts()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-400 font-bold py-2 px-3 rounded-lg transition flex items-center gap-2">
           <span>🔔</span> Audio Alerts: <span id="audioStatusText" class="text-red-500">OFF</span>
         </button>
@@ -125,6 +124,7 @@
               <tr>
                 <th class="p-3">ID / Date Created</th>
                 <th class="p-3">Client Info</th>
+                <th class="p-3">Loyalty Progress</th>
                 <th class="p-3">Schedule Window</th>
                 <th class="p-3">Vehicle & Service</th>
                 <th class="p-3">Type</th>
@@ -135,7 +135,7 @@
             </thead>
             <tbody id="dispatchTableBody" class="divide-y divide-zinc-900">
               <tr>
-                <td colspan="8" class="p-6 text-center text-gray-500">Loading bookings...</td>
+                <td colspan="9" class="p-6 text-center text-gray-500">Loading bookings...</td>
               </tr>
             </tbody>
           </table>
@@ -150,12 +150,12 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let allBookings = [];
+    let clientUsageMap = {}; // Key: email/phone, Value: count of bookings
     let currentFilter = 'All';
     let autoRefreshTimer = null;
     let audioEnabled = false;
     let initialLoadComplete = false;
 
-    // Check existing authentication session on load
     window.addEventListener('DOMContentLoaded', () => {
       const isAuthenticated = sessionStorage.getItem('kw_auth') === 'true';
       if (isAuthenticated) {
@@ -163,14 +163,12 @@
       }
     });
 
-    // Synthesize Audio Chime Notification using Web Audio API
     function playNotificationSound() {
       if (!audioEnabled) return;
       try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const ctx = new AudioContext();
         
-        // Note 1: High Chime (880Hz - A5)
         const osc1 = ctx.createOscillator();
         const gain1 = ctx.createGain();
         osc1.type = 'sine';
@@ -178,7 +176,6 @@
         osc1.connect(gain1);
         gain1.connect(ctx.destination);
         
-        // Note 2: Higher Chime (1174.66Hz - D6)
         const osc2 = ctx.createOscillator();
         const gain2 = ctx.createGain();
         osc2.type = 'sine';
@@ -188,7 +185,6 @@
 
         const now = ctx.currentTime;
         
-        // Play Chime Sequence
         gain1.gain.setValueAtTime(0.15, now);
         gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
         osc1.start(now);
@@ -209,7 +205,7 @@
       if (audioEnabled) {
         textEl.textContent = 'ON';
         textEl.className = 'text-green-400 font-bold';
-        playNotificationSound(); // Play test sound to confirm enabled state
+        playNotificationSound();
         showToast('Notification Sound Enabled 🔔', 'Alert chimes will play when new orders arrive.');
       } else {
         textEl.textContent = 'OFF';
@@ -296,13 +292,13 @@
       }
     }
 
-    // Set up instant Supabase database listener for new bookings
     function setupRealtimeSubscription() {
       supabaseClient
         .channel('public:bookings')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bookings' }, payload => {
           const newBooking = payload.new;
           allBookings.unshift(newBooking);
+          buildClientUsageMap();
           calculateAnalytics();
           renderTable();
           playNotificationSound();
@@ -328,7 +324,6 @@
         const previousCount = allBookings.length;
         const freshData = data || [];
 
-        // Check if new orders arrived during fetch pulse
         if (initialLoadComplete && freshData.length > previousCount) {
           const newCount = freshData.length - previousCount;
           playNotificationSound();
@@ -337,17 +332,42 @@
 
         allBookings = freshData;
         initialLoadComplete = true;
+        buildClientUsageMap();
         calculateAnalytics();
         renderTable();
       } catch (err) {
         console.error('Error fetching bookings:', err);
         document.getElementById('dispatchTableBody').innerHTML = `
           <tr>
-            <td colspan="8" class="p-6 text-center text-red-500">
+            <td colspan="9" class="p-6 text-center text-red-500">
               Failed to load bookings. Check Supabase RLS policies or database table permissions.
             </td>
           </tr>`;
       }
+    }
+
+    // Build chronological usage count per client (by email or phone)
+    function buildClientUsageMap() {
+      clientUsageMap = {};
+      // Process chronologically (oldest to newest) to get accurate sequence numbers
+      const sortedChronological = [...allBookings].reverse();
+
+      sortedChronological.forEach(b => {
+        if (b.payment_status === 'Cancelled') return;
+        
+        const key = (b.email || b.phone || b.client_name || '').toLowerCase().trim();
+        if (!key) return;
+
+        if (!clientUsageMap[key]) {
+          clientUsageMap[key] = {
+            total: 0,
+            bookingSequence: {}
+          };
+        }
+
+        clientUsageMap[key].total += 1;
+        clientUsageMap[key].bookingSequence[b.id] = clientUsageMap[key].total;
+      });
     }
 
     function calculateAnalytics() {
@@ -417,7 +437,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="8" class="p-6 text-center text-gray-500">No bookings found for this view.</td>
+            <td colspan="9" class="p-6 text-center text-gray-500">No bookings found for this view.</td>
           </tr>`;
         return;
       }
@@ -426,8 +446,16 @@
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.service_address || '')}`;
         const isSub = b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'));
         
+        // Lookup Client Usage Sequence Number
+        const clientKey = (b.email || b.phone || b.client_name || '').toLowerCase().trim();
+        const clientStats = clientUsageMap[clientKey];
+        const serviceNum = clientStats && clientStats.bookingSequence[b.id] ? clientStats.bookingSequence[b.id] : 1;
+        
+        // 5th Service (or multiples of 5: 5th, 10th, 15th...) qualifies for 25% Off Add-Ons
+        const isDiscountEligible = serviceNum > 0 && serviceNum % 5 === 0;
+
         return `
-          <tr class="hover:bg-zinc-900/50 transition">
+          <tr class="hover:bg-zinc-900/50 transition ${isDiscountEligible ? 'bg-amber-950/20' : ''}">
             <td class="p-3">
               <span class="font-bold text-white">#${b.id}</span>
               <div class="text-[10px] text-gray-500">${new Date(b.created_at).toLocaleDateString()} ${new Date(b.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
@@ -436,6 +464,17 @@
               <div class="font-bold text-white">${escapeHtml(b.client_name)}</div>
               <div class="text-gray-400"><a href="tel:${b.phone}" class="hover:underline text-red-400">${escapeHtml(b.phone)}</a></div>
               <div class="text-[10px] text-gray-500">${escapeHtml(b.email)}</div>
+            </td>
+            <td class="p-3">
+              <div class="flex flex-col gap-1">
+                <span class="inline-block font-bold ${isDiscountEligible ? 'text-amber-400' : 'text-gray-300'}">
+                  Service #${serviceNum}
+                </span>
+                ${isDiscountEligible 
+                  ? `<span class="bg-amber-500/20 text-amber-300 border border-amber-600 px-2 py-0.5 rounded text-[10px] font-extrabold animate-pulse">⭐ 25% OFF Add-Ons!</span>`
+                  : `<span class="text-[10px] text-zinc-500">${5 - (serviceNum % 5)} more till discount</span>`
+                }
+              </div>
             </td>
             <td class="p-3">
               <div class="text-red-500 font-bold">${b.service_date || 'N/A'}</div>
@@ -487,6 +526,7 @@
         const item = allBookings.find(b => b.id === id);
         if (item) item.payment_status = newStatus;
         
+        buildClientUsageMap();
         calculateAnalytics();
         renderTable();
       } catch (err) {
