@@ -9,42 +9,28 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Stripe JS Library -->
   <script src="https://js.stripe.com/v3/"></script>
-  <!-- Google Maps Places API -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPdfr_haNgDJNCwqPT-dU31ANGmanphNA&libraries=places" defer async></script>
   <style>
-    .pac-container { 
-      background-color: #09090b !important; 
-      color: #ffffff !important; 
-      border: 1px solid #27272a !important; 
-      font-family: inherit !important; 
-      border-radius: 0.5rem !important; 
-      margin-top: 4px !important; 
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important; 
-      z-index: 9999 !important; 
+    /* Custom Scrollbar for Add-ons */
+    ::-webkit-scrollbar {
+      width: 6px;
     }
-    .pac-item { 
-      color: #a1a1aa !important; 
-      border-top: 1px solid #27272a !important; 
-      padding: 8px 12px !important; 
-      cursor: pointer; 
+    ::-webkit-scrollbar-track {
+      background: #09090b;
     }
-    .pac-item:hover { 
-      background-color: #27272a !important; 
-      color: #ffffff !important; 
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 3px;
     }
-    .pac-item-query { 
-      color: #ffffff !important; 
-    }
-    .pac-icon { 
-      filter: invert(1) brightness(2); 
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3f3f46;
     }
   </style>
 </head>
-<body class="bg-black text-white min-h-screen p-4 flex flex-col items-center justify-center">
+<body class="bg-black text-white min-h-screen px-3 py-6 sm:px-6 md:py-10 flex flex-col items-center justify-center font-sans antialiased">
 
   <!-- Services Alert Notification Popup Modal -->
   <div id="servicesAlertModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300">
-    <div class="bg-zinc-950 border border-red-600 rounded-xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+    <div class="bg-zinc-950 border border-red-600 rounded-xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
       
       <!-- Close Button (X) -->
       <button type="button" onclick="closeServicesAlert()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold">
@@ -59,59 +45,60 @@
           </svg>
         </div>
         <div>
-          <h3 class="text-lg font-bold text-white tracking-wide">Services Alert</h3>
+          <h3 class="text-base sm:text-lg font-bold text-white tracking-wide">Services Alert</h3>
           <p class="text-xs text-red-500 font-semibold uppercase tracking-wider">Important Customer Notice</p>
         </div>
       </div>
 
       <!-- Modal Body Text -->
-      <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-lg my-4 text-center">
-        <p class="text-sm font-semibold text-white leading-relaxed">
+      <div class="bg-zinc-900 border border-zinc-800 p-3.5 sm:p-4 rounded-lg my-4 text-center">
+        <p class="text-xs sm:text-sm font-semibold text-white leading-relaxed">
           Your vehicle gets serviced twice, and you pay exactly the price you see.
         </p>
       </div>
 
       <!-- Action Button -->
-      <button type="button" onclick="closeServicesAlert()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-sm transition shadow-lg shadow-red-900/40">
+      <button type="button" onclick="closeServicesAlert()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs sm:text-sm transition shadow-lg shadow-red-900/40">
         Got It, Continue
       </button>
     </div>
   </div>
 
   <!-- Logo Header -->
-  <div class="mb-6 text-center">
-    <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Washing & Mobile Detailing Logo" class="h-16 mx-auto mb-2 object-contain filter drop-shadow-[0_0_10px_rgba(239,68,68,0.3)]">
-    <h1 class="text-lg font-bold text-white tracking-wide">KW COMMERCIAL FLEET WASHING <span class="text-red-600">&</span> MOBILE DETAILING</h1>
-    <p class="text-xs text-gray-400">Professional Mobile Service Direct to Your Location | Mon–Sat: 5AM–6PM</p>
+  <div class="mb-6 text-center max-w-xl">
+    <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Washing & Mobile Detailing Logo" class="h-14 sm:h-16 mx-auto mb-2 object-contain filter drop-shadow-[0_0_10px_rgba(239,68,68,0.3)]">
+    <h1 class="text-base sm:text-lg md:text-xl font-bold text-white tracking-wide uppercase">KW COMMERCIAL FLEET WASHING <span class="text-red-600">&</span> MOBILE DETAILING</h1>
+    <p class="text-[11px] sm:text-xs text-gray-400 mt-1">Professional Mobile Service Direct to Your Location | Mon–Sat: 5AM–6PM</p>
   </div>
 
-  <div class="max-w-4xl w-full bg-zinc-950 p-6 sm:p-8 rounded-xl shadow-2xl border border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+  <!-- Main Container (Responsive Grid: 1 col mobile/tablet, 2 col desktop) -->
+  <div class="max-w-5xl w-full bg-zinc-950 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-2xl border border-zinc-800 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
     
-    <!-- Left Column: Expanded Calendar & Time Slot Box -->
-    <div class="bg-black p-6 rounded-lg border border-zinc-800 flex flex-col justify-start space-y-4 h-fit">
+    <!-- Left Column: Calendar & Time Slot Box -->
+    <div class="bg-black p-4 sm:p-6 rounded-lg sm:rounded-xl border border-zinc-800 flex flex-col justify-start space-y-4 w-full">
       <div>
         <div class="flex justify-between items-center mb-4">
-          <button type="button" id="prevMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3.5 py-2 rounded text-sm font-bold border border-zinc-800 transition">&larr; Prev</button>
-          <h3 id="monthYearDisplay" class="text-lg font-bold text-white"></h3>
-          <button type="button" id="nextMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3.5 py-2 rounded text-sm font-bold border border-zinc-800 transition">Next &rarr;</button>
+          <button type="button" id="prevMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded text-xs sm:text-sm font-bold border border-zinc-800 transition">&larr; Prev</button>
+          <h3 id="monthYearDisplay" class="text-base sm:text-lg font-bold text-white"></h3>
+          <button type="button" id="nextMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded text-xs sm:text-sm font-bold border border-zinc-800 transition">Next &rarr;</button>
         </div>
 
-        <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold text-gray-400 mb-3">
+        <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center text-xs font-bold text-gray-400 mb-2 sm:mb-3">
           <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
         </div>
 
-        <!-- Larger Calendar Grid -->
-        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-2 text-center"></div>
+        <!-- Responsive Calendar Grid -->
+        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center"></div>
 
         <div class="mt-3 pt-3 border-t border-zinc-900 text-xs text-gray-400 text-center">
-          Selected Date : <span id="selectedDateDisplay" class="text-red-500 font-bold text-sm">None selected</span>
+          Selected Date : <span id="selectedDateDisplay" class="text-red-500 font-bold text-xs sm:text-sm">None selected</span>
         </div>
       </div>
 
-      <!-- Compact Time Slots Grid -->
+      <!-- Time Slots Grid -->
       <div class="pt-3 border-t border-zinc-900">
         <label class="block text-xs font-medium mb-2 text-gray-300">Select Available Time Slot</label>
-        <div id="timeSlotGrid" class="grid grid-cols-2 gap-2 opacity-50 pointer-events-none">
+        <div id="timeSlotGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 opacity-50 pointer-events-none">
           <button type="button" data-time="05:00 AM - 08:00 AM" class="time-slot-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 p-2.5 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
             05:00 AM - 08:00 AM
           </button>
@@ -130,10 +117,10 @@
     </div>
 
     <!-- Right Column: Booking & Payment Form -->
-    <div>
+    <div class="w-full">
       <!-- Beta Testing Banner + Re-Open Services Alert Button -->
-      <div class="mb-4 p-3 bg-red-950/40 border border-red-600/60 rounded-lg flex items-center justify-between gap-2 shadow-md">
-        <div class="flex items-start gap-2.5">
+      <div class="mb-4 p-3 bg-red-950/40 border border-red-600/60 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-md">
+        <div class="flex items-start gap-2.5 flex-1 min-w-[200px]">
           <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
@@ -141,7 +128,7 @@
           <div>
             <p class="text-xs font-bold text-red-500 tracking-wide uppercase">System Notification &mdash; Beta Testing</p>
             <p class="text-[11px] text-gray-300 leading-snug mt-0.5">
-              Our booking system is currently operating in <strong class="text-white">Beta Testing</strong> mode to refine your experience.
+              Our booking system is currently operating in <strong class="text-white">Beta Testing</strong> mode.
             </p>
           </div>
         </div>
@@ -150,32 +137,32 @@
         </button>
       </div>
 
-      <h2 class="text-xl font-bold mb-1 text-white flex items-center gap-2">
+      <h2 class="text-lg sm:text-xl font-bold mb-1 text-white flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-red-600"></span> Book & Secure Appointment
       </h2>
       <p class="text-xs text-gray-400 mb-4">Complete your details to confirm your detail service.</p>
 
-      <form id="bookingForm" class="space-y-3">
+      <form id="bookingForm" class="space-y-3 sm:space-y-3.5">
         <div>
           <label class="block text-xs font-medium mb-1 text-gray-300">Full Name</label>
-          <input type="text" id="clientName" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+          <input type="text" id="clientName" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Phone Number</label>
-            <input type="tel" id="phone" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+            <input type="tel" id="phone" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Email Address</label>
-            <input type="email" id="email" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+            <input type="email" id="email" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Vehicle Category</label>
-            <select id="vehicleCategory" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+            <select id="vehicleCategory" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
               <option value="Coupe" data-price="250">Coupe</option>
               <option value="Sedan" data-price="290">Sedan</option>
               <option value="Midsize SUV / Crossover" data-price="330">Midsize SUV / Crossover</option>
@@ -185,7 +172,7 @@
           </div>
           <div>
             <label class="block text-xs font-medium mb-1 text-gray-300">Package / Plan</label>
-            <select id="serviceType" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+            <select id="serviceType" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
               <option value="Full Luxury Detail" data-price="0" data-is-subscription="false">Full Luxury Detail (Standard One-Time)</option>
               <option value="KW Signature Wash 365" data-price="220" data-is-subscription="true">KW Signature Wash 365 ($220/mo Auto-Pay)</option>
               <option value="Black Label 365 ($449)" data-price="449" data-is-subscription="true">Black Label 365 ($449/mo Auto-Pay)</option>
@@ -201,12 +188,12 @@
         <!-- Selected Selection Base Price Drop-Box -->
         <div>
           <label class="block text-xs font-medium mb-1 text-gray-300">Selected Selection Base Price</label>
-          <select id="basePriceSelect" onchange="syncFromBasePriceSelect()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600 font-bold">
+          <select id="basePriceSelect" onchange="syncFromBasePriceSelect()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600 font-bold">
             <!-- Dynamically Populated via JS -->
           </select>
         </div>
 
-        <!-- Permanent Setup Fee Mandatory Row ($25) -->
+        <!-- Setup Fee Mandatory Row ($25) -->
         <div class="p-3 bg-zinc-900/90 border border-red-900/50 rounded-lg flex items-center justify-between">
           <span class="text-xs font-semibold text-gray-200">Setup Fee <span class="text-red-500 font-bold">(Non-refundable)</span></span>
           <span class="text-xs font-bold text-red-500">$25</span>
@@ -223,15 +210,15 @@
           </p>
         </div>
 
-        <!-- Add-ons Selection Section (Without Plus Symbols) -->
+        <!-- Add-ons Selection Section -->
         <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
           <label class="block text-xs font-medium text-gray-300">Select Add-On Services</label>
-          <div class="space-y-2 text-xs text-gray-300 max-h-52 overflow-y-auto pr-1">
+          <div class="space-y-3 text-xs text-gray-300 max-h-56 overflow-y-auto pr-1">
             
             <!-- Pet Hair Removal ($50 - $90) -->
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Pet Hair Removal</p>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal (Standard)" data-price="50" onchange="calculateTotalPrice()">
                   <span>Standard ($50)</span>
@@ -246,7 +233,7 @@
             <!-- Seat Shampoo / Extraction ($100 - $140) -->
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Seat Shampoo / Extraction</p>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Seat Shampoo (Standard)" data-price="100" onchange="calculateTotalPrice()">
                   <span>Standard ($100)</span>
@@ -261,7 +248,7 @@
             <!-- Engine Bay Cleaning ($100 - $150) -->
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Engine Bay Cleaning</p>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay (Standard)" data-price="100" onchange="calculateTotalPrice()">
                   <span>Standard ($100)</span>
@@ -276,7 +263,7 @@
             <!-- Excessive Soil Removal ($70 - $100) -->
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Excessive Soil Removal</p>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Excessive Soil (Moderate)" data-price="70" onchange="calculateTotalPrice()">
                   <span>Moderate ($70)</span>
@@ -291,7 +278,7 @@
             <!-- Paint Polishing ($175 - $350) -->
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Paint Polishing</p>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Polishing (Gloss)" data-price="175" onchange="calculateTotalPrice()">
                   <span>Gloss ($175)</span>
@@ -306,7 +293,7 @@
             <!-- Paint Correction ($250 - $450) -->
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Paint Correction</p>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (Minor Scratch)" data-price="250" onchange="calculateTotalPrice()">
                   <span>Minor ($250)</span>
@@ -321,7 +308,7 @@
             <!-- Ceramic Coatings ($400 - $600) -->
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Ceramic Coatings</p>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Ceramic Coating (1-Year)" data-price="400" onchange="calculateTotalPrice()">
                   <span>1-Year ($400)</span>
@@ -336,10 +323,13 @@
           </div>
         </div>
 
-        <!-- Google Places Autocomplete Address Input -->
-        <div>
+        <!-- LocationIQ Address Autocomplete Section -->
+        <div class="relative">
           <label class="block text-xs font-medium mb-1 text-gray-300">Mobile Service Address</label>
-          <input type="text" id="serviceAddress" placeholder="Start typing street address..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-red-600">
+          <input type="text" id="serviceAddress" placeholder="Start typing street address..." autocomplete="off" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
+          
+          <!-- Dropdown Suggestions Container -->
+          <ul id="addressSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-50 hidden divide-y divide-zinc-800/60"></ul>
         </div>
 
         <input type="hidden" id="serviceDate">
@@ -391,7 +381,7 @@
           </div>
         </div>
 
-        <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
+        <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg text-xs sm:text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
           Confirm Booking (<span id="payBtnAmount">$275</span>)
         </button>
       </form>
@@ -422,12 +412,111 @@
     const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
     const STRIPE_PUBLISHABLE_KEY = 'pk_live_51UXoy841rEJafE4qq4lXTr2T0q0P6p4qglGVZjFR1X3TvEGwDlDQwQAIrtHoU2GpONiMDJM8K7vgdG338knTqVAF004qtQ3bG3';
+    const LOCATIONIQ_API_KEY = 'pk.8621415053070b47124f0c43666b6c0e'; // Enterprise OpenStreetMap Autocomplete Access
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     // Hardcoded Permanent Setup Fee ($25)
     const SETUP_FEE = 25;
+
+    // LocationIQ Address Autocomplete Implementation
+    const addressInput = document.getElementById('serviceAddress');
+    const addressSuggestions = document.getElementById('addressSuggestions');
+    let debounceTimer;
+    let selectedIndex = -1;
+
+    if (addressInput && addressSuggestions) {
+      addressInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        const query = e.target.value.trim();
+
+        if (query.length < 3) {
+          addressSuggestions.classList.add('hidden');
+          addressSuggestions.innerHTML = '';
+          return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+          try {
+            const url = `https://api.locationiq.com/v1/autocomplete?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(query)}&limit=5&countrycodes=us&tag=place:house,place:building,highway:residential`;
+            const res = await fetch(url);
+            
+            if (!res.ok) throw new Error('Autocomplete request failed');
+            const data = await res.json();
+
+            addressSuggestions.innerHTML = '';
+            selectedIndex = -1;
+
+            if (data && data.length > 0) {
+              data.forEach((item) => {
+                const li = document.createElement('li');
+                li.className = 'p-2.5 text-xs text-gray-300 hover:bg-zinc-800 hover:text-white cursor-pointer transition flex items-center gap-2';
+                li.innerHTML = `
+                  <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  <span class="truncate">${item.display_name}</span>
+                `;
+
+                li.addEventListener('click', () => {
+                  addressInput.value = item.display_name;
+                  addressSuggestions.classList.add('hidden');
+                  addressSuggestions.innerHTML = '';
+                });
+
+                addressSuggestions.appendChild(li);
+              });
+              addressSuggestions.classList.remove('hidden');
+            } else {
+              addressSuggestions.classList.add('hidden');
+            }
+          } catch (err) {
+            console.warn('LocationIQ Autocomplete error:', err);
+            addressSuggestions.classList.add('hidden');
+          }
+        }, 300);
+      });
+
+      // Keyboard Navigation (Arrow keys & Enter)
+      addressInput.addEventListener('keydown', (e) => {
+        const items = addressSuggestions.querySelectorAll('li');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          selectedIndex = (selectedIndex + 1) % items.length;
+          updateHighlight(items);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+          updateHighlight(items);
+        } else if (e.key === 'Enter' && selectedIndex >= 0) {
+          e.preventDefault();
+          items[selectedIndex].click();
+        } else if (e.key === 'Escape') {
+          addressSuggestions.classList.add('hidden');
+        }
+      });
+
+      function updateHighlight(items) {
+        items.forEach((item, index) => {
+          if (index === selectedIndex) {
+            item.classList.add('bg-zinc-800', 'text-white');
+          } else {
+            item.classList.remove('bg-zinc-800', 'text-white');
+          }
+        });
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!addressInput.contains(e.target) && !addressSuggestions.contains(e.target)) {
+          addressSuggestions.classList.add('hidden');
+        }
+      });
+    }
 
     // Payment Option Tab Toggle Logic
     let currentPaymentMethod = 'online';
@@ -470,38 +559,6 @@
       const totalAmount = calculateTotalPrice();
       submitBtn.innerHTML = `Confirm Booking (Pay $${totalAmount} in Person/Zelle)`;
     });
-
-    // Google Places Autocomplete Setup
-    function initGoogleAutocomplete() {
-      const input = document.getElementById('serviceAddress');
-      if (!input) return;
-
-      if (typeof google !== 'undefined' && google.maps && google.maps.places) {
-        try {
-          const autocomplete = new google.maps.places.Autocomplete(input, {
-            componentRestrictions: { country: "us" },
-            fields: ["formatted_address"],
-            types: ["address"]
-          });
-
-          input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-            }
-          });
-        } catch (err) {
-          console.warn('Google Places Autocomplete failed to load:', err);
-        }
-      } else {
-        console.warn('Google Maps API key unverified or missing. Field remains standard input.');
-      }
-    }
-
-    if (document.readyState === 'complete') {
-      initGoogleAutocomplete();
-    } else {
-      window.addEventListener('load', initGoogleAutocomplete);
-    }
 
     // Dynamic Price Calculator & Drop-Box Syncing
     function populateBasePriceDropBox() {
@@ -777,14 +834,13 @@
     let selectedDateStr = '';
     let currentMonthBookings = [];
 
-    // Expanded Calendar Renderer with Capacity Enforcement (DAILY_MAX_LIMIT = 4) & DD:MM:YYYY Format
+    // Calendar Renderer with Capacity Enforcement & DD:MM:YYYY Format
     async function renderCalendar() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       document.getElementById('monthYearDisplay').textContent = `${monthNames[month]} ${year}`;
 
-      // Fetch existing bookings for this month from Supabase
       currentMonthBookings = await fetchMonthBookings(year, month);
 
       const firstDayIndex = new Date(year, month, 1).getDay();
@@ -807,11 +863,10 @@
         const dateObj = new Date(year, month, day);
         const dayOfWeek = dateObj.getDay();
 
-        // Check total bookings on this date against DAILY_MAX_LIMIT (4)
         const totalOrdersOnDate = currentMonthBookings.filter(b => b.service_date === dateStr).length;
 
         dayDiv.textContent = day;
-        dayDiv.className = "h-10 sm:h-11 text-sm rounded-lg cursor-pointer transition flex items-center justify-center font-bold border border-zinc-900/60 ";
+        dayDiv.className = "h-9 sm:h-11 text-xs sm:text-sm rounded-lg cursor-pointer transition flex items-center justify-center font-bold border border-zinc-900/60 ";
 
         if (dateStr < todayStr) {
           dayDiv.classList.add('text-zinc-700', 'cursor-not-allowed', 'bg-zinc-950/40');
@@ -819,7 +874,6 @@
           dayDiv.classList.add('text-zinc-700', 'line-through', 'cursor-not-allowed', 'bg-zinc-950/40');
           dayDiv.title = 'Closed on Sundays';
         } else if (totalOrdersOnDate >= DAILY_MAX_LIMIT) {
-          // Gray out date when daily limit of 4 is reached
           dayDiv.classList.add('text-zinc-600', 'line-through', 'cursor-not-allowed', 'bg-zinc-950/80');
           dayDiv.title = 'Fully Booked (4/4)';
         } else {
@@ -833,7 +887,6 @@
             selectedDateStr = dateStr;
             document.getElementById('serviceDate').value = selectedDateStr;
             
-            // Format to DD:MM:YYYY for display label
             const formattedDisplayDate = `${formattedDay}:${formattedMonth}:${year}`;
             document.getElementById('selectedDateDisplay').textContent = formattedDisplayDate;
 
