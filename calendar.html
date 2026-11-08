@@ -87,29 +87,30 @@
 
   <div class="max-w-4xl w-full bg-zinc-950 p-6 sm:p-8 rounded-xl shadow-2xl border border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
     
-    <!-- Left Column: Compact Calendar & Time Slot Box -->
-    <div class="bg-black p-5 rounded-lg border border-zinc-800 flex flex-col justify-start space-y-3 h-fit">
+    <!-- Left Column: Expanded Calendar & Time Slot Box -->
+    <div class="bg-black p-6 rounded-lg border border-zinc-800 flex flex-col justify-start space-y-4 h-fit">
       <div>
-        <div class="flex justify-between items-center mb-3">
-          <button type="button" id="prevMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3 py-1.5 rounded text-sm font-bold border border-zinc-800 transition">&larr; Prev</button>
-          <h3 id="monthYearDisplay" class="text-base font-bold text-white"></h3>
-          <button type="button" id="nextMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3 py-1.5 rounded text-sm font-bold border border-zinc-800 transition">Next &rarr;</button>
+        <div class="flex justify-between items-center mb-4">
+          <button type="button" id="prevMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3.5 py-2 rounded text-sm font-bold border border-zinc-800 transition">&larr; Prev</button>
+          <h3 id="monthYearDisplay" class="text-lg font-bold text-white"></h3>
+          <button type="button" id="nextMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3.5 py-2 rounded text-sm font-bold border border-zinc-800 transition">Next &rarr;</button>
         </div>
 
-        <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500 mb-2">
+        <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold text-gray-400 mb-3">
           <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
         </div>
 
-        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1 text-center"></div>
+        <!-- Larger Calendar Grid -->
+        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-2 text-center"></div>
 
-        <div class="mt-2 pt-2 border-t border-zinc-900 text-xs text-gray-400 text-center">
-          Selected Date: <span id="selectedDateDisplay" class="text-red-500 font-bold">None selected</span>
+        <div class="mt-3 pt-3 border-t border-zinc-900 text-xs text-gray-400 text-center">
+          Selected Date: <span id="selectedDateDisplay" class="text-red-500 font-bold text-sm">None selected</span>
         </div>
       </div>
 
       <!-- Compact Time Slots Grid -->
-      <div class="pt-2 border-t border-zinc-900">
-        <label class="block text-xs font-medium mb-1.5 text-gray-300">Select Available Time Slot</label>
+      <div class="pt-3 border-t border-zinc-900">
+        <label class="block text-xs font-medium mb-2 text-gray-300">Select Available Time Slot</label>
         <div id="timeSlotGrid" class="grid grid-cols-2 gap-2 opacity-50 pointer-events-none">
           <button type="button" data-time="05:00 AM - 08:00 AM" class="time-slot-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 p-2.5 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
             05:00 AM - 08:00 AM
@@ -124,7 +125,7 @@
             03:00 PM - 06:00 PM
           </button>
         </div>
-        <p id="timeSlotPrompt" class="text-[11px] text-gray-500 text-center mt-1.5">Select a date on the grid above to unlock time slots.</p>
+        <p id="timeSlotPrompt" class="text-[11px] text-gray-500 text-center mt-2">Select a date on the grid above to unlock time slots.</p>
       </div>
     </div>
 
@@ -411,6 +412,10 @@
       if (modal) modal.classList.remove('hidden');
     }
 
+    // Capacity Threshold Configuration
+    const DAILY_MAX_LIMIT = 4; // Max 4 orders per day before date grays out
+    const TIME_SLOT_MAX = 4;   // Max 4 orders per time slot before slot disables
+
     // Fully Configured Project Keys
     const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
@@ -586,8 +591,14 @@
 
     timeSlotBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        timeSlotBtns.forEach(b => b.classList.remove('bg-red-600', 'text-white', 'border-red-600', 'font-bold'));
-        timeSlotBtns.forEach(b => b.classList.add('bg-zinc-900', 'text-gray-300', 'border-zinc-800'));
+        if (btn.disabled) return;
+
+        timeSlotBtns.forEach(b => {
+          if (!b.disabled) {
+            b.classList.remove('bg-red-600', 'text-white', 'border-red-600', 'font-bold');
+            b.classList.add('bg-zinc-900', 'text-gray-300', 'border-zinc-800');
+          }
+        });
         
         btn.classList.remove('bg-zinc-900', 'text-gray-300', 'border-zinc-800');
         btn.classList.add('bg-red-600', 'text-white', 'border-red-600', 'font-bold');
@@ -596,6 +607,63 @@
         document.getElementById('selectedTimeSlotValue').value = selectedTimeSlotStr;
       });
     });
+
+    // Fetch Monthly Bookings from Supabase for Capacity Validation
+    async function fetchMonthBookings(year, month) {
+      const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+      const endDate = `${year}-${String(month + 1).padStart(2, '0')}-31`;
+
+      const { data, error } = await supabaseClient
+        .from('bookings')
+        .select('service_date, time_slot')
+        .gte('service_date', startDate)
+        .lte('service_date', endDate);
+
+      if (error) {
+        console.error('Error fetching calendar availability:', error);
+        return [];
+      }
+      return data || [];
+    }
+
+    // Filter Time Slot Grid Based on Selected Date & Cap (TIME_SLOT_MAX = 4)
+    function updateTimeSlotAvailability(selectedDateStr, monthBookings) {
+      const timeGrid = document.getElementById('timeSlotGrid');
+      const timePrompt = document.getElementById('timeSlotPrompt');
+      timeGrid.classList.remove('opacity-50', 'pointer-events-none');
+      timePrompt.textContent = 'Tap to select an available time window:';
+      timePrompt.classList.remove('text-gray-500');
+      timePrompt.classList.add('text-red-400');
+
+      const bookedSlots = monthBookings
+        .filter(b => b.service_date === selectedDateStr)
+        .map(b => b.time_slot);
+
+      timeSlotBtns.forEach(btn => {
+        const slotValue = btn.getAttribute('data-time');
+        const countForSlot = bookedSlots.filter(s => s === slotValue).length;
+
+        if (countForSlot >= TIME_SLOT_MAX) {
+          btn.disabled = true;
+          btn.classList.add('opacity-30', 'cursor-not-allowed', 'line-through', 'bg-zinc-950');
+          btn.classList.remove('hover:bg-zinc-800', 'bg-zinc-900', 'text-gray-300', 'bg-red-600', 'text-white');
+          btn.title = 'Slot Fully Booked (4/4)';
+          if (selectedTimeSlotStr === slotValue) {
+            selectedTimeSlotStr = '';
+            document.getElementById('selectedTimeSlotValue').value = '';
+          }
+        } else {
+          btn.disabled = false;
+          btn.classList.remove('opacity-30', 'cursor-not-allowed', 'line-through', 'bg-zinc-950');
+          if (selectedTimeSlotStr === slotValue) {
+            btn.classList.add('bg-red-600', 'text-white', 'border-red-600', 'font-bold');
+          } else {
+            btn.classList.add('bg-zinc-900', 'text-gray-300');
+          }
+          btn.title = `${countForSlot}/${TIME_SLOT_MAX} booked`;
+        }
+      });
+    }
 
     // Initialize Stripe & Elements
     const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
@@ -609,7 +677,6 @@
     });
     expressCheckoutElement.mount('#express-checkout-element');
 
-    // Express Checkout Event Handler (Apple Pay / Google Pay)
     expressCheckoutElement.on('confirm', async (event) => {
       if (!selectedDateStr) {
         alert('Please select a date from the calendar grid before paying.');
@@ -627,13 +694,11 @@
       const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
       const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
 
-      // Extract client details from wallet or form fields
       const billingDetails = event.billingDetails || {};
       const clientName = billingDetails.name || document.getElementById('clientName').value || 'Express Checkout Customer';
       const clientEmail = billingDetails.email || document.getElementById('email').value || 'express@checkout.com';
       const clientPhone = billingDetails.phone || document.getElementById('phone').value || 'N/A';
       
-      // Extract service address from form field or wallet address
       let serviceAddress = document.getElementById('serviceAddress').value;
       if (!serviceAddress && billingDetails.address) {
         const addr = billingDetails.address;
@@ -673,7 +738,6 @@
         } else if (paymentIntent && paymentIntent.status === 'succeeded') {
           const statusLabel = isSubscription ? 'Active Subscription (Express Wallet Monthly Auto-Pay)' : 'Paid & Confirmed (Express Wallet One-Time)';
           
-          // Write directly to Supabase so it pops up on the Admin Dispatch Portal
           await saveBookingToSupabaseWithDetails({
             clientName,
             phone: clientPhone,
@@ -709,12 +773,17 @@
 
     let currentDate = new Date();
     let selectedDateStr = '';
+    let currentMonthBookings = [];
 
-    function renderCalendar() {
+    // Expanded Calendar Renderer with Capacity Enforcement (DAILY_MAX_LIMIT = 4)
+    async function renderCalendar() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       document.getElementById('monthYearDisplay').textContent = `${monthNames[month]} ${year}`;
+
+      // Fetch existing bookings for this month from Supabase
+      currentMonthBookings = await fetchMonthBookings(year, month);
 
       const firstDayIndex = new Date(year, month, 1).getDay();
       const totalDays = new Date(year, month + 1, 0).getDate();
@@ -736,18 +805,26 @@
         const dateObj = new Date(year, month, day);
         const dayOfWeek = dateObj.getDay();
 
+        // Check total bookings on this date against DAILY_MAX_LIMIT (4)
+        const totalOrdersOnDate = currentMonthBookings.filter(b => b.service_date === dateStr).length;
+
         dayDiv.textContent = day;
-        dayDiv.className = "py-2 text-xs rounded-lg cursor-pointer transition flex items-center justify-center font-medium ";
+        dayDiv.className = "h-10 sm:h-11 text-sm rounded-lg cursor-pointer transition flex items-center justify-center font-bold border border-zinc-900/60 ";
 
         if (dateStr < todayStr) {
-          dayDiv.classList.add('text-zinc-700', 'cursor-not-allowed');
+          dayDiv.classList.add('text-zinc-700', 'cursor-not-allowed', 'bg-zinc-950/40');
         } else if (dayOfWeek === 0) {
-          dayDiv.classList.add('text-zinc-700', 'line-through', 'cursor-not-allowed');
+          dayDiv.classList.add('text-zinc-700', 'line-through', 'cursor-not-allowed', 'bg-zinc-950/40');
           dayDiv.title = 'Closed on Sundays';
+        } else if (totalOrdersOnDate >= DAILY_MAX_LIMIT) {
+          // Gray out date when daily limit of 4 is reached
+          dayDiv.classList.add('text-zinc-600', 'line-through', 'cursor-not-allowed', 'bg-zinc-950/80');
+          dayDiv.title = 'Fully Booked (4/4)';
         } else {
-          dayDiv.classList.add('text-gray-200', 'hover:bg-zinc-800', 'hover:text-red-400');
+          dayDiv.classList.add('text-gray-200', 'bg-zinc-900', 'hover:bg-zinc-800', 'hover:text-red-400', 'hover:border-red-900/50');
           if (dateStr === selectedDateStr) {
-            dayDiv.classList.add('bg-red-600', 'text-white', 'font-bold', 'shadow');
+            dayDiv.classList.remove('bg-zinc-900', 'text-gray-200');
+            dayDiv.classList.add('bg-red-600', 'text-white', 'font-black', 'shadow-lg', 'shadow-red-900/50', 'border-red-500');
           }
 
           dayDiv.addEventListener('click', () => {
@@ -755,12 +832,7 @@
             document.getElementById('serviceDate').value = selectedDateStr;
             document.getElementById('selectedDateDisplay').textContent = selectedDateStr;
 
-            const timeGrid = document.getElementById('timeSlotGrid');
-            const timePrompt = document.getElementById('timeSlotPrompt');
-            timeGrid.classList.remove('opacity-50', 'pointer-events-none');
-            timePrompt.textContent = 'Tap to select an available time window:';
-            timePrompt.classList.remove('text-gray-500');
-            timePrompt.classList.add('text-red-400');
+            updateTimeSlotAvailability(selectedDateStr, currentMonthBookings);
             renderCalendar();
           });
         }
@@ -870,7 +942,7 @@
       }
     });
 
-    // Write Record to Supabase (Used by standard card, Express Checkout, and Cash/Zelle)
+    // Write Record to Supabase
     async function saveBookingToSupabaseWithDetails({ clientName, phone, email, serviceAddress, amountPaid, stripePaymentId, paymentStatus, isSubscription }) {
       const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
       const packageSelected = document.getElementById('serviceType').value;
