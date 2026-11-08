@@ -194,12 +194,12 @@
         </div>
       </div>
 
-      <!-- REVENUE REPORTS TAB VIEW WITH VISUAL WIDGET CHARTS -->
+      <!-- REVENUE REPORTS TAB VIEW -->
       <div id="revenueReportsSection" class="hidden space-y-6">
         <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 class="text-base font-bold text-white mb-1">Financial & Revenue Visual Analytics</h2>
-            <p class="text-xs text-gray-400">Track visual revenue trajectories, monthly performance, and revenue mix.</p>
+            <h2 class="text-base font-bold text-white mb-1">Financial & Revenue Analytics</h2>
+            <p class="text-xs text-gray-400">Track revenue trajectories, service stream mix, and add-on breakdown.</p>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-xs text-gray-400">Chart Range:</span>
@@ -241,21 +241,21 @@
         <!-- VISUAL WIDGET CHARTS GRID -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          <!-- Widget 1: Monthly Revenue Trend (Bar/Line Chart) -->
+          <!-- Monthly Revenue Trend (Bar/Line Chart) -->
           <div class="lg:col-span-2 bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
               <div>
                 <h3 class="text-xs font-bold text-white uppercase tracking-wider">Monthly Revenue Trend</h3>
                 <p class="text-[11px] text-gray-500">Gross revenue generated per month</p>
               </div>
-              <span class="bg-red-950/60 border border-red-800 text-red-400 text-[10px] px-2 py-0.5 rounded font-bold">Live Visual Widget</span>
+              <span class="bg-red-950/60 border border-red-800 text-red-400 text-[10px] px-2 py-0.5 rounded font-bold">Revenue Widget</span>
             </div>
             <div class="h-64 relative w-full">
               <canvas id="monthlyRevenueChart"></canvas>
             </div>
           </div>
 
-          <!-- Widget 2: Revenue Mix Breakdown (Doughnut Chart) -->
+          <!-- Revenue Mix Breakdown (Doughnut Chart) -->
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
             <div class="mb-4">
               <h3 class="text-xs font-bold text-white uppercase tracking-wider">Revenue Stream Mix</h3>
@@ -268,7 +268,50 @@
 
         </div>
 
-        <!-- Revenue Breakdown Table -->
+        <!-- ADD-ONS PERFORMANCE CHART & TABLE -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Widget: Individual Add-On Revenue Distribution Chart -->
+          <div class="lg:col-span-1 bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
+            <div class="mb-4">
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider">Top Add-On Revenue</h3>
+              <p class="text-[11px] text-gray-500">Gross earnings per add-on category</p>
+            </div>
+            <div class="h-64 relative w-full flex items-center justify-center">
+              <canvas id="addOnsChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Add-On Service Revenue Breakdown Table -->
+          <div class="lg:col-span-2 bg-zinc-950 rounded-xl border border-zinc-800 p-4">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-xs font-bold text-amber-400 uppercase">Individual Add-On Revenue Breakdown</h3>
+              <span id="totalAddOnRevBadge" class="bg-amber-950/60 border border-amber-800 text-amber-300 text-[10px] font-extrabold px-2 py-0.5 rounded">
+                Add-On Total: $0.00
+              </span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-zinc-900 border-b border-zinc-800 text-gray-400 uppercase font-semibold">
+                  <tr>
+                    <th class="p-3">Add-On Service</th>
+                    <th class="p-3">Unit Price Range</th>
+                    <th class="p-3">Times Purchased</th>
+                    <th class="p-3">Estimated Gross Revenue</th>
+                  </tr>
+                </thead>
+                <tbody id="addOnsReportTableBody" class="divide-y divide-zinc-900 text-gray-300">
+                  <tr>
+                    <td colspan="4" class="p-4 text-center text-gray-500">Calculating add-on totals...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Base Revenue Breakdown Table -->
         <div class="bg-zinc-950 rounded-xl border border-zinc-800 p-4">
           <h3 class="text-xs font-bold text-gray-300 uppercase mb-3">Revenue Breakdown by Booking Type</h3>
           <div class="overflow-x-auto">
@@ -347,9 +390,21 @@
     let pendingCompletionBookingId = null;
     let pendingSignatureDataUrl = null;
 
-    // Chart.js Widget Instances
+    // Chart.js Instances
     let monthlyRevenueChartInstance = null;
     let revenueMixChartInstance = null;
+    let addOnsChartInstance = null;
+
+    // Standardized Add-On Pricing Map
+    const ADD_ON_PRICING = [
+      { key: 'pet hair', name: 'Pet Hair Removal', price: 70, range: '$50 - $90' },
+      { key: 'seat', name: 'Seat Shampoo / Extraction', price: 120, range: '$100 - $140' },
+      { key: 'engine', name: 'Engine Bay Cleaning', price: 125, range: '$100 - $150' },
+      { key: 'soil', name: 'Excessive Soil Removal', price: 85, range: '$70 - $100' },
+      { key: 'polishing', name: 'Paint Polishing', price: 260, range: '$175 - $350' },
+      { key: 'correction', name: 'Paint Correction', price: 350, range: '$250 - $450' },
+      { key: 'ceramic', name: 'Ceramic Coating', price: 500, range: '$400 - $600' }
+    ];
 
     window.addEventListener('click', initAudioContext, { once: true });
     window.addEventListener('touchstart', initAudioContext, { once: true });
@@ -840,7 +895,35 @@
       renderCharts();
     }
 
-    // Render Visual Widget Charts using Chart.js
+    // Process & Extract Add-Ons Data
+    function calculateAddOnsData() {
+      const stats = {};
+      ADD_ON_PRICING.forEach(item => {
+        stats[item.key] = {
+          name: item.name,
+          range: item.range,
+          price: item.price,
+          count: 0,
+          revenue: 0
+        };
+      });
+
+      allBookings.forEach(b => {
+        if (b.payment_status === 'Cancelled') return;
+        const addOnText = (b.add_ons || b.service_type || '').toLowerCase();
+
+        ADD_ON_PRICING.forEach(item => {
+          if (addOnText.includes(item.key)) {
+            stats[item.key].count += 1;
+            stats[item.key].revenue += item.price;
+          }
+        });
+      });
+
+      return stats;
+    }
+
+    // Render All Visual Widget Charts using Chart.js
     function renderCharts() {
       if (document.getElementById('revenueReportsSection').classList.contains('hidden')) return;
 
@@ -866,7 +949,7 @@
         monthlyRevenueData.push(monthlyTotal);
       }
 
-      // Widget Chart 1: Bar Chart
+      // Widget Chart 1: Bar Chart (Monthly Revenue)
       const ctx1 = document.getElementById('monthlyRevenueChart')?.getContext('2d');
       if (ctx1) {
         if (monthlyRevenueChartInstance) monthlyRevenueChartInstance.destroy();
@@ -925,7 +1008,7 @@
         else oneTimeTotal += amt;
       });
 
-      // Widget Chart 2: Doughnut Chart
+      // Widget Chart 2: Doughnut Chart (Revenue Streams)
       const ctx2 = document.getElementById('revenueMixChart')?.getContext('2d');
       if (ctx2) {
         if (revenueMixChartInstance) revenueMixChartInstance.destroy();
@@ -957,6 +1040,77 @@
               }
             },
             cutout: '70%'
+          }
+        });
+      }
+
+      // 3. Build Add-Ons Data & Render Table + Horizontal Bar Chart
+      const addOnsData = calculateAddOnsData();
+      renderAddOnsReport(addOnsData);
+    }
+
+    function renderAddOnsReport(stats) {
+      const tbody = document.getElementById('addOnsReportTableBody');
+      const addOnList = Object.values(stats);
+      let totalAddOnRevenue = 0;
+
+      addOnList.forEach(item => totalAddOnRevenue += item.revenue);
+
+      document.getElementById('totalAddOnRevBadge').textContent = `Add-On Total: $${totalAddOnRevenue.toFixed(2)}`;
+
+      tbody.innerHTML = addOnList.map(item => `
+        <tr class="hover:bg-zinc-900/50 transition">
+          <td class="p-3 font-bold text-white">${escapeHtml(item.name)}</td>
+          <td class="p-3 text-gray-400 font-mono text-[11px]">${item.range}</td>
+          <td class="p-3">
+            <span class="bg-zinc-900 border border-zinc-800 text-amber-300 font-bold px-2 py-0.5 rounded text-[11px]">
+              ${item.count} order(s)
+            </span>
+          </td>
+          <td class="p-3 font-bold text-green-400">$${item.revenue.toFixed(2)}</td>
+        </tr>
+      `).join('');
+
+      // Widget Chart 3: Horizontal Bar Chart (Add-On Revenue Distribution)
+      const ctx3 = document.getElementById('addOnsChart')?.getContext('2d');
+      if (ctx3) {
+        if (addOnsChartInstance) addOnsChartInstance.destroy();
+
+        addOnsChartInstance = new Chart(ctx3, {
+          type: 'bar',
+          data: {
+            labels: addOnList.map(i => i.name.split(' ')[0]),
+            datasets: [{
+              label: 'Add-On Revenue ($)',
+              data: addOnList.map(i => i.revenue),
+              backgroundColor: 'rgba(245, 158, 11, 0.7)',
+              borderColor: 'rgba(245, 158, 11, 1)',
+              borderWidth: 1.5,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` Revenue: $${ctx.raw.toFixed(2)}`
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(39, 39, 42, 0.6)' },
+                ticks: { color: '#9ca3af', font: { size: 9 }, callback: (v) => `$${v}` }
+              },
+              y: {
+                grid: { display: false },
+                ticks: { color: '#d4d4d8', font: { size: 10 } }
+              }
+            }
           }
         });
       }
