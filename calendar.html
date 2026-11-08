@@ -94,6 +94,20 @@
 
     <!-- Right Column: Booking & Payment Form -->
     <div>
+      <!-- Beta Testing Notification Banner -->
+      <div class="mb-4 p-3 bg-red-950/40 border border-red-600/60 rounded-lg flex items-start gap-2.5 shadow-md">
+        <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+        </span>
+        <div>
+          <p class="text-xs font-bold text-red-500 tracking-wide uppercase">System Notification &mdash; Beta Testing</p>
+          <p class="text-[11px] text-gray-300 leading-snug mt-0.5">
+            Our booking system is currently operating in <strong class="text-white">Beta Testing</strong> mode to refine your experience. All appointments and payments are processed securely!
+          </p>
+        </div>
+      </div>
+
       <h2 class="text-xl font-bold mb-1 text-white flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-red-600"></span> Book & Secure Appointment
       </h2>
@@ -165,7 +179,7 @@
           </p>
         </div>
 
-        <!-- Add-ons Selection Section (Plus Symbols Removed) -->
+        <!-- Add-ons Selection Section (Without Plus Symbols) -->
         <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
           <label class="block text-xs font-medium text-gray-300">Select Add-On Services</label>
           <div class="space-y-2 text-xs text-gray-300 max-h-52 overflow-y-auto pr-1">
