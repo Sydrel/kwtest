@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS Client Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Signature Pad Library for clean digital signatures -->
+  <!-- Signature Pad Library -->
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 </head>
 <body class="bg-black text-white min-h-screen p-4 sm:p-6 font-sans flex flex-col justify-center items-center">
@@ -15,18 +15,18 @@
   <!-- POPUP TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
-  <!-- DIGITAL SIGNATURE MODAL -->
+  <!-- DIGITAL SIGNATURE MODAL (Step 1) -->
   <div id="signatureModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
       <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
         <div>
-          <h3 class="text-lg font-bold text-white">Complete Order & Client Signature</h3>
+          <h3 class="text-lg font-bold text-white">Client Signature</h3>
           <p id="modalClientInfo" class="text-xs text-gray-400">Order # -- | Client</p>
         </div>
         <button onclick="closeSignatureModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
       </div>
 
-      <p class="text-xs text-gray-300">Please have the client sign below to acknowledge job completion and authorize automated receipt delivery.</p>
+      <p class="text-xs text-gray-300">Have the client sign below to acknowledge completion of service.</p>
 
       <!-- Canvas Signature Pad -->
       <div class="border border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative">
@@ -36,16 +36,50 @@
 
       <div class="flex justify-between items-center pt-2">
         <button onclick="clearSignature()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-400 font-bold py-2 px-3 rounded-lg transition">
-          🗑️ Clear Signature
+          🗑️ Clear
         </button>
         <div class="flex gap-2">
           <button onclick="closeSignatureModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2 px-4 rounded-lg transition">
             Cancel
           </button>
-          <button onclick="saveSignatureAndComplete()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-lg shadow-red-900/30">
-            Sign & Send Email 📩
+          <button onclick="proceedToConfirmation()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-lg shadow-red-900/30">
+            Review & Confirm ➔
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLETION CONFIRMATION MODAL (Step 2) -->
+  <div id="confirmationModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+      <div class="pb-3 border-b border-zinc-800 text-center">
+        <h3 class="text-lg font-bold text-white">Confirm Job Completion</h3>
+        <p class="text-xs text-gray-400">Review details before sending receipt & archiving order</p>
+      </div>
+
+      <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2 text-xs">
+        <div class="flex justify-between"><span class="text-gray-400">Order ID:</span><span id="confirmOrderId" class="font-bold text-white">#--</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">Client:</span><span id="confirmClientName" class="font-bold text-white">--</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">Send Receipt To:</span><span id="confirmClientEmail" class="font-bold text-red-400">--</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">Service:</span><span id="confirmService" class="font-bold text-gray-200 truncate max-w-[200px]">--</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">Total Paid:</span><span id="confirmAmount" class="font-bold text-green-400">$0.00</span></div>
+        
+        <div class="pt-2 border-t border-zinc-800">
+          <span class="text-gray-400 block mb-1">Captured Signature:</span>
+          <div class="bg-white p-2 rounded-lg flex justify-center">
+            <img id="confirmSignatureImg" src="" alt="Client Signature" class="h-16 object-contain">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="backToSignature()" class="w-1/2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2.5 rounded-lg transition">
+          ← Back to Sign
+        </button>
+        <button onclick="confirmAndMoveToComplete()" class="w-1/2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2.5 rounded-lg transition shadow-lg shadow-green-900/30 flex items-center justify-center gap-1">
+          ✅ Confirm & Move Order
+        </button>
       </div>
     </div>
   </div>
@@ -145,10 +179,10 @@
       <!-- Filter Bar -->
       <div class="flex flex-wrap gap-2 items-center justify-between bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
         <div class="flex flex-wrap gap-2">
-          <button onclick="filterStatus('All')" class="filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition">All Orders</button>
-          <button onclick="filterStatus('Paid & Confirmed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Paid & Confirmed</button>
-          <button onclick="filterStatus('Completed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Completed</button>
-          <button onclick="filterStatus('Subscription')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-purple-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Subscriptions Only</button>
+          <button id="filterAll" onclick="filterStatus('All')" class="filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition">All Active Orders</button>
+          <button id="filterPaid" onclick="filterStatus('Paid & Confirmed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Paid & Confirmed</button>
+          <button id="filterSub" onclick="filterStatus('Subscription')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-purple-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Subscriptions Only</button>
+          <button id="filterCompleted" onclick="filterStatus('Completed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-green-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">📁 Completed Tab</button>
         </div>
         <span id="orderCount" class="text-gray-400 font-medium">Loading orders...</span>
       </div>
@@ -167,7 +201,7 @@
                 <th class="p-3">Type</th>
                 <th class="p-3">Service Address</th>
                 <th class="p-3">Amount</th>
-                <th class="p-3">Status / Signature</th>
+                <th class="p-3">Status / Action</th>
               </tr>
             </thead>
             <tbody id="dispatchTableBody" class="divide-y divide-zinc-900">
@@ -195,6 +229,7 @@
     
     let signaturePad = null;
     let pendingCompletionBookingId = null;
+    let pendingSignatureDataUrl = null;
 
     window.addEventListener('DOMContentLoaded', () => {
       const isAuthenticated = sessionStorage.getItem('kw_auth') === 'true';
@@ -235,46 +270,69 @@
       document.getElementById('signatureModal').classList.add('hidden');
       if (signaturePad) signaturePad.clear();
       pendingCompletionBookingId = null;
-      renderTable(); // Reset dropdown if cancelled
+      renderTable();
     }
 
     function clearSignature() {
       if (signaturePad) signaturePad.clear();
     }
 
-    async function saveSignatureAndComplete() {
+    function proceedToConfirmation() {
       if (signaturePad.isEmpty()) {
-        alert('Please collect client signature before completing the job.');
+        alert('Please collect a client signature first.');
         return;
       }
 
-      const signatureDataUrl = signaturePad.toDataURL(); // Base64 signature image
+      pendingSignatureDataUrl = signaturePad.toDataURL();
       const booking = allBookings.find(b => b.id === pendingCompletionBookingId);
 
+      if (!booking) return;
+
+      document.getElementById('confirmOrderId').textContent = `#${booking.id}`;
+      document.getElementById('confirmClientName').textContent = booking.client_name || 'Client';
+      document.getElementById('confirmClientEmail').textContent = booking.email || 'No email provided';
+      document.getElementById('confirmService').textContent = booking.service_type || 'Detailing Service';
+      document.getElementById('confirmAmount').textContent = `$${parseFloat(booking.amount_paid || 0).toFixed(2)}`;
+      document.getElementById('confirmSignatureImg').src = pendingSignatureDataUrl;
+
+      document.getElementById('signatureModal').classList.add('hidden');
+      document.getElementById('confirmationModal').classList.remove('hidden');
+    }
+
+    function backToSignature() {
+      document.getElementById('confirmationModal').classList.add('hidden');
+      document.getElementById('signatureModal').classList.remove('hidden');
+    }
+
+    async function confirmAndMoveToComplete() {
+      const booking = allBookings.find(b => b.id === pendingCompletionBookingId);
+      if (!booking) return;
+
       try {
-        // 1. Update Supabase record with signature and status
+        // 1. Update database record to 'Completed' and attach signature
         const { error } = await supabaseClient
           .from('bookings')
           .update({ 
             payment_status: 'Completed',
-            client_signature: signatureDataUrl,
+            client_signature: pendingSignatureDataUrl,
             completed_at: new Date().toISOString()
           })
           .eq('id', pendingCompletionBookingId);
 
         if (error) throw error;
 
-        // Update local object state
-        if (booking) {
-          booking.payment_status = 'Completed';
-          booking.client_signature = signatureDataUrl;
-        }
+        booking.payment_status = 'Completed';
+        booking.client_signature = pendingSignatureDataUrl;
 
-        // 2. Trigger Completion Email via Supabase Function / API
-        await sendJobCompletedEmail(booking, signatureDataUrl);
+        // 2. Dispatch job completion email payload
+        await sendJobCompletedEmail(booking, pendingSignatureDataUrl);
 
-        showToast('Job Completed & Email Sent 📩', `Completion receipt emailed to ${booking?.email || 'client'}.`);
-        closeSignatureModal();
+        document.getElementById('confirmationModal').classList.add('hidden');
+        showToast('Order Completed & Moved 📁', `Order #${booking.id} is moved to Completed Tab. Receipt sent to ${booking.email || 'client'}.`);
+        
+        pendingCompletionBookingId = null;
+        pendingSignatureDataUrl = null;
+
         buildClientUsageMap();
         calculateAnalytics();
         renderTable();
@@ -283,7 +341,6 @@
       }
     }
 
-    // Call your Supabase Edge Function to dispatch the receipt email
     async function sendJobCompletedEmail(booking, signatureImg) {
       try {
         await fetch(`${SUPABASE_URL}/functions/v1/send-completion-email`, {
@@ -577,7 +634,7 @@
           subscriptionsCount++;
         }
 
-        if (b.payment_status === 'Paid & Confirmed' || b.payment_status === 'Dispatched') {
+        if (b.payment_status === 'Paid & Confirmed' || b.payment_status === 'Dispatched' || b.payment_status === 'In Progress') {
           pendingCount++;
         }
       });
@@ -594,9 +651,15 @@
       const tbody = document.getElementById('dispatchTableBody');
       
       let filtered = allBookings;
-      if (currentFilter === 'Subscription') {
-        filtered = allBookings.filter(b => b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub')));
-      } else if (currentFilter !== 'All') {
+
+      // Filter Logic: Default "All" hides Completed orders to keep pending queue clean
+      if (currentFilter === 'All') {
+        filtered = allBookings.filter(b => b.payment_status !== 'Completed');
+      } else if (currentFilter === 'Completed') {
+        filtered = allBookings.filter(b => b.payment_status === 'Completed');
+      } else if (currentFilter === 'Subscription') {
+        filtered = allBookings.filter(b => (b.is_subscription || (b.service_type && b.service_type.toLowerCase().includes('sub'))) && b.payment_status !== 'Completed');
+      } else {
         filtered = allBookings.filter(b => b.payment_status === currentFilter);
       }
 
@@ -605,7 +668,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="9" class="p-6 text-center text-gray-500">No bookings found for this view.</td>
+            <td colspan="9" class="p-6 text-center text-gray-500">No ${currentFilter === 'Completed' ? 'completed' : 'active'} bookings found in this view.</td>
           </tr>`;
         return;
       }
@@ -695,6 +758,22 @@
 
     function filterStatus(status) {
       currentFilter = status;
+
+      // Highlight Active Filter Button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.className = 'filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-1.5 px-3 rounded-lg border border-zinc-800 transition';
+      });
+
+      if (status === 'All') {
+        document.getElementById('filterAll').className = 'filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
+      } else if (status === 'Paid & Confirmed') {
+        document.getElementById('filterPaid').className = 'filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
+      } else if (status === 'Subscription') {
+        document.getElementById('filterSub').className = 'filter-btn bg-purple-900/60 text-purple-300 border border-purple-700 font-bold py-1.5 px-3 rounded-lg transition';
+      } else if (status === 'Completed') {
+        document.getElementById('filterCompleted').className = 'filter-btn bg-green-900/60 text-green-300 border border-green-700 font-bold py-1.5 px-3 rounded-lg transition';
+      }
+
       renderTable();
     }
 
