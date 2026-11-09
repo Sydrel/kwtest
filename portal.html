@@ -218,7 +218,7 @@
     </div>
   </div>
 
-  <!-- CLEAN LOGIN SCREEN CONTAINER (NO PRE-FILLED CREDS) -->
+  <!-- CLEAN LOGIN SCREEN CONTAINER (STRICT SUPABASE AUTH) -->
   <div id="loginScreen" class="w-full max-w-md bg-zinc-950 p-8 rounded-2xl border border-zinc-800 shadow-2xl my-auto">
     <div class="flex flex-col items-center mb-6 text-center">
       <img src="https://i.imgur.com/9Q025WO.png" alt="KW Logo" class="h-16 object-contain mb-3 filter drop-shadow-[0_0_12px_rgba(239,68,68,0.4)]">
@@ -600,17 +600,68 @@
       }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      // Clear inputs on DOM load to prevent browser autofill
+    window.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('loginEmail').value = '';
       document.getElementById('loginPassword').value = '';
 
-      const isAuthenticated = sessionStorage.getItem('kw_auth') === 'true';
-      if (isAuthenticated) {
+      // Check active Supabase auth session
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        sessionStorage.setItem('kw_auth', 'true');
         showDashboard();
+      } else {
+        sessionStorage.removeItem('kw_auth');
       }
+
       initSignaturePad();
     });
+
+    // PART C: STRICT SUPABASE AUTH LOGIN FUNCTION
+    async function handleLogin(e) {
+      e.preventDefault();
+      initAudioContext();
+      
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const errorEl = document.getElementById('loginError');
+      
+      errorEl.classList.add('hidden');
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password,
+        });
+
+        if (error || !data?.session) {
+          throw new Error(error ? error.message : 'Authentication failed.');
+        }
+
+        sessionStorage.setItem('kw_auth', 'true');
+        showDashboard();
+      } catch (err) {
+        errorEl.textContent = 'Invalid login credentials. Please check your email and password.';
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        await supabaseClient.auth.signOut();
+      } catch (e) {
+        console.warn('Supabase sign-out warning:', e);
+      }
+
+      sessionStorage.removeItem('kw_auth');
+      if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+      
+      document.getElementById('portalDashboard').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.body.classList.add('flex', 'flex-col', 'justify-center', 'items-center');
+      
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginPassword').value = '';
+    }
 
     // Helper to strictly classify Subscription vs One-Time Order Type
     function getIsSubscription(b) {
@@ -937,51 +988,9 @@
       }, 4500);
     }
 
-    async function handleLogin(e) {
-      e.preventDefault();
-      initAudioContext();
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value.trim();
-      const errorEl = document.getElementById('loginError');
-      
-      errorEl.classList.add('hidden');
-
-      try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password,
-        });
-
-        if (!error && data?.session) {
-          sessionStorage.setItem('kw_auth', 'true');
-          showDashboard();
-          return;
-        }
-      } catch (err) {
-        console.warn('Supabase Auth error, checking fallback passcodes...');
-      }
-
-      const validPasscodes = ['admin123', 'kwdetailing', 'kw2026'];
-      if (validPasscodes.includes(password) || (email === 'admin@kwdetailing.com' && password === 'admin123')) {
-        sessionStorage.setItem('kw_auth', 'true');
-        showDashboard();
-      } else {
-        errorEl.textContent = 'Invalid credentials. Check your password and try again.';
-        errorEl.classList.remove('hidden');
-      }
-    }
-
-    function handleLogout() {
-      sessionStorage.removeItem('kw_auth');
-      if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-      
-      document.getElementById('portalDashboard').classList.add('hidden');
-      document.getElementById('loginScreen').classList.remove('hidden');
-      document.body.classList.add('flex', 'flex-col', 'justify-center', 'items-center');
-      
-      // Clear inputs on logout
-      document.getElementById('loginEmail').value = '';
-      document.getElementById('loginPassword').value = '';
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById('loginPassword');
+      pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
     }
 
     function showDashboard() {
@@ -1019,11 +1028,6 @@
         .subscribe();
     }
 
-    function togglePasswordVisibility() {
-      const pwdInput = document.getElementById('loginPassword');
-      pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
-    }
-
     async function fetchBookings() {
       try {
         const { data, error } = await supabaseClient
@@ -1055,7 +1059,7 @@
         document.getElementById('dispatchTableBody').innerHTML = `
           <tr>
             <td colspan="5" class="p-6 text-center text-red-500">
-              Failed to load bookings. Check Supabase RLS policies or database table permissions.
+              Failed to load bookings. Verify your login status or Supabase RLS policies.
             </td>
           </tr>`;
       }
