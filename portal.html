@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KW Detailing - Portal</title>
+  <title>KW Detailing - Admin Dispatch Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS Client Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,12 +12,12 @@
   <!-- Chart.js Engine for Visual Widgets -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-black text-white min-h-screen p-4 sm:p-6 font-sans flex flex-col justify-center items-center">
+<body class="bg-black text-white min-h-screen p-3 sm:p-6 font-sans flex flex-col justify-center items-center">
 
   <!-- POPUP TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
-  <!-- CLEAN & ORGANIZED ORDER DETAILS MODAL -->
+  <!-- CLEAN & ENHANCED ORDER DETAILS MODAL (TAP TO VIEW) -->
   <div id="orderDetailsModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5">
     <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
       
@@ -36,6 +36,17 @@
       <!-- Modal Content Body -->
       <div class="p-6 overflow-y-auto space-y-4 text-xs">
 
+        <!-- LOYALTY DISCOUNT STATUS BANNER -->
+        <div id="detailLoyaltyBanner" class="hidden p-3 rounded-xl border bg-amber-950/30 border-amber-600/60 text-amber-300 flex justify-between items-center">
+          <div>
+            <span id="detailServiceNumBadge" class="font-bold block text-amber-400">Service #--</span>
+            <span id="detailLoyaltySubtext" class="text-[11px] text-zinc-300">Loyalty Tracker Status</span>
+          </div>
+          <span id="detailLoyaltyTag" class="bg-amber-500/20 border border-amber-600 text-amber-300 px-2.5 py-1 rounded-lg text-[11px] font-extrabold animate-pulse">
+            25% OFF Add-Ons!
+          </span>
+        </div>
+
         <!-- WORK ORDER & ADD-ONS (PRIMARY VISUAL AREA) -->
         <div class="bg-zinc-900/60 border border-amber-900/40 rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between pb-2 border-b border-zinc-800">
@@ -47,9 +58,14 @@
             </span>
           </div>
 
-          <div>
-            <span class="text-zinc-400 text-[10px] uppercase font-semibold block mb-0.5">Base Service Package</span>
-            <p id="detailServiceType" class="text-sm font-extrabold text-white">--</p>
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-zinc-400 text-[10px] uppercase font-semibold block mb-0.5">Base Service Package</span>
+              <p id="detailServiceType" class="text-sm font-extrabold text-white">--</p>
+            </div>
+            <span id="detailOrderTypeBadge" class="bg-zinc-900 text-gray-400 border border-zinc-800 px-2 py-0.5 rounded text-[10px] font-bold">
+              One-Time
+            </span>
           </div>
 
           <div class="pt-2 border-t border-zinc-800/80">
@@ -60,7 +76,7 @@
           </div>
         </div>
 
-        <!-- 2-COLUMN GRID: SCHEDULE & CLIENT INFO -->
+        <!-- 2-COLUMN GRID: SCHEDULE & PAYMENT INFO -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           
           <!-- Schedule Card -->
@@ -80,7 +96,7 @@
               💳 Payment & Status
             </span>
             <div class="space-y-1">
-              <div class="flex justify-between"><span class="text-zinc-500">Total Charged:</span><span id="detailAmountPaid" class="font-extrabold text-green-400">$0.00</span></div>
+              <div class="flex justify-between"><span class="text-zinc-500">Total Amount:</span><span id="detailAmountPaid" class="font-extrabold text-green-400">$0.00</span></div>
               <div class="flex justify-between"><span class="text-zinc-500">Payment Type:</span><span id="detailPaymentMethod" class="font-bold text-amber-400">--</span></div>
             </div>
           </div>
@@ -239,42 +255,52 @@
   <!-- MAIN PORTAL DASHBOARD -->
   <div id="portalDashboard" class="w-full max-w-7xl mx-auto hidden space-y-6">
 
-    <!-- Header Section -->
-    <header class="flex flex-col sm:flex-row justify-between items-center gap-4 pb-4 border-b border-zinc-800">
+    <!-- Clean Header Section (Removed redundant portal banner text) -->
+    <header class="flex flex-row justify-between items-center gap-4 pb-4 border-b border-zinc-800">
       <div class="flex items-center gap-3">
-        <img src="https://i.imgur.com/9Q025WO.png" alt="KW Logo" class="h-12 object-contain filter drop-shadow-[0_0_8px_rgba(239,68,68,0.3)]">
-        <div>
-          <h1 class="text-xl font-bold tracking-wide">KW PORTAL</h1>
-          <p class="text-xs text-gray-400">Mobile Service Fleet, Client Subscriptions & Revenue Analytics</p>
-        </div>
+        <img src="https://i.imgur.com/9Q025WO.png" alt="KW Logo" class="h-10 sm:h-12 object-contain filter drop-shadow-[0_0_8px_rgba(239,68,68,0.3)]">
       </div>
-      <div class="flex flex-wrap items-center gap-3">
-        <button onclick="fetchBookings()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2 px-3 rounded-lg transition">
-          🔄 Refresh Data
+      <div class="flex flex-wrap items-center gap-2.5">
+        <button onclick="fetchBookings()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2 px-3 rounded-xl transition flex items-center gap-1.5">
+          🔄 <span class="hidden sm:inline">Refresh Data</span>
         </button>
-        <div id="statusBadge" class="bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Live Sync Active
+        <div id="statusBadge" class="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl text-xs font-semibold text-gray-400 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> <span class="hidden sm:inline">Live Sync</span>
         </div>
-        <button onclick="handleLogout()" class="bg-red-950/40 hover:bg-red-900/60 border border-red-800 text-xs text-red-400 font-bold py-2 px-3 rounded-lg transition">
-          🔒 Sign Out
+        <button onclick="handleLogout()" class="bg-red-950/40 hover:bg-red-900/60 border border-red-800 text-xs text-red-400 font-bold py-2 px-3 rounded-xl transition flex items-center gap-1.5">
+          🔒 <span class="hidden sm:inline">Sign Out</span>
         </button>
       </div>
     </header>
 
     <main class="space-y-6">
 
-      <!-- Navigation & Filter Bar -->
-      <div class="flex flex-wrap gap-2 items-center justify-between bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs">
-        <div class="flex flex-wrap gap-2">
-          <button id="filterUpcoming" onclick="filterStatus('Upcoming')" class="filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition">Upcoming Orders</button>
-          <button id="filterCalendar" onclick="filterStatus('Calendar')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-red-400 font-bold py-1.5 px-3 rounded-lg border border-zinc-800 transition">📅 Work Calendar</button>
-          <button id="filterPending" onclick="filterStatus('Pending')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-yellow-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Pending Only</button>
-          <button id="filterSub" onclick="filterStatus('Subscription')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-purple-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Subscriptions Only</button>
-          <button id="filterCompleted" onclick="filterStatus('Completed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-green-400 py-1.5 px-3 rounded-lg border border-zinc-800 transition">Completed</button>
-          <button id="filterContacts" onclick="filterStatus('Contacts')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-cyan-400 font-bold py-1.5 px-3 rounded-lg border border-zinc-800 transition">📇 Client Contacts</button>
-          <button id="filterReports" onclick="filterStatus('Reports')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-blue-400 font-bold py-1.5 px-3 rounded-lg border border-zinc-800 transition">📊 Revenue Reports</button>
+      <!-- Navigation Bar with Icon Buttons -->
+      <div class="flex flex-wrap gap-2 items-center justify-between bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-xs">
+        <div class="flex flex-wrap gap-1.5 sm:gap-2">
+          <button id="filterUpcoming" onclick="filterStatus('Upcoming')" title="Upcoming Orders" class="filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5">
+            📋 <span class="hidden md:inline">Upcoming</span>
+          </button>
+          <button id="filterCalendar" onclick="filterStatus('Calendar')" title="Work Calendar" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-red-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
+            📅 <span class="hidden md:inline">Calendar</span>
+          </button>
+          <button id="filterPending" onclick="filterStatus('Pending')" title="Pending Only" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-yellow-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
+            ⏳ <span class="hidden md:inline">Pending</span>
+          </button>
+          <button id="filterSub" onclick="filterStatus('Subscription')" title="Subscriptions Only" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-purple-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
+            🔄 <span class="hidden md:inline">Subscriptions</span>
+          </button>
+          <button id="filterCompleted" onclick="filterStatus('Completed')" title="Completed Orders" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-green-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
+            ✅ <span class="hidden md:inline">Completed</span>
+          </button>
+          <button id="filterContacts" onclick="filterStatus('Contacts')" title="Client Contacts" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-cyan-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
+            📇 <span class="hidden md:inline">Contacts</span>
+          </button>
+          <button id="filterReports" onclick="filterStatus('Reports')" title="Revenue Reports" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-blue-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
+            📊 <span class="hidden md:inline">Reports</span>
+          </button>
         </div>
-        <span id="orderCount" class="text-gray-400 font-medium">Loading...</span>
+        <span id="orderCount" class="text-gray-400 font-medium px-2">Loading...</span>
       </div>
 
       <!-- WORK CALENDAR TAB VIEW -->
@@ -501,29 +527,25 @@
         </div>
       </div>
 
-      <!-- ORDERS TABLE CONTAINER -->
+      <!-- STREAMLINED ORDERS TABLE CONTAINER (CONCONDENSED TO 5 ESSENTIAL COLUMNS) -->
       <div id="ordersTableSection" class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
         <div class="p-3 bg-zinc-900/50 border-b border-zinc-800 text-gray-400 text-[11px] flex items-center justify-between">
-          <span>💡 <strong>Tip:</strong> Tap any order row or click <strong>🔍 View Order</strong> to expand job specifications.</span>
+          <span>💡 <strong>Tip:</strong> Tap any order row to expand complete specifications, add-ons, and contact info.</span>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead class="bg-zinc-900 border-b border-zinc-800 text-gray-400 uppercase tracking-wider font-semibold">
               <tr>
-                <th class="p-3">ID / Date Created</th>
-                <th class="p-3">Client Info</th>
-                <th class="p-3">Loyalty Progress</th>
-                <th class="p-3">Schedule Window</th>
-                <th class="p-3">Vehicle & Service</th>
-                <th class="p-3">Type</th>
-                <th class="p-3">Service Address</th>
-                <th class="p-3">Amount / Method</th>
-                <th class="p-3">Status / Action</th>
+                <th class="p-3.5">Order ID & Client</th>
+                <th class="p-3.5">Schedule & Location</th>
+                <th class="p-3.5">Vehicle & Service</th>
+                <th class="p-3.5">Amount / Method</th>
+                <th class="p-3.5">Status & Action</th>
               </tr>
             </thead>
             <tbody id="dispatchTableBody" class="divide-y divide-zinc-900">
               <tr>
-                <td colspan="9" class="p-6 text-center text-gray-500">Loading bookings...</td>
+                <td colspan="5" class="p-6 text-center text-gray-500">Loading bookings...</td>
               </tr>
             </tbody>
           </table>
@@ -617,6 +639,28 @@
       const b = allBookings.find(item => item.id === bookingId);
       if (!b) return;
 
+      const clientKey = (b.email || b.phone || b.client_name || '').toLowerCase().trim();
+      const clientStats = clientUsageMap[clientKey];
+      const serviceNum = clientStats && clientStats.bookingSequence[b.id] ? clientStats.bookingSequence[b.id] : 1;
+      const isDiscountEligible = serviceNum > 0 && serviceNum % 5 === 0;
+
+      // Loyalty Banner Setup inside Modal
+      const loyaltyBanner = document.getElementById('detailLoyaltyBanner');
+      if (serviceNum > 0) {
+        loyaltyBanner.classList.remove('hidden');
+        document.getElementById('detailServiceNumBadge').textContent = `Loyalty Record: Service #${serviceNum}`;
+        
+        if (isDiscountEligible) {
+          document.getElementById('detailLoyaltySubtext').textContent = `Client reached 5th service milestone!`;
+          document.getElementById('detailLoyaltyTag').classList.remove('hidden');
+        } else {
+          document.getElementById('detailLoyaltySubtext').textContent = `${5 - (serviceNum % 5)} more service(s) until 25% off add-ons.`;
+          document.getElementById('detailLoyaltyTag').classList.add('hidden');
+        }
+      } else {
+        loyaltyBanner.classList.add('hidden');
+      }
+
       document.getElementById('detailOrderIdBadge').textContent = `#${b.id}`;
       document.getElementById('detailClientName').textContent = b.client_name || 'Client';
       document.getElementById('detailCreatedDate').textContent = `Booked: ${new Date(b.created_at).toLocaleDateString()} ${new Date(b.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
@@ -629,6 +673,13 @@
 
       document.getElementById('detailVehicleCategory').textContent = (b.vehicle_category || 'Vehicle').toUpperCase();
       document.getElementById('detailServiceType').textContent = b.service_type || 'Detailing Package';
+
+      const isSub = getIsSubscription(b);
+      const subBadge = document.getElementById('detailOrderTypeBadge');
+      subBadge.textContent = isSub ? 'Subscription Plan' : 'One-Time Service';
+      subBadge.className = isSub 
+        ? 'bg-purple-900/40 text-purple-400 border border-purple-800 px-2 py-0.5 rounded text-[10px] font-bold'
+        : 'bg-zinc-900 text-gray-400 border border-zinc-800 px-2 py-0.5 rounded text-[10px] font-bold';
 
       // Parse and display clean add-ons badges
       const addOnsContainer = document.getElementById('detailAddOnsList');
@@ -998,7 +1049,7 @@
         console.error('Error fetching bookings:', err);
         document.getElementById('dispatchTableBody').innerHTML = `
           <tr>
-            <td colspan="9" class="p-6 text-center text-red-500">
+            <td colspan="5" class="p-6 text-center text-red-500">
               Failed to load bookings. Check Supabase RLS policies or database table permissions.
             </td>
           </tr>`;
@@ -1385,18 +1436,16 @@
       const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
       const todayDateNumber = today.getDate();
 
-      // Group bookings by day key YYYY-MM-DD or YYYY-M-D
       const bookingsByDay = {};
       allBookings.forEach(b => {
         if (b.payment_status === 'Cancelled') return;
         const dateStr = b.service_date || (b.created_at ? b.created_at.split('T')[0] : '');
         if (!dateStr) return;
 
-        // Standardize YYYY-MM-DD parsing
         const parts = dateStr.split('-');
         if (parts.length === 3) {
           const bYear = parseInt(parts[0]);
-          const bMonth = parseInt(parts[1]) - 1; // 0 index
+          const bMonth = parseInt(parts[1]) - 1;
           const bDay = parseInt(parts[2]);
 
           if (bYear === year && bMonth === month) {
@@ -1408,17 +1457,13 @@
 
       let html = '';
 
-      // Blank slots before first day of month
       for (let i = 0; i < startingDayIndex; i++) {
         html += `<div class="bg-zinc-950/40 border border-zinc-900 rounded-xl p-2 min-h-[110px]"></div>`;
       }
 
-      // Days of the month
       for (let day = 1; day <= totalDaysInMonth; day++) {
         const isToday = isCurrentMonth && day === todayDateNumber;
         const dayBookings = bookingsByDay[day] || [];
-        
-        // Sort day bookings by time slot if available
         dayBookings.sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
 
         html += `
@@ -1576,6 +1621,9 @@
       }).join('');
     }
 
+    /* ----------------------------------------------------
+       STREAMLINED 5-COLUMN DISPATCH TABLE RENDERER
+    ---------------------------------------------------- */
     function renderTable() {
       const tbody = document.getElementById('dispatchTableBody');
       const tableSection = document.getElementById('ordersTableSection');
@@ -1630,7 +1678,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="9" class="p-6 text-center text-gray-500">No ${currentFilter.toLowerCase()} orders found in this view.</td>
+            <td colspan="5" class="p-6 text-center text-gray-500">No ${currentFilter.toLowerCase()} orders found in this view.</td>
           </tr>`;
         return;
       }
@@ -1638,69 +1686,58 @@
       tbody.innerHTML = filtered.map(b => {
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.service_address || '')}`;
         const isSub = getIsSubscription(b);
-        
-        const clientKey = (b.email || b.phone || b.client_name || '').toLowerCase().trim();
-        const clientStats = clientUsageMap[clientKey];
-        const serviceNum = clientStats && clientStats.bookingSequence[b.id] ? clientStats.bookingSequence[b.id] : 1;
-        const isDiscountEligible = serviceNum > 0 && serviceNum % 5 === 0;
         const hasSignature = !!b.client_signature;
         const status = b.payment_status || 'Pending';
         const paymentLabel = getPaymentMethodLabel(b);
         const isCashZelle = paymentLabel === 'Cash / Zelle';
 
         return `
-          <tr onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer hover:bg-zinc-900/80 transition group ${isDiscountEligible ? 'bg-amber-950/20' : ''}">
-            <td class="p-3">
-              <div class="flex items-center gap-1.5">
-                <span class="font-bold text-white group-hover:text-red-400 transition">#${b.id}</span>
+          <tr onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer hover:bg-zinc-900/80 transition group">
+            
+            <!-- COLUMN 1: Order ID & Client Info -->
+            <td class="p-3.5">
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="font-bold text-white group-hover:text-red-400 transition text-sm">#${b.id}</span>
                 <span class="bg-zinc-900 border border-zinc-800 text-[9px] text-gray-400 px-1.5 py-0.5 rounded font-bold group-hover:border-red-600 transition">🔍 View Order</span>
               </div>
-              <div class="text-[10px] text-gray-500">${new Date(b.created_at).toLocaleDateString()} ${new Date(b.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-            </td>
-            <td class="p-3">
-              <div class="font-bold text-white">${escapeHtml(b.client_name)}</div>
-              <div class="text-gray-400" onclick="event.stopPropagation()"><a href="tel:${b.phone}" class="hover:underline text-red-400">${escapeHtml(b.phone)}</a></div>
-              <div class="text-[10px] text-gray-500">${escapeHtml(b.email)}</div>
-            </td>
-            <td class="p-3">
-              <div class="flex flex-col gap-1">
-                <span class="inline-block font-bold ${isDiscountEligible ? 'text-amber-400' : 'text-gray-300'}">
-                  Service #${serviceNum}
-                </span>
-                ${isDiscountEligible 
-                  ? `<span class="bg-amber-500/20 text-amber-300 border border-amber-600 px-2 py-0.5 rounded text-[10px] font-extrabold animate-pulse">25% OFF Add-Ons!</span>`
-                  : `<span class="text-[10px] text-zinc-500">${5 - (serviceNum % 5)} more till discount</span>`
-                }
+              <div class="font-extrabold text-white text-xs">${escapeHtml(b.client_name)}</div>
+              <div class="text-[10px] text-gray-400" onclick="event.stopPropagation()">
+                <a href="tel:${b.phone}" class="hover:underline text-red-400 font-semibold">${escapeHtml(b.phone)}</a>
               </div>
             </td>
-            <td class="p-3">
-              <div class="text-red-500 font-bold">${b.service_date || 'N/A'}</div>
-              <div class="text-gray-300">${escapeHtml(b.time_slot || 'Standard')}</div>
-            </td>
-            <td class="p-3">
-              <span class="inline-block bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-[11px] font-semibold text-gray-200 mb-1">
-                ${escapeHtml(b.vehicle_category || 'Vehicle')}
-              </span>
-              <div class="text-[11px] text-gray-400 max-w-xs truncate">${escapeHtml(b.service_type || '')}</div>
-            </td>
-            <td class="p-3">
-              ${isSub 
-                ? `<span class="bg-purple-900/40 text-purple-400 border border-purple-800 px-2 py-0.5 rounded text-[10px] font-bold">Subscription</span>` 
-                : `<span class="bg-zinc-900 text-gray-400 border border-zinc-800 px-2 py-0.5 rounded text-[10px]">One-Time</span>`}
-            </td>
-            <td class="p-3">
-              <div class="text-gray-300 max-w-xs truncate mb-1">${escapeHtml(b.service_address || 'N/A')}</div>
-              <a href="${mapsUrl}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-[10px] text-red-500 hover:text-red-400 font-bold">
-                🗺️ Navigate Maps
+
+            <!-- COLUMN 2: Schedule & Service Address -->
+            <td class="p-3.5">
+              <div class="text-red-500 font-bold text-xs">${b.service_date || 'N/A'} <span class="text-gray-300 font-normal">(${escapeHtml(b.time_slot || 'Standard')})</span></div>
+              <div class="text-gray-300 max-w-xs truncate text-[11px] mt-0.5">${escapeHtml(b.service_address || 'N/A')}</div>
+              <a href="${mapsUrl}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-[10px] text-red-400 hover:text-red-300 font-bold mt-0.5">
+                🗺️ Open Maps
               </a>
             </td>
-            <td class="p-3">
-              <div class="font-bold text-green-400 text-sm">$${parseFloat(b.amount_paid || 0).toFixed(2)}</div>
-              <div class="text-[9px] ${isCashZelle ? 'text-amber-400 font-bold' : 'text-gray-400 font-semibold'} truncate w-24" title="${paymentLabel}">
+
+            <!-- COLUMN 3: Vehicle & Service Package -->
+            <td class="p-3.5">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-[10px] font-bold text-gray-200">
+                  ${escapeHtml(b.vehicle_category || 'Vehicle')}
+                </span>
+                ${isSub 
+                  ? `<span class="bg-purple-900/40 text-purple-400 border border-purple-800 px-2 py-0.5 rounded text-[9px] font-bold">Sub</span>` 
+                  : `<span class="bg-zinc-900 text-gray-400 border border-zinc-800 px-1.5 py-0.5 rounded text-[9px]">One-Time</span>`}
+              </div>
+              <div class="text-[11px] text-gray-300 font-semibold max-w-xs truncate">${escapeHtml(b.service_type || 'Detailing Package')}</div>
+            </td>
+
+            <!-- COLUMN 4: Amount & Payment Type -->
+            <td class="p-3.5">
+              <div class="font-extrabold text-green-400 text-sm">$${parseFloat(b.amount_paid || 0).toFixed(2)}</div>
+              <div class="text-[10px] ${isCashZelle ? 'text-amber-400 font-bold' : 'text-gray-400 font-semibold'} truncate max-w-[110px]" title="${paymentLabel}">
                 ${paymentLabel}
               </div>
             </td>
-            <td class="p-3 space-y-1" onclick="event.stopPropagation()">
+
+            <!-- COLUMN 5: Status Dropdown & Signature Action -->
+            <td class="p-3.5 space-y-1" onclick="event.stopPropagation()">
               <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(status)}">
                 <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
                 <option value="Paid & Confirmed" ${status === 'Paid & Confirmed' ? 'selected' : ''}>Paid & Confirmed</option>
@@ -1709,8 +1746,9 @@
                 <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
                 <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
               </select>
-              ${hasSignature ? `<div class="text-[10px] text-green-400 font-semibold flex items-center gap-1">Signed & Completed</div>` : ''}
+              ${hasSignature ? `<div class="text-[9px] text-green-400 font-semibold flex items-center gap-1">✍️ Signed</div>` : ''}
             </td>
+
           </tr>
         `;
       }).join('');
@@ -1732,23 +1770,23 @@
       currentFilter = status;
 
       document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.className = 'filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-1.5 px-3 rounded-lg border border-zinc-800 transition';
+        btn.className = 'filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5';
       });
 
       if (status === 'Upcoming') {
-        document.getElementById('filterUpcoming').className = 'filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
+        document.getElementById('filterUpcoming').className = 'filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
       } else if (status === 'Calendar') {
-        document.getElementById('filterCalendar').className = 'filter-btn bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
+        document.getElementById('filterCalendar').className = 'filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
       } else if (status === 'Pending') {
-        document.getElementById('filterPending').className = 'filter-btn bg-yellow-900/60 text-yellow-300 border border-yellow-700 font-bold py-1.5 px-3 rounded-lg transition';
+        document.getElementById('filterPending').className = 'filter-btn bg-yellow-900/60 text-yellow-300 border border-yellow-700 font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
       } else if (status === 'Subscription') {
-        document.getElementById('filterSub').className = 'filter-btn bg-purple-900/60 text-purple-300 border border-purple-700 font-bold py-1.5 px-3 rounded-lg transition';
+        document.getElementById('filterSub').className = 'filter-btn bg-purple-900/60 text-purple-300 border border-purple-700 font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
       } else if (status === 'Completed') {
-        document.getElementById('filterCompleted').className = 'filter-btn bg-green-900/60 text-green-300 border border-green-700 font-bold py-1.5 px-3 rounded-lg transition';
+        document.getElementById('filterCompleted').className = 'filter-btn bg-green-900/60 text-green-300 border border-green-700 font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
       } else if (status === 'Contacts') {
-        document.getElementById('filterContacts').className = 'filter-btn bg-cyan-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
+        document.getElementById('filterContacts').className = 'filter-btn bg-cyan-600 text-white font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
       } else if (status === 'Reports') {
-        document.getElementById('filterReports').className = 'filter-btn bg-blue-600 text-white font-bold py-1.5 px-3 rounded-lg transition';
+        document.getElementById('filterReports').className = 'filter-btn bg-blue-600 text-white font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
       }
 
       renderTable();
