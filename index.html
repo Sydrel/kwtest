@@ -339,7 +339,6 @@
         .close-btn { background: none; border: none; color: var(--kw-white); font-size: 2rem; cursor: pointer; line-height: 1; transition: 0.3s;}
         .close-btn:hover { color: var(--kw-red); }
         .modal-body { padding: 25px; }
-        .modal-body p { color: var(--kw-gray); font-size: 0.95rem; margin-bottom: 20px;}
         .vehicle-tier { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; font-weight: 400; font-size: 1rem;}
         .tier-price { color: var(--kw-red); font-weight: 600; font-size: 1.15rem; }
         .modal-footer { padding: 25px; background: #0a0a0a; text-align: center;}
@@ -786,7 +785,8 @@
                     { name: 'Coupe', price: '$250' },
                     { name: 'Sedan', price: '$290' },
                     { name: 'Midsize SUV', price: '$330' },
-                    { name: 'Pick-Up Truck', price: '$350' }
+                    { name: 'Pick-Up Truck', price: '$350' },
+                    { name: 'SUV 3-Row', price: '$400' }
                 ])">
                     <img src="https://i.imgur.com/uyT3Q9x.jpeg" alt="Cars and Standard Vehicles" class="service-bg">
                     <div class="service-info">
@@ -905,7 +905,6 @@
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <p>We service the following sizes in this category. Contact us for a custom quote tailored to your volume.</p>
                 <div id="modalPriceList"></div>
             </div>
             <div class="modal-footer">
