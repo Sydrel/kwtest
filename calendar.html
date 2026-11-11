@@ -71,7 +71,7 @@
     <p class="text-[11px] sm:text-xs text-gray-400 mt-1">Professional Mobile Service Direct to Your Location | Mon–Sat: 5AM–6PM</p>
   </div>
 
-  <!-- Main Container -->
+  <!-- Main Container (Responsive Grid: 1 col mobile/tablet, 2 col desktop) -->
   <div class="max-w-5xl w-full bg-zinc-950 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-2xl border border-zinc-800 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
     
     <!-- Left Column: Calendar & Time Slot Box -->
@@ -193,10 +193,10 @@
           </select>
         </div>
 
-        <!-- Setup Fee Mandatory Row ($50) -->
+        <!-- Setup Fee Mandatory Row ($25) -->
         <div class="p-3 bg-zinc-900/90 border border-red-900/50 rounded-lg flex items-center justify-between">
           <span class="text-xs font-semibold text-gray-200">Setup Fee <span class="text-red-500 font-bold">(Non-refundable)</span></span>
-          <span class="text-xs font-bold text-red-500">$50</span>
+          <span class="text-xs font-bold text-red-500">$25</span>
         </div>
 
         <!-- Auto-Pay Recurring Plan Disclaimer -->
@@ -206,7 +206,7 @@
             Recurring Monthly Membership Agreement:
           </p>
           <p class="leading-relaxed text-[11px] text-gray-400">
-            By booking a monthly plan, you authorize <strong class="text-white">KW Commercial Fleet Washing & Mobile Detailing</strong> to bill your card today for month 1 + $50 setup fee/add-ons, and automatically renew your subscription every 30 days. Cancel anytime.
+            By booking a monthly plan, you authorize <strong class="text-white">KW Commercial Fleet Washing & Mobile Detailing</strong> to bill your card today for month 1 + setup fee/add-ons, and automatically renew your subscription every 30 days. Cancel anytime.
           </p>
         </div>
 
@@ -382,7 +382,7 @@
         </div>
 
         <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg text-xs sm:text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
-          Confirm Booking (<span id="payBtnAmount">$300</span>)
+          Confirm Booking (<span id="payBtnAmount">$275</span>)
         </button>
       </form>
       
@@ -405,20 +405,20 @@
     }
 
     // Capacity Threshold Configuration
-    const DAILY_MAX_LIMIT = 4;
-    const TIME_SLOT_MAX = 4;
+    const DAILY_MAX_LIMIT = 4; // Max 4 orders per day before date grays out
+    const TIME_SLOT_MAX = 4;   // Max 4 orders per time slot before slot disables
 
     // Fully Configured Project Keys
     const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
     const STRIPE_PUBLISHABLE_KEY = 'pk_live_51UXoy841rEJafE4qq4lXTr2T0q0P6p4qglGVZjFR1X3TvEGwDlDQwQAIrtHoU2GpONiMDJM8K7vgdG338knTqVAF004qtQ3bG3';
-    const LOCATIONIQ_API_KEY = 'pk.6aed632131158f485c9b1b025bfc45d2';
+    const LOCATIONIQ_API_KEY = 'pk.6aed632131158f485c9b1b025bfc45d2'; // Updated LocationIQ Key
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Updated Setup Fee to $50
-    const SETUP_FEE = 50;
+    // Hardcoded Permanent Setup Fee ($25)
+    const SETUP_FEE = 25;
 
     // LocationIQ Address Autocomplete Implementation with Safe Error Catching
     const addressInput = document.getElementById('serviceAddress');
@@ -512,6 +512,7 @@
         });
       }
 
+      // Close dropdown when clicking outside
       document.addEventListener('click', (e) => {
         if (!addressInput.contains(e.target) && !addressSuggestions.contains(e.target)) {
           addressSuggestions.classList.add('hidden');
@@ -552,7 +553,7 @@
 
       payOnlineTab.classList.replace('bg-red-600', 'bg-zinc-900');
       payOnlineTab.classList.replace('text-white', 'text-gray-400');
-      payOnlineTab.classList.replace('border-red-600', 'border-red-600');
+      payOnlineTab.classList.replace('border-red-600', 'border-zinc-800');
 
       inPersonSection.classList.remove('hidden');
       cardPaymentSection.classList.add('hidden');
@@ -686,6 +687,7 @@
       return data || [];
     }
 
+    // Filter Time Slot Grid Based on Selected Date & Cap (TIME_SLOT_MAX = 4)
     function updateTimeSlotAvailability(selectedDateStr, monthBookings) {
       const timeGrid = document.getElementById('timeSlotGrid');
       const timePrompt = document.getElementById('timeSlotPrompt');
@@ -726,7 +728,7 @@
 
     // Initialize Stripe & Elements
     const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    const elements = stripe.elements({ mode: 'payment', amount: 30000, currency: 'usd' });
+    const elements = stripe.elements({ mode: 'payment', amount: 27500, currency: 'usd' });
 
     // Express Checkout
     const expressCheckoutElement = elements.create('expressCheckout', {
@@ -749,14 +751,6 @@
       }
 
       const totalAmount = calculateTotalPrice();
-      const basePriceSelect = document.getElementById('basePriceSelect');
-      const basePrice = parseInt(basePriceSelect ? basePriceSelect.value : 250, 10);
-      
-      let addonsAmount = 0;
-      document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
-        addonsAmount += parseInt(cb.getAttribute('data-price') || 0, 10);
-      });
-
       const serviceSelect = document.getElementById('serviceType');
       const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
       const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
@@ -781,14 +775,11 @@
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
           },
           body: JSON.stringify({
-            amount: basePrice * 100,
-            setupFee: SETUP_FEE * 100, // $50 setup fee passed in cents (5000)
-            addonsAmount: addonsAmount * 100,
+            amount: totalAmount * 100,
             isSubscription: isSubscription,
             packageName: serviceSelect.value,
             clientName: clientName,
-            email: clientEmail,
-            phone: clientPhone
+            email: clientEmail
           })
         });
 
@@ -845,6 +836,7 @@
     let selectedDateStr = '';
     let currentMonthBookings = [];
 
+    // Calendar Renderer with Capacity Enforcement & DD:MM:YYYY Format
     async function renderCalendar() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
@@ -927,14 +919,6 @@
       const cardErrors = document.getElementById('card-errors');
       submitBtn.disabled = true;
       const totalAmount = calculateTotalPrice();
-      const basePriceSelect = document.getElementById('basePriceSelect');
-      const basePrice = parseInt(basePriceSelect ? basePriceSelect.value : 250, 10);
-      
-      let addonsAmount = 0;
-      document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
-        addonsAmount += parseInt(cb.getAttribute('data-price') || 0, 10);
-      });
-
       const serviceSelect = document.getElementById('serviceType');
       const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
       const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
@@ -968,14 +952,11 @@
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
           },
           body: JSON.stringify({
-            amount: basePrice * 100,
-            setupFee: SETUP_FEE * 100, // $50 setup fee in cents (5000)
-            addonsAmount: addonsAmount * 100,
+            amount: totalAmount * 100,
             isSubscription: isSubscription,
             packageName: serviceSelect.value,
             clientName: document.getElementById('clientName').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value
+            email: document.getElementById('email').value
           })
         });
 
@@ -1026,7 +1007,7 @@
       const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
       const packageSelected = document.getElementById('serviceType').value;
 
-      const fullServiceDescription = `${packageSelected} + $50 Setup Fee` + (selectedAddons ? ` + Addons: [${selectedAddons}]` : '');
+      const fullServiceDescription = `${packageSelected} + $25 Setup Fee` + (selectedAddons ? ` + Addons: [${selectedAddons}]` : '');
 
       const { data, error: dbError } = await supabaseClient
         .from('bookings')
