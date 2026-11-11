@@ -159,37 +159,29 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-          <div>
-            <label class="block text-xs font-medium mb-1 text-gray-300">Vehicle Category</label>
-            <select id="vehicleCategory" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
-              <option value="Coupe" data-price="250">Coupe</option>
-              <option value="Sedan" data-price="290">Sedan</option>
-              <option value="Midsize SUV / Crossover" data-price="330">Midsize SUV / Crossover</option>
-              <option value="Pickup Truck" data-price="350">Pickup Truck</option>
-              <option value="Large SUV" data-price="350">Large SUV</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-medium mb-1 text-gray-300">Package / Plan</label>
-            <select id="serviceType" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
-              <option value="Full Luxury Detail" data-price="0" data-is-subscription="false">Full Luxury Detail (Standard One-Time)</option>
-              <option value="KW Signature Wash 365" data-price="220" data-is-subscription="true">KW Signature Wash 365 ($220/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($449)" data-price="449" data-is-subscription="true">Black Label 365 ($449/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($499)" data-price="499" data-is-subscription="true">Black Label 365 ($499/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($549)" data-price="549" data-is-subscription="true">Black Label 365 ($549/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($599)" data-price="599" data-is-subscription="true">Black Label 365 ($599/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($649)" data-price="649" data-is-subscription="true">Black Label 365 ($649/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($700)" data-price="700" data-is-subscription="true">Black Label 365 ($700/mo Auto-Pay)</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Selected Selection Base Price Drop-Box -->
+        <!-- Single Unified Dropdown: Plan - Vehicle -->
         <div>
-          <label class="block text-xs font-medium mb-1 text-gray-300">Selected Selection Base Price</label>
-          <select id="basePriceSelect" onchange="syncFromBasePriceSelect()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600 font-bold">
-            <!-- Dynamically Populated via JS -->
+          <label class="block text-xs font-medium mb-1 text-gray-300">Select Plan & Vehicle Category</label>
+          <select id="servicePackageCombined" onchange="calculateTotalPrice()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600 font-semibold">
+            <!-- Standard One-Time Luxury Detail Options -->
+            <optgroup label="Standard One-Time Services (Full Luxury Detail)">
+              <option value="Full Luxury Detail - Coupe" data-plan="Full Luxury Detail" data-vehicle="Coupe" data-price="250" data-is-subscription="false" selected>Full Luxury Detail - Coupe ($250)</option>
+              <option value="Full Luxury Detail - Sedan" data-plan="Full Luxury Detail" data-vehicle="Sedan" data-price="290" data-is-subscription="false">Full Luxury Detail - Sedan ($290)</option>
+              <option value="Full Luxury Detail - Midsize SUV / Crossover" data-plan="Full Luxury Detail" data-vehicle="Midsize SUV / Crossover" data-price="330" data-is-subscription="false">Full Luxury Detail - Midsize SUV / Crossover ($330)</option>
+              <option value="Full Luxury Detail - Pickup Truck" data-plan="Full Luxury Detail" data-vehicle="Pickup Truck" data-price="350" data-is-subscription="false">Full Luxury Detail - Pickup Truck ($350)</option>
+              <option value="Full Luxury Detail - Large SUV" data-plan="Full Luxury Detail" data-vehicle="Large SUV" data-price="350" data-is-subscription="false">Full Luxury Detail - Large SUV ($350)</option>
+            </optgroup>
+
+            <!-- Monthly Subscription Auto-Pay Options -->
+            <optgroup label="Monthly Subscription Plans (Auto-Pay)">
+              <option value="KW Signature Wash 365 - All Vehicles" data-plan="KW Signature Wash 365" data-vehicle="All Vehicles" data-price="220" data-is-subscription="true">KW Signature Wash 365 - All Vehicles ($220/mo)</option>
+              <option value="Black Label 365 ($449) - Coupe" data-plan="Black Label 365 ($449)" data-vehicle="Coupe" data-price="449" data-is-subscription="true">Black Label 365 - Coupe ($449/mo)</option>
+              <option value="Black Label 365 ($499) - Sedan" data-plan="Black Label 365 ($499)" data-vehicle="Sedan" data-price="499" data-is-subscription="true">Black Label 365 - Sedan ($499/mo)</option>
+              <option value="Black Label 365 ($549) - Midsize SUV" data-plan="Black Label 365 ($549)" data-vehicle="Midsize SUV / Crossover" data-price="549" data-is-subscription="true">Black Label 365 - Midsize SUV / Crossover ($549/mo)</option>
+              <option value="Black Label 365 ($599) - Pickup Truck" data-plan="Black Label 365 ($599)" data-vehicle="Pickup Truck" data-price="599" data-is-subscription="true">Black Label 365 - Pickup Truck ($599/mo)</option>
+              <option value="Black Label 365 ($649) - Large SUV" data-plan="Black Label 365 ($649)" data-vehicle="Large SUV" data-price="649" data-is-subscription="true">Black Label 365 - Large SUV ($649/mo)</option>
+              <option value="Black Label 365 ($700) - Premium Fleet / Executive" data-plan="Black Label 365 ($700)" data-vehicle="Executive Vehicle" data-price="700" data-is-subscription="true">Black Label 365 - Premium Fleet / Executive ($700/mo)</option>
+            </optgroup>
           </select>
         </div>
 
@@ -393,7 +385,6 @@
   </div>
 
   <script>
-    // Services Alert Popup Handlers
     function closeServicesAlert() {
       const modal = document.getElementById('servicesAlertModal');
       if (modal) modal.classList.add('hidden');
@@ -404,11 +395,9 @@
       if (modal) modal.classList.remove('hidden');
     }
 
-    // Capacity Threshold Configuration
     const DAILY_MAX_LIMIT = 4;
     const TIME_SLOT_MAX = 4;
 
-    // Fully Configured Project Keys
     const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
     const STRIPE_PUBLISHABLE_KEY = 'pk_live_51UXoy841rEJafE4qq4lXTr2T0q0P6p4qglGVZjFR1X3TvEGwDlDQwQAIrtHoU2GpONiMDJM8K7vgdG338knTqVAF004qtQ3bG3';
@@ -416,11 +405,9 @@
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    // Updated Setup Fee to $50
     const SETUP_FEE = 50;
 
-    // LocationIQ Address Autocomplete Implementation with Safe Error Catching
+    // LocationIQ Address Autocomplete
     const addressInput = document.getElementById('serviceAddress');
     const addressSuggestions = document.getElementById('addressSuggestions');
     let debounceTimer;
@@ -481,7 +468,6 @@
         }, 300);
       });
 
-      // Keyboard Navigation (Arrow keys & Enter)
       addressInput.addEventListener('keydown', (e) => {
         const items = addressSuggestions.querySelectorAll('li');
         if (!items.length) return;
@@ -552,7 +538,7 @@
 
       payOnlineTab.classList.replace('bg-red-600', 'bg-zinc-900');
       payOnlineTab.classList.replace('text-white', 'text-gray-400');
-      payOnlineTab.classList.replace('border-red-600', 'border-red-600');
+      payOnlineTab.classList.replace('border-red-600', 'border-zinc-800');
 
       inPersonSection.classList.remove('hidden');
       cardPaymentSection.classList.add('hidden');
@@ -561,19 +547,17 @@
       submitBtn.innerHTML = `Confirm Booking (Pay $${totalAmount} in Person/Zelle)`;
     });
 
-    // Dynamic Price Calculator & Drop-Box Syncing
-    function populateBasePriceDropBox() {
-      const basePriceSelect = document.getElementById('basePriceSelect');
-      const vehicleSelect = document.getElementById('vehicleCategory');
-      const serviceSelect = document.getElementById('serviceType');
+    // Dynamic Price Calculator based on Combined Dropdown Selection
+    function calculateTotalPrice() {
+      const packageSelect = document.getElementById('servicePackageCombined');
+      const payBtnAmount = document.getElementById('payBtnAmount');
       const subscriptionDisclaimer = document.getElementById('subscriptionDisclaimer');
-      if (!basePriceSelect || !vehicleSelect || !serviceSelect) return;
+      
+      if (!packageSelect) return 300;
 
-      basePriceSelect.innerHTML = '';
-
-      const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
-      const planPrice = parseInt(selectedPlanOpt ? selectedPlanOpt.getAttribute('data-price') : 0, 10);
-      const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
+      const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
+      const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 250, 10);
+      const isSubscription = selectedOpt ? selectedOpt.getAttribute('data-is-subscription') === 'true' : false;
 
       if (subscriptionDisclaimer) {
         if (isSubscription) {
@@ -581,54 +565,6 @@
         } else {
           subscriptionDisclaimer.classList.add('hidden');
         }
-      }
-
-      if (planPrice > 0) {
-        const opt = document.createElement('option');
-        opt.value = planPrice;
-        opt.setAttribute('data-source', 'plan');
-        opt.textContent = `$${planPrice} - Monthly Plan Base Rate (${selectedPlanOpt.value})`;
-        basePriceSelect.appendChild(opt);
-      } else {
-        Array.from(vehicleSelect.options).forEach(vOpt => {
-          const opt = document.createElement('option');
-          const price = vOpt.getAttribute('data-price');
-          opt.value = price;
-          opt.setAttribute('data-source', 'vehicle');
-          opt.setAttribute('data-vehicle', vOpt.value);
-          opt.textContent = `$${price} - Base Rate (${vOpt.value})`;
-          if (vOpt.value === vehicleSelect.value) {
-            opt.selected = true;
-          }
-          basePriceSelect.appendChild(opt);
-        });
-      }
-    }
-
-    function syncFromCategoryOrPlan() {
-      populateBasePriceDropBox();
-      calculateTotalPrice();
-    }
-
-    function syncFromBasePriceSelect() {
-      const basePriceSelect = document.getElementById('basePriceSelect');
-      const vehicleSelect = document.getElementById('vehicleCategory');
-      const selectedOpt = basePriceSelect.options[basePriceSelect.selectedIndex];
-
-      if (selectedOpt && selectedOpt.getAttribute('data-source') === 'vehicle') {
-        const vehicleVal = selectedOpt.getAttribute('data-vehicle');
-        if (vehicleVal) vehicleSelect.value = vehicleVal;
-      }
-      calculateTotalPrice();
-    }
-
-    function calculateTotalPrice() {
-      const basePriceSelect = document.getElementById('basePriceSelect');
-      const payBtnAmount = document.getElementById('payBtnAmount');
-      
-      let basePrice = 250;
-      if (basePriceSelect && basePriceSelect.value) {
-        basePrice = parseInt(basePriceSelect.value, 10);
       }
 
       let addonTotal = 0;
@@ -643,7 +579,7 @@
       return finalTotal;
     }
 
-    populateBasePriceDropBox();
+    calculateTotalPrice();
 
     // Time Slot Grid Selection Setup
     let selectedTimeSlotStr = '';
@@ -668,7 +604,6 @@
       });
     });
 
-    // Fetch Monthly Bookings from Supabase for Capacity Validation
     async function fetchMonthBookings(year, month) {
       const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
       const endDate = `${year}-${String(month + 1).padStart(2, '0')}-31`;
@@ -749,17 +684,15 @@
       }
 
       const totalAmount = calculateTotalPrice();
-      const basePriceSelect = document.getElementById('basePriceSelect');
-      const basePrice = parseInt(basePriceSelect ? basePriceSelect.value : 250, 10);
-      
+      const packageSelect = document.getElementById('servicePackageCombined');
+      const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
+      const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 250, 10);
+      const isSubscription = selectedOpt ? selectedOpt.getAttribute('data-is-subscription') === 'true' : false;
+
       let addonsAmount = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
         addonsAmount += parseInt(cb.getAttribute('data-price') || 0, 10);
       });
-
-      const serviceSelect = document.getElementById('serviceType');
-      const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
-      const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
 
       const billingDetails = event.billingDetails || {};
       const clientName = billingDetails.name || document.getElementById('clientName').value || 'Express Checkout Customer';
@@ -782,10 +715,10 @@
           },
           body: JSON.stringify({
             amount: basePrice * 100,
-            setupFee: SETUP_FEE * 100, // $50 setup fee passed in cents (5000)
+            setupFee: SETUP_FEE * 100,
             addonsAmount: addonsAmount * 100,
             isSubscription: isSubscription,
-            packageName: serviceSelect.value,
+            packageName: selectedOpt.value,
             clientName: clientName,
             email: clientEmail,
             phone: clientPhone
@@ -828,7 +761,6 @@
       }
     });
 
-    // Standard Card Element
     const card = elements.create('card', {
       style: {
         base: { color: '#ffffff', fontFamily: 'inherit', fontSize: '14px', '::placeholder': { color: '#71717a' } },
@@ -926,18 +858,18 @@
 
       const cardErrors = document.getElementById('card-errors');
       submitBtn.disabled = true;
-      const totalAmount = calculateTotalPrice();
-      const basePriceSelect = document.getElementById('basePriceSelect');
-      const basePrice = parseInt(basePriceSelect ? basePriceSelect.value : 250, 10);
-      
+
+      const packageSelect = document.getElementById('servicePackageCombined');
+      const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
+      const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 250, 10);
+      const isSubscription = selectedOpt ? selectedOpt.getAttribute('data-is-subscription') === 'true' : false;
+
       let addonsAmount = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
         addonsAmount += parseInt(cb.getAttribute('data-price') || 0, 10);
       });
 
-      const serviceSelect = document.getElementById('serviceType');
-      const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
-      const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
+      const totalAmount = basePrice + SETUP_FEE + addonsAmount;
 
       // Path A: Pay in Person / Zelle
       if (currentPaymentMethod === 'in_person') {
@@ -969,10 +901,10 @@
           },
           body: JSON.stringify({
             amount: basePrice * 100,
-            setupFee: SETUP_FEE * 100, // $50 setup fee in cents (5000)
+            setupFee: SETUP_FEE * 100,
             addonsAmount: addonsAmount * 100,
             isSubscription: isSubscription,
-            packageName: serviceSelect.value,
+            packageName: selectedOpt.value,
             clientName: document.getElementById('clientName').value,
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value
@@ -1021,11 +953,14 @@
       }
     });
 
-    // Write Record to Supabase
     async function saveBookingToSupabaseWithDetails({ clientName, phone, email, serviceAddress, amountPaid, stripePaymentId, paymentStatus, isSubscription }) {
-      const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
-      const packageSelected = document.getElementById('serviceType').value;
+      const packageSelect = document.getElementById('servicePackageCombined');
+      const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
+      
+      const vehicleCategory = selectedOpt ? selectedOpt.getAttribute('data-vehicle') : 'Unknown';
+      const packageSelected = selectedOpt ? selectedOpt.value : 'Full Luxury Detail';
 
+      const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
       const fullServiceDescription = `${packageSelected} + $50 Setup Fee` + (selectedAddons ? ` + Addons: [${selectedAddons}]` : '');
 
       const { data, error: dbError } = await supabaseClient
@@ -1034,7 +969,7 @@
           client_name: clientName,
           phone: phone,
           email: email,
-          vehicle_category: document.getElementById('vehicleCategory').value,
+          vehicle_category: vehicleCategory,
           service_type: fullServiceDescription,
           service_date: selectedDateStr,
           time_slot: selectedTimeSlotStr,
@@ -1042,7 +977,8 @@
           payment_status: paymentStatus,
           stripe_payment_id: stripePaymentId,
           amount_paid: amountPaid,
-          is_subscription: isSubscription
+          is_subscription: isSubscription,
+          setup_fee_charged: SETUP_FEE
         }])
         .select();
 
