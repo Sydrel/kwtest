@@ -159,22 +159,26 @@
           </div>
         </div>
 
-        <!-- Single Unified Dropdown: Plan - Vehicle -->
+        <!-- Single Unified Dropdown: Subscription Plan - Vehicle -->
         <div>
-          <label class="block text-xs font-medium mb-1 text-gray-300">Select Plan & Vehicle Category</label>
+          <label class="block text-xs font-medium mb-1 text-gray-300">Select Subscription Plan & Vehicle Category</label>
           <select id="servicePackageCombined" onchange="calculateTotalPrice()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600 font-semibold">
-            <!-- Standard One-Time Luxury Detail Options -->
-            <optgroup label="Standard One-Time Services (Full Luxury Detail)">
-              <option value="Full Luxury Detail - Coupe" data-plan="Full Luxury Detail" data-vehicle="Coupe" data-price="250" data-is-subscription="false" selected>Full Luxury Detail - Coupe ($250)</option>
-              <option value="Full Luxury Detail - Sedan" data-plan="Full Luxury Detail" data-vehicle="Sedan" data-price="290" data-is-subscription="false">Full Luxury Detail - Sedan ($290)</option>
-              <option value="Full Luxury Detail - Midsize SUV / Crossover" data-plan="Full Luxury Detail" data-vehicle="Midsize SUV / Crossover" data-price="330" data-is-subscription="false">Full Luxury Detail - Midsize SUV / Crossover ($330)</option>
-              <option value="Full Luxury Detail - Pickup Truck" data-plan="Full Luxury Detail" data-vehicle="Pickup Truck" data-price="350" data-is-subscription="false">Full Luxury Detail - Pickup Truck ($350)</option>
-              <option value="Full Luxury Detail - Large SUV" data-plan="Full Luxury Detail" data-vehicle="Large SUV" data-price="350" data-is-subscription="false">Full Luxury Detail - Large SUV ($350)</option>
+            <!-- Full Luxury Detail Subscription Options -->
+            <optgroup label="Full Luxury Detail Plans">
+              <option value="Full Luxury Detail - Coupe" data-plan="Full Luxury Detail" data-vehicle="Coupe" data-price="250" data-is-subscription="true" selected>Full Luxury Detail - Coupe ($250/mo)</option>
+              <option value="Full Luxury Detail - Sedan" data-plan="Full Luxury Detail" data-vehicle="Sedan" data-price="290" data-is-subscription="true">Full Luxury Detail - Sedan ($290/mo)</option>
+              <option value="Full Luxury Detail - Midsize SUV / Crossover" data-plan="Full Luxury Detail" data-vehicle="Midsize SUV / Crossover" data-price="330" data-is-subscription="true">Full Luxury Detail - Midsize SUV / Crossover ($330/mo)</option>
+              <option value="Full Luxury Detail - Pickup Truck" data-plan="Full Luxury Detail" data-vehicle="Pickup Truck" data-price="350" data-is-subscription="true">Full Luxury Detail - Pickup Truck ($350/mo)</option>
+              <option value="Full Luxury Detail - Large SUV" data-plan="Full Luxury Detail" data-vehicle="Large SUV" data-price="350" data-is-subscription="true">Full Luxury Detail - Large SUV ($350/mo)</option>
             </optgroup>
 
-            <!-- Monthly Subscription Auto-Pay Options -->
-            <optgroup label="Monthly Subscription Plans (Auto-Pay)">
+            <!-- KW Signature Wash 365 -->
+            <optgroup label="KW Signature Wash 365">
               <option value="KW Signature Wash 365 - All Vehicles" data-plan="KW Signature Wash 365" data-vehicle="All Vehicles" data-price="220" data-is-subscription="true">KW Signature Wash 365 - All Vehicles ($220/mo)</option>
+            </optgroup>
+
+            <!-- Black Label 365 Subscription Options -->
+            <optgroup label="Black Label 365 Plans">
               <option value="Black Label 365 ($449) - Coupe" data-plan="Black Label 365 ($449)" data-vehicle="Coupe" data-price="449" data-is-subscription="true">Black Label 365 - Coupe ($449/mo)</option>
               <option value="Black Label 365 ($499) - Sedan" data-plan="Black Label 365 ($499)" data-vehicle="Sedan" data-price="499" data-is-subscription="true">Black Label 365 - Sedan ($499/mo)</option>
               <option value="Black Label 365 ($549) - Midsize SUV" data-plan="Black Label 365 ($549)" data-vehicle="Midsize SUV / Crossover" data-price="549" data-is-subscription="true">Black Label 365 - Midsize SUV / Crossover ($549/mo)</option>
@@ -191,8 +195,8 @@
           <span class="text-xs font-bold text-red-500">$50</span>
         </div>
 
-        <!-- Auto-Pay Recurring Plan Disclaimer -->
-        <div id="subscriptionDisclaimer" class="p-3 bg-red-950/30 border border-red-800/60 rounded-lg text-xs text-gray-300 hidden space-y-1">
+        <!-- Subscription Agreement Disclaimer -->
+        <div id="subscriptionDisclaimer" class="p-3 bg-red-950/30 border border-red-800/60 rounded-lg text-xs text-gray-300 space-y-1">
           <p class="font-bold text-red-400 flex items-center gap-1.5">
             <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             Recurring Monthly Membership Agreement:
@@ -374,7 +378,7 @@
         </div>
 
         <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg text-xs sm:text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
-          Confirm Booking (<span id="payBtnAmount">$300</span>)
+          Confirm Subscription Booking (<span id="payBtnAmount">$300</span>)
         </button>
       </form>
       
@@ -527,7 +531,7 @@
       inPersonSection.classList.add('hidden');
       
       const totalAmount = calculateTotalPrice();
-      submitBtn.innerHTML = `Pay & Confirm Booking (<span id="payBtnAmount">$${totalAmount}</span>)`;
+      submitBtn.innerHTML = `Confirm Subscription Booking (<span id="payBtnAmount">$${totalAmount}</span>)`;
     });
 
     payInPersonTab.addEventListener('click', () => {
@@ -544,28 +548,18 @@
       cardPaymentSection.classList.add('hidden');
 
       const totalAmount = calculateTotalPrice();
-      submitBtn.innerHTML = `Confirm Booking (Pay $${totalAmount} in Person/Zelle)`;
+      submitBtn.innerHTML = `Confirm Subscription (Pay $${totalAmount} in Person/Zelle)`;
     });
 
     // Dynamic Price Calculator based on Combined Dropdown Selection
     function calculateTotalPrice() {
       const packageSelect = document.getElementById('servicePackageCombined');
       const payBtnAmount = document.getElementById('payBtnAmount');
-      const subscriptionDisclaimer = document.getElementById('subscriptionDisclaimer');
       
       if (!packageSelect) return 300;
 
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
       const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 250, 10);
-      const isSubscription = selectedOpt ? selectedOpt.getAttribute('data-is-subscription') === 'true' : false;
-
-      if (subscriptionDisclaimer) {
-        if (isSubscription) {
-          subscriptionDisclaimer.classList.remove('hidden');
-        } else {
-          subscriptionDisclaimer.classList.add('hidden');
-        }
-      }
 
       let addonTotal = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
@@ -687,7 +681,6 @@
       const packageSelect = document.getElementById('servicePackageCombined');
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
       const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 250, 10);
-      const isSubscription = selectedOpt ? selectedOpt.getAttribute('data-is-subscription') === 'true' : false;
 
       let addonsAmount = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
@@ -717,7 +710,7 @@
             amount: basePrice * 100,
             setupFee: SETUP_FEE * 100,
             addonsAmount: addonsAmount * 100,
-            isSubscription: isSubscription,
+            isSubscription: true,
             packageName: selectedOpt.value,
             clientName: clientName,
             email: clientEmail,
@@ -739,8 +732,6 @@
           document.getElementById('card-errors').textContent = error.message;
           event.decline();
         } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-          const statusLabel = isSubscription ? 'Active Subscription (Express Wallet Monthly Auto-Pay)' : 'Paid & Confirmed (Express Wallet One-Time)';
-          
           await saveBookingToSupabaseWithDetails({
             clientName,
             phone: clientPhone,
@@ -748,8 +739,8 @@
             serviceAddress,
             amountPaid: totalAmount,
             stripePaymentId: paymentIntent.id,
-            paymentStatus: statusLabel,
-            isSubscription
+            paymentStatus: 'Active Subscription (Express Wallet Monthly Auto-Pay)',
+            isSubscription: true
           });
 
           event.complete('success');
@@ -862,7 +853,6 @@
       const packageSelect = document.getElementById('servicePackageCombined');
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
       const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 250, 10);
-      const isSubscription = selectedOpt ? selectedOpt.getAttribute('data-is-subscription') === 'true' : false;
 
       let addonsAmount = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
@@ -874,7 +864,6 @@
       // Path A: Pay in Person / Zelle
       if (currentPaymentMethod === 'in_person') {
         submitBtn.textContent = 'Saving Booking...';
-        const statusLabel = isSubscription ? 'Active Subscription (Pending - Cash_Zelle)' : 'Pending - Cash_Zelle';
         await saveBookingToSupabaseWithDetails({
           clientName: document.getElementById('clientName').value,
           phone: document.getElementById('phone').value,
@@ -882,14 +871,14 @@
           serviceAddress: document.getElementById('serviceAddress').value,
           amountPaid: totalAmount,
           stripePaymentId: 'IN_PERSON_ZELLE',
-          paymentStatus: statusLabel,
-          isSubscription
+          paymentStatus: 'Active Subscription (Pending - Cash_Zelle)',
+          isSubscription: true
         });
         return;
       }
 
       // Path B: Online Card Payment via Stripe
-      submitBtn.textContent = isSubscription ? 'Setting Up Monthly Auto-Pay...' : 'Processing Payment...';
+      submitBtn.textContent = 'Setting Up Monthly Subscription...';
       if (cardErrors) cardErrors.textContent = '';
 
       try {
@@ -903,7 +892,7 @@
             amount: basePrice * 100,
             setupFee: SETUP_FEE * 100,
             addonsAmount: addonsAmount * 100,
-            isSubscription: isSubscription,
+            isSubscription: true,
             packageName: selectedOpt.value,
             clientName: document.getElementById('clientName').value,
             email: document.getElementById('email').value,
@@ -928,12 +917,11 @@
         if (paymentResult.error) {
           if (cardErrors) cardErrors.textContent = paymentResult.error.message;
           submitBtn.disabled = false;
-          submitBtn.textContent = `Pay & Confirm Booking ($${totalAmount})`;
+          submitBtn.textContent = `Confirm Subscription Booking ($${totalAmount})`;
           return;
         }
 
         if (paymentResult.paymentIntent.status === 'succeeded') {
-          const statusLabel = isSubscription ? 'Active Subscription (Stripe Monthly Auto-Pay)' : 'Paid & Confirmed (Stripe Card)';
           await saveBookingToSupabaseWithDetails({
             clientName: document.getElementById('clientName').value,
             phone: document.getElementById('phone').value,
@@ -941,15 +929,15 @@
             serviceAddress: document.getElementById('serviceAddress').value,
             amountPaid: totalAmount,
             stripePaymentId: paymentResult.paymentIntent.id,
-            paymentStatus: statusLabel,
-            isSubscription
+            paymentStatus: 'Active Subscription (Stripe Monthly Auto-Pay)',
+            isSubscription: true
           });
         }
       } catch (err) {
         console.error(err);
         if (cardErrors) cardErrors.textContent = err.message || 'Payment processing failed.';
         submitBtn.disabled = false;
-        submitBtn.textContent = `Pay & Confirm Booking ($${totalAmount})`;
+        submitBtn.textContent = `Confirm Subscription Booking ($${totalAmount})`;
       }
     });
 
