@@ -212,6 +212,49 @@
           </p>
         </div>
 
+        <!-- Ceramic Coatings Information Card -->
+        <div class="p-3.5 bg-black border border-red-900/60 rounded-lg space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span> Premium & Ultimate Ceramic Coatings
+            </h4>
+            <span class="text-[10px] bg-red-950 text-red-400 border border-red-800/50 px-2 py-0.5 rounded font-bold uppercase">Showroom Protection</span>
+          </div>
+
+          <p class="text-[11px] text-gray-300 leading-relaxed">
+            Enhance your shine and protect your investment with our hydrophobic ceramic coatings. Repels water, dirt, road grime, and environmental contaminants while delivering exceptional clarity and long-term durability.
+          </p>
+
+          <!-- Quick Tier Reference Table -->
+          <div class="bg-zinc-900/80 rounded border border-zinc-800 p-2 text-[10px] sm:text-[11px]">
+            <div class="grid grid-cols-3 font-bold text-red-400 border-b border-zinc-800 pb-1 mb-1">
+              <span>Vehicle Type</span>
+              <span>1–2 Year Protection</span>
+              <span>4–5 Year Ultimate</span>
+            </div>
+            <div class="grid grid-cols-3 text-gray-300 border-b border-zinc-800/50 py-0.5">
+              <span>Sedan / Coupe</span>
+              <span>$499</span>
+              <span>$1,299</span>
+            </div>
+            <div class="grid grid-cols-3 text-gray-300 border-b border-zinc-800/50 py-0.5">
+              <span>Midsize SUV</span>
+              <span>$599</span>
+              <span>$1,499</span>
+            </div>
+            <div class="grid grid-cols-3 text-gray-300 border-b border-zinc-800/50 py-0.5">
+              <span>Large SUV / Pickup</span>
+              <span>$699</span>
+              <span>$1,699</span>
+            </div>
+            <div class="grid grid-cols-3 text-gray-300 py-0.5">
+              <span>Luxury / Exotic</span>
+              <span class="text-red-400 font-semibold">Custom Quote</span>
+              <span>$1,899+</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Add-ons Selection Section -->
         <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
           <label class="block text-xs font-medium text-gray-300">Select Add-On Services</label>
@@ -307,17 +350,33 @@
               </div>
             </div>
 
-            <!-- Ceramic Coatings ($400 - $600) -->
+            <!-- Ceramic Coating Add-ons ($499 - $1699) -->
             <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Ceramic Coatings</p>
+              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Ceramic Coating Protection</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Ceramic Coating (1-Year)" data-price="400" onchange="calculateTotalPrice()">
-                  <span>1-Year ($400)</span>
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Premium Ceramic Coating (1-2 Year Protection - Sedan/Coupe)" data-price="499" onchange="calculateTotalPrice()">
+                  <span>1-2Yr Sedan/Coupe ($499)</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Ceramic Coating (5-Year Pro)" data-price="600" onchange="calculateTotalPrice()">
-                  <span>5-Year Pro ($600)</span>
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Premium Ceramic Coating (1-2 Year Protection - Midsize SUV)" data-price="599" onchange="calculateTotalPrice()">
+                  <span>1-2Yr Midsize SUV ($599)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Premium Ceramic Coating (1-2 Year Protection - Large SUV/Pickup)" data-price="699" onchange="calculateTotalPrice()">
+                  <span>1-2Yr Large SUV/Pickup ($699)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Ultimate Ceramic Coating (4-5 Year Protection - Sedan/Coupe)" data-price="1299" onchange="calculateTotalPrice()">
+                  <span>4-5Yr Sedan/Coupe ($1,299)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Ultimate Ceramic Coating (4-5 Year Protection - Midsize SUV)" data-price="1499" onchange="calculateTotalPrice()">
+                  <span>4-5Yr Midsize SUV ($1,499)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Ultimate Ceramic Coating (4-5 Year Protection - Large SUV/Pickup)" data-price="1699" onchange="calculateTotalPrice()">
+                  <span>4-5Yr Large SUV/Pickup ($1,699)</span>
                 </label>
               </div>
             </div>
