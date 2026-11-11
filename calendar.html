@@ -1,1043 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KW Commercial Fleet Washing & Mobile Detailing - Book & Pay</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS Client Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Stripe JS Library -->
-  <script src="https://js.stripe.com/v3/"></script>
-  <style>
-    /* Custom Scrollbar for Add-ons */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #09090b;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #27272a;
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #3f3f46;
-    }
-  </style>
-</head>
-<body class="bg-black text-white min-h-screen px-3 py-6 sm:px-6 md:py-10 flex flex-col items-center justify-center font-sans antialiased">
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import Stripe from 'https://esm.sh/stripe@12.0.0?target=deno';
 
-  <!-- Services Alert Notification Popup Modal -->
-  <div id="servicesAlertModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300">
-    <div class="bg-zinc-950 border border-red-600 rounded-xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+  apiVersion: '2022-11-15',
+});
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
+  try {
+    const { amount, addonsAmount, setupFee, isSubscription, packageName, clientName, email, phone } = await req.json();
+
+    let customer;
+    const existingCustomers = await stripe.customers.list({ email: email, limit: 1 });
+    if (existingCustomers.data.length > 0) {
+      customer = existingCustomers.data[0];
+    } else {
+      customer = await stripe.customers.create({
+        name: clientName,
+        email: email,
+        phone: phone || undefined,
+        metadata: { business: 'KW Commercial Fleet Washing & Mobile Detailing' }
+      });
+    }
+
+    if (isSubscription) {
+      // 1. Create the recurring monthly price for the subscription plan itself
+      const price = await stripe.prices.create({
+        unit_amount: amount, // Monthly recurring cost in cents
+        currency: 'usd',
+        recurring: { interval: 'month' },
+        product_data: {
+          name: `${packageName} (Monthly Subscription)`,
+        },
+      });
+
+      // 2. Bundle one-time day-one charges ($50 Setup Fee + Any Selected Add-ons)
+      const oneTimeInvoiceItems = [];
       
-      <!-- Close Button (X) -->
-      <button type="button" onclick="closeServicesAlert()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold">
-        &times;
-      </button>
-
-      <!-- Modal Header -->
-      <div class="flex items-center gap-3 mb-3">
-        <div class="p-2 bg-red-600/20 border border-red-600/50 rounded-lg text-red-500">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-        <div>
-          <h3 class="text-base sm:text-lg font-bold text-white tracking-wide">Services Alert</h3>
-          <p class="text-xs text-red-500 font-semibold uppercase tracking-wider">Important Customer Notice</p>
-        </div>
-      </div>
-
-      <!-- Modal Body Text -->
-      <div class="bg-zinc-900 border border-zinc-800 p-3.5 sm:p-4 rounded-lg my-4 text-center">
-        <p class="text-xs sm:text-sm font-semibold text-white leading-relaxed">
-          Your vehicle gets serviced twice, and you pay exactly the price you see.
-        </p>
-      </div>
-
-      <!-- Action Button -->
-      <button type="button" onclick="closeServicesAlert()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs sm:text-sm transition shadow-lg shadow-red-900/40">
-        Got It, Continue
-      </button>
-    </div>
-  </div>
-
-  <!-- Logo Header -->
-  <div class="mb-6 text-center max-w-xl">
-    <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Washing & Mobile Detailing Logo" class="h-14 sm:h-16 mx-auto mb-2 object-contain filter drop-shadow-[0_0_10px_rgba(239,68,68,0.3)]">
-    <h1 class="text-base sm:text-lg md:text-xl font-bold text-white tracking-wide uppercase">KW COMMERCIAL FLEET WASHING <span class="text-red-600">&</span> MOBILE DETAILING</h1>
-    <p class="text-[11px] sm:text-xs text-gray-400 mt-1">Professional Mobile Service Direct to Your Location | Mon–Sat: 5AM–6PM</p>
-  </div>
-
-  <!-- Main Container (Responsive Grid: 1 col mobile/tablet, 2 col desktop) -->
-  <div class="max-w-5xl w-full bg-zinc-950 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-2xl border border-zinc-800 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-    
-    <!-- Left Column: Calendar & Time Slot Box -->
-    <div class="bg-black p-4 sm:p-6 rounded-lg sm:rounded-xl border border-zinc-800 flex flex-col justify-start space-y-4 w-full">
-      <div>
-        <div class="flex justify-between items-center mb-4">
-          <button type="button" id="prevMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded text-xs sm:text-sm font-bold border border-zinc-800 transition">&larr; Prev</button>
-          <h3 id="monthYearDisplay" class="text-base sm:text-lg font-bold text-white"></h3>
-          <button type="button" id="nextMonth" class="bg-zinc-900 hover:bg-zinc-800 text-red-500 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded text-xs sm:text-sm font-bold border border-zinc-800 transition">Next &rarr;</button>
-        </div>
-
-        <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center text-xs font-bold text-gray-400 mb-2 sm:mb-3">
-          <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
-        </div>
-
-        <!-- Responsive Calendar Grid -->
-        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center"></div>
-
-        <div class="mt-3 pt-3 border-t border-zinc-900 text-xs text-gray-400 text-center">
-          Selected Date : <span id="selectedDateDisplay" class="text-red-500 font-bold text-xs sm:text-sm">None selected</span>
-        </div>
-      </div>
-
-      <!-- Time Slots Grid -->
-      <div class="pt-3 border-t border-zinc-900">
-        <label class="block text-xs font-medium mb-2 text-gray-300">Select Available Time Slot</label>
-        <div id="timeSlotGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 opacity-50 pointer-events-none">
-          <button type="button" data-time="05:00 AM - 08:00 AM" class="time-slot-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 p-2.5 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
-            05:00 AM - 08:00 AM
-          </button>
-          <button type="button" data-time="08:30 AM - 11:30 AM" class="time-slot-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 p-2.5 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
-            08:30 AM - 11:30 AM
-          </button>
-          <button type="button" data-time="12:00 PM - 03:00 PM" class="time-slot-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 p-2.5 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
-            12:00 PM - 03:00 PM
-          </button>
-          <button type="button" data-time="03:00 PM - 06:00 PM" class="time-slot-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 p-2.5 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
-            03:00 PM - 06:00 PM
-          </button>
-        </div>
-        <p id="timeSlotPrompt" class="text-[11px] text-gray-500 text-center mt-2">Select a date on the grid above to unlock time slots.</p>
-      </div>
-    </div>
-
-    <!-- Right Column: Booking & Payment Form -->
-    <div class="w-full">
-      <!-- Beta Testing Banner + Re-Open Services Alert Button -->
-      <div class="mb-4 p-3 bg-red-950/40 border border-red-600/60 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-md">
-        <div class="flex items-start gap-2.5 flex-1 min-w-[200px]">
-          <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
-          </span>
-          <div>
-            <p class="text-xs font-bold text-red-500 tracking-wide uppercase">System Notification &mdash; Beta Testing</p>
-            <p class="text-[11px] text-gray-300 leading-snug mt-0.5">
-              Our booking system is currently operating in <strong class="text-white">Beta Testing</strong> mode.
-            </p>
-          </div>
-        </div>
-        <button type="button" onclick="openServicesAlert()" class="flex-shrink-0 bg-red-900/60 hover:bg-red-800 text-red-300 hover:text-white px-2.5 py-1 rounded text-[11px] font-bold border border-red-700/60 transition">
-          Services Alert
-        </button>
-      </div>
-
-      <h2 class="text-lg sm:text-xl font-bold mb-1 text-white flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-red-600"></span> Book & Secure Appointment
-      </h2>
-      <p class="text-xs text-gray-400 mb-4">Complete your details to confirm your detail service.</p>
-
-      <form id="bookingForm" class="space-y-3 sm:space-y-3.5">
-        <div>
-          <label class="block text-xs font-medium mb-1 text-gray-300">Full Name</label>
-          <input type="text" id="clientName" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-          <div>
-            <label class="block text-xs font-medium mb-1 text-gray-300">Phone Number</label>
-            <input type="tel" id="phone" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
-          </div>
-          <div>
-            <label class="block text-xs font-medium mb-1 text-gray-300">Email Address</label>
-            <input type="email" id="email" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-          <div>
-            <label class="block text-xs font-medium mb-1 text-gray-300">Vehicle Category</label>
-            <select id="vehicleCategory" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
-              <option value="Coupe" data-price="250">Coupe</option>
-              <option value="Sedan" data-price="290">Sedan</option>
-              <option value="Midsize SUV / Crossover" data-price="330">Midsize SUV / Crossover</option>
-              <option value="Pickup Truck" data-price="350">Pickup Truck</option>
-              <option value="Large SUV" data-price="350">Large SUV</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-medium mb-1 text-gray-300">Package / Plan</label>
-            <select id="serviceType" onchange="syncFromCategoryOrPlan()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
-              <option value="Full Luxury Detail" data-price="0" data-is-subscription="false">Full Luxury Detail (Standard One-Time)</option>
-              <option value="KW Signature Wash 365" data-price="220" data-is-subscription="true">KW Signature Wash 365 ($220/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($449)" data-price="449" data-is-subscription="true">Black Label 365 ($449/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($499)" data-price="499" data-is-subscription="true">Black Label 365 ($499/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($549)" data-price="549" data-is-subscription="true">Black Label 365 ($549/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($599)" data-price="599" data-is-subscription="true">Black Label 365 ($599/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($649)" data-price="649" data-is-subscription="true">Black Label 365 ($649/mo Auto-Pay)</option>
-              <option value="Black Label 365 ($700)" data-price="700" data-is-subscription="true">Black Label 365 ($700/mo Auto-Pay)</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Selected Selection Base Price Drop-Box -->
-        <div>
-          <label class="block text-xs font-medium mb-1 text-gray-300">Selected Selection Base Price</label>
-          <select id="basePriceSelect" onchange="syncFromBasePriceSelect()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600 font-bold">
-            <!-- Dynamically Populated via JS -->
-          </select>
-        </div>
-
-        <!-- Setup Fee Mandatory Row ($25) -->
-        <div class="p-3 bg-zinc-900/90 border border-red-900/50 rounded-lg flex items-center justify-between">
-          <span class="text-xs font-semibold text-gray-200">Setup Fee <span class="text-red-500 font-bold">(Non-refundable)</span></span>
-          <span class="text-xs font-bold text-red-500">$25</span>
-        </div>
-
-        <!-- Auto-Pay Recurring Plan Disclaimer -->
-        <div id="subscriptionDisclaimer" class="p-3 bg-red-950/30 border border-red-800/60 rounded-lg text-xs text-gray-300 hidden space-y-1">
-          <p class="font-bold text-red-400 flex items-center gap-1.5">
-            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            Recurring Monthly Membership Agreement:
-          </p>
-          <p class="leading-relaxed text-[11px] text-gray-400">
-            By booking a monthly plan, you authorize <strong class="text-white">KW Commercial Fleet Washing & Mobile Detailing</strong> to bill your card today for month 1 + setup fee/add-ons, and automatically renew your subscription every 30 days. Cancel anytime.
-          </p>
-        </div>
-
-        <!-- Add-ons Selection Section -->
-        <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
-          <label class="block text-xs font-medium text-gray-300">Select Add-On Services</label>
-          <div class="space-y-3 text-xs text-gray-300 max-h-56 overflow-y-auto pr-1">
-            
-            <!-- Pet Hair Removal ($50 - $90) -->
-            <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Pet Hair Removal</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal (Standard)" data-price="50" onchange="calculateTotalPrice()">
-                  <span>Standard ($50)</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal (Heavy)" data-price="90" onchange="calculateTotalPrice()">
-                  <span>Heavy ($90)</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Seat Shampoo / Extraction ($100 - $140) -->
-            <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Seat Shampoo / Extraction</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Seat Shampoo (Standard)" data-price="100" onchange="calculateTotalPrice()">
-                  <span>Standard ($100)</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Seat Shampoo (Deep Extraction)" data-price="140" onchange="calculateTotalPrice()">
-                  <span>Deep ($140)</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Engine Bay Cleaning ($100 - $150) -->
-            <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Engine Bay Cleaning</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay (Standard)" data-price="100" onchange="calculateTotalPrice()">
-                  <span>Standard ($100)</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay (Showroom Detail)" data-price="150" onchange="calculateTotalPrice()">
-                  <span>Showroom ($150)</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Excessive Soil Removal ($70 - $100) -->
-            <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Excessive Soil Removal</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Excessive Soil (Moderate)" data-price="70" onchange="calculateTotalPrice()">
-                  <span>Moderate ($70)</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Excessive Soil (Heavy)" data-price="100" onchange="calculateTotalPrice()">
-                  <span>Heavy ($100)</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Paint Polishing ($175 - $350) -->
-            <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Paint Polishing</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Polishing (Gloss)" data-price="175" onchange="calculateTotalPrice()">
-                  <span>Gloss ($175)</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Polishing (Ultra Gloss)" data-price="350" onchange="calculateTotalPrice()">
-                  <span>Ultra ($350)</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Paint Correction ($250 - $450) -->
-            <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Paint Correction</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (Minor Scratch)" data-price="250" onchange="calculateTotalPrice()">
-                  <span>Minor ($250)</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (Full Multi-Stage)" data-price="450" onchange="calculateTotalPrice()">
-                  <span>Full ($450)</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Ceramic Coatings ($400 - $600) -->
-            <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Ceramic Coatings</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Ceramic Coating (1-Year)" data-price="400" onchange="calculateTotalPrice()">
-                  <span>1-Year ($400)</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Ceramic Coating (5-Year Pro)" data-price="600" onchange="calculateTotalPrice()">
-                  <span>5-Year Pro ($600)</span>
-                </label>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- LocationIQ Address Autocomplete Section -->
-        <div class="relative">
-          <label class="block text-xs font-medium mb-1 text-gray-300">Mobile Service Address</label>
-          <input type="text" id="serviceAddress" placeholder="Start typing street address..." autocomplete="off" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600">
-          
-          <!-- Dropdown Suggestions Container -->
-          <ul id="addressSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-50 hidden divide-y divide-zinc-800/60"></ul>
-        </div>
-
-        <input type="hidden" id="serviceDate">
-        <input type="hidden" id="selectedTimeSlotValue">
-
-        <!-- Payment Method Choice Selector -->
-        <div class="mt-4">
-          <label class="block text-xs font-medium mb-1.5 text-gray-300">Payment Option</label>
-          <div class="grid grid-cols-2 gap-2 mb-3">
-            <button type="button" id="payOnlineTab" class="py-2 px-3 text-xs font-bold rounded-lg border border-red-600 bg-red-600 text-white transition">
-              Card / Mobile Wallet
-            </button>
-            <button type="button" id="payInPersonTab" class="py-2 px-3 text-xs font-bold rounded-lg border border-zinc-800 bg-zinc-900 text-gray-400 hover:text-white transition">
-              Pay in Person / Zelle
-            </button>
-          </div>
-
-          <!-- Section 1: Card / Online Payment Box -->
-          <div id="cardPaymentSection" class="space-y-3">
-            <div>
-              <label class="block text-xs font-medium mb-1.5 text-gray-300">Express Instant Checkout</label>
-              <div id="express-checkout-element"></div>
-            </div>
-
-            <div class="relative flex py-1 items-center">
-              <div class="flex-grow border-t border-zinc-800"></div>
-              <span class="flex-shrink mx-3 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">or pay with card</span>
-              <div class="flex-grow border-t border-zinc-800"></div>
-            </div>
-
-            <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg">
-              <label class="block text-xs font-medium mb-2 text-gray-300">Debit / Credit Card</label>
-              <div id="card-element" class="p-3 bg-black border border-zinc-800 rounded-lg text-white"></div>
-              <div id="card-errors" class="text-xs text-red-500 mt-2 font-medium" role="alert"></div>
-            </div>
-          </div>
-
-          <!-- Section 2: Pay in Person / Zelle Box (Hidden by Default) -->
-          <div id="inPersonSection" class="hidden p-4 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
-            <div class="flex items-center gap-2 text-red-500 font-bold text-xs">
-              <span class="w-2 h-2 rounded-full bg-red-600"></span> Pay Upon Completion or via Zelle
-            </div>
-            <p class="text-xs text-gray-300 leading-relaxed">
-              No payment is required right now. You can pay with <strong class="text-white">Cash</strong>, <strong class="text-white">Card</strong>, or <strong class="text-white">Zelle</strong> when our detailing unit finishes servicing your vehicle at your location.
-            </p>
-            <div class="p-2.5 bg-black border border-zinc-800 rounded text-xs text-gray-400">
-              <span class="font-bold text-white">Zelle Info:</span> Send payment to <span class="text-red-400 font-medium">KW Commercial Fleet Washing & Mobile Detailing</span> upon arrival.
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg text-xs sm:text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
-          Confirm Booking (<span id="payBtnAmount">$275</span>)
-        </button>
-      </form>
-      
-      <div id="successMessage" class="hidden mt-4 p-4 bg-zinc-900 border border-red-600 text-white rounded-lg text-center text-sm shadow-lg">
-        Appointment successfully confirmed! We look forward to servicing your vehicle.
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Services Alert Popup Handlers
-    function closeServicesAlert() {
-      const modal = document.getElementById('servicesAlertModal');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function openServicesAlert() {
-      const modal = document.getElementById('servicesAlertModal');
-      if (modal) modal.classList.remove('hidden');
-    }
-
-    // Capacity Threshold Configuration
-    const DAILY_MAX_LIMIT = 4; // Max 4 orders per day before date grays out
-    const TIME_SLOT_MAX = 4;   // Max 4 orders per time slot before slot disables
-
-    // Fully Configured Project Keys
-    const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
-    const STRIPE_PUBLISHABLE_KEY = 'pk_live_51UXoy841rEJafE4qq4lXTr2T0q0P6p4qglGVZjFR1X3TvEGwDlDQwQAIrtHoU2GpONiMDJM8K7vgdG338knTqVAF004qtQ3bG3';
-    const LOCATIONIQ_API_KEY = 'pk.6aed632131158f485c9b1b025bfc45d2'; // Updated LocationIQ Key
-    const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
-
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    // Hardcoded Permanent Setup Fee ($25)
-    const SETUP_FEE = 25;
-
-    // LocationIQ Address Autocomplete Implementation with Safe Error Catching
-    const addressInput = document.getElementById('serviceAddress');
-    const addressSuggestions = document.getElementById('addressSuggestions');
-    let debounceTimer;
-    let selectedIndex = -1;
-
-    if (addressInput && addressSuggestions) {
-      addressInput.addEventListener('input', (e) => {
-        clearTimeout(debounceTimer);
-        const query = e.target.value.trim();
-
-        if (query.length < 3) {
-          addressSuggestions.classList.add('hidden');
-          addressSuggestions.innerHTML = '';
-          return;
-        }
-
-        debounceTimer = setTimeout(async () => {
-          try {
-            const url = `https://api.locationiq.com/v1/autocomplete?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(query)}&limit=5&countrycodes=us`;
-            const res = await fetch(url);
-            
-            if (!res.ok) {
-              addressSuggestions.classList.add('hidden');
-              return;
-            }
-            
-            const data = await res.json();
-            addressSuggestions.innerHTML = '';
-            selectedIndex = -1;
-
-            if (Array.isArray(data) && data.length > 0) {
-              data.forEach((item) => {
-                const li = document.createElement('li');
-                li.className = 'p-2.5 text-xs text-gray-300 hover:bg-zinc-800 hover:text-white cursor-pointer transition flex items-center gap-2';
-                li.innerHTML = `
-                  <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  </svg>
-                  <span class="truncate">${item.display_name}</span>
-                `;
-
-                li.addEventListener('click', () => {
-                  addressInput.value = item.display_name;
-                  addressSuggestions.classList.add('hidden');
-                  addressSuggestions.innerHTML = '';
-                });
-
-                addressSuggestions.appendChild(li);
-              });
-              addressSuggestions.classList.remove('hidden');
-            } else {
-              addressSuggestions.classList.add('hidden');
-            }
-          } catch (err) {
-            addressSuggestions.classList.add('hidden');
-          }
-        }, 300);
-      });
-
-      // Keyboard Navigation (Arrow keys & Enter)
-      addressInput.addEventListener('keydown', (e) => {
-        const items = addressSuggestions.querySelectorAll('li');
-        if (!items.length) return;
-
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          selectedIndex = (selectedIndex + 1) % items.length;
-          updateHighlight(items);
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          selectedIndex = (selectedIndex - 1 + items.length) % items.length;
-          updateHighlight(items);
-        } else if (e.key === 'Enter' && selectedIndex >= 0) {
-          e.preventDefault();
-          items[selectedIndex].click();
-        } else if (e.key === 'Escape') {
-          addressSuggestions.classList.add('hidden');
-        }
-      });
-
-      function updateHighlight(items) {
-        items.forEach((item, index) => {
-          if (index === selectedIndex) {
-            item.classList.add('bg-zinc-800', 'text-white');
-          } else {
-            item.classList.remove('bg-zinc-800', 'text-white');
-          }
-        });
-      }
-
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!addressInput.contains(e.target) && !addressSuggestions.contains(e.target)) {
-          addressSuggestions.classList.add('hidden');
-        }
-      });
-    }
-
-    // Payment Option Tab Toggle Logic
-    let currentPaymentMethod = 'online';
-    const payOnlineTab = document.getElementById('payOnlineTab');
-    const payInPersonTab = document.getElementById('payInPersonTab');
-    const cardPaymentSection = document.getElementById('cardPaymentSection');
-    const inPersonSection = document.getElementById('inPersonSection');
-    const submitBtn = document.getElementById('submitBtn');
-
-    payOnlineTab.addEventListener('click', () => {
-      currentPaymentMethod = 'online';
-      payOnlineTab.classList.replace('bg-zinc-900', 'bg-red-600');
-      payOnlineTab.classList.replace('text-gray-400', 'text-white');
-      payOnlineTab.classList.replace('border-zinc-800', 'border-red-600');
-
-      payInPersonTab.classList.replace('bg-red-600', 'bg-zinc-900');
-      payInPersonTab.classList.replace('text-white', 'text-gray-400');
-      payInPersonTab.classList.replace('border-red-600', 'border-zinc-800');
-
-      cardPaymentSection.classList.remove('hidden');
-      inPersonSection.classList.add('hidden');
-      
-      const totalAmount = calculateTotalPrice();
-      submitBtn.innerHTML = `Pay & Confirm Booking (<span id="payBtnAmount">$${totalAmount}</span>)`;
-    });
-
-    payInPersonTab.addEventListener('click', () => {
-      currentPaymentMethod = 'in_person';
-      payInPersonTab.classList.replace('bg-zinc-900', 'bg-red-600');
-      payInPersonTab.classList.replace('text-gray-400', 'text-white');
-      payInPersonTab.classList.replace('border-zinc-800', 'border-red-600');
-
-      payOnlineTab.classList.replace('bg-red-600', 'bg-zinc-900');
-      payOnlineTab.classList.replace('text-white', 'text-gray-400');
-      payOnlineTab.classList.replace('border-red-600', 'border-zinc-800');
-
-      inPersonSection.classList.remove('hidden');
-      cardPaymentSection.classList.add('hidden');
-
-      const totalAmount = calculateTotalPrice();
-      submitBtn.innerHTML = `Confirm Booking (Pay $${totalAmount} in Person/Zelle)`;
-    });
-
-    // Dynamic Price Calculator & Drop-Box Syncing
-    function populateBasePriceDropBox() {
-      const basePriceSelect = document.getElementById('basePriceSelect');
-      const vehicleSelect = document.getElementById('vehicleCategory');
-      const serviceSelect = document.getElementById('serviceType');
-      const subscriptionDisclaimer = document.getElementById('subscriptionDisclaimer');
-      if (!basePriceSelect || !vehicleSelect || !serviceSelect) return;
-
-      basePriceSelect.innerHTML = '';
-
-      const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
-      const planPrice = parseInt(selectedPlanOpt ? selectedPlanOpt.getAttribute('data-price') : 0, 10);
-      const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
-
-      if (subscriptionDisclaimer) {
-        if (isSubscription) {
-          subscriptionDisclaimer.classList.remove('hidden');
-        } else {
-          subscriptionDisclaimer.classList.add('hidden');
-        }
-      }
-
-      if (planPrice > 0) {
-        const opt = document.createElement('option');
-        opt.value = planPrice;
-        opt.setAttribute('data-source', 'plan');
-        opt.textContent = `$${planPrice} - Monthly Plan Base Rate (${selectedPlanOpt.value})`;
-        basePriceSelect.appendChild(opt);
-      } else {
-        Array.from(vehicleSelect.options).forEach(vOpt => {
-          const opt = document.createElement('option');
-          const price = vOpt.getAttribute('data-price');
-          opt.value = price;
-          opt.setAttribute('data-source', 'vehicle');
-          opt.setAttribute('data-vehicle', vOpt.value);
-          opt.textContent = `$${price} - Base Rate (${vOpt.value})`;
-          if (vOpt.value === vehicleSelect.value) {
-            opt.selected = true;
-          }
-          basePriceSelect.appendChild(opt);
-        });
-      }
-    }
-
-    function syncFromCategoryOrPlan() {
-      populateBasePriceDropBox();
-      calculateTotalPrice();
-    }
-
-    function syncFromBasePriceSelect() {
-      const basePriceSelect = document.getElementById('basePriceSelect');
-      const vehicleSelect = document.getElementById('vehicleCategory');
-      const selectedOpt = basePriceSelect.options[basePriceSelect.selectedIndex];
-
-      if (selectedOpt && selectedOpt.getAttribute('data-source') === 'vehicle') {
-        const vehicleVal = selectedOpt.getAttribute('data-vehicle');
-        if (vehicleVal) vehicleSelect.value = vehicleVal;
-      }
-      calculateTotalPrice();
-    }
-
-    function calculateTotalPrice() {
-      const basePriceSelect = document.getElementById('basePriceSelect');
-      const payBtnAmount = document.getElementById('payBtnAmount');
-      
-      let basePrice = 250;
-      if (basePriceSelect && basePriceSelect.value) {
-        basePrice = parseInt(basePriceSelect.value, 10);
-      }
-
-      let addonTotal = 0;
-      document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
-        addonTotal += parseInt(cb.getAttribute('data-price') || 0, 10);
-      });
-
-      const finalTotal = basePrice + SETUP_FEE + addonTotal;
-      if (payBtnAmount) {
-        payBtnAmount.textContent = `$${finalTotal}`;
-      }
-      return finalTotal;
-    }
-
-    populateBasePriceDropBox();
-
-    // Time Slot Grid Selection Setup
-    let selectedTimeSlotStr = '';
-    const timeSlotBtns = document.querySelectorAll('.time-slot-btn');
-
-    timeSlotBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (btn.disabled) return;
-
-        timeSlotBtns.forEach(b => {
-          if (!b.disabled) {
-            b.classList.remove('bg-red-600', 'text-white', 'border-red-600', 'font-bold');
-            b.classList.add('bg-zinc-900', 'text-gray-300', 'border-zinc-800');
-          }
-        });
-        
-        btn.classList.remove('bg-zinc-900', 'text-gray-300', 'border-zinc-800');
-        btn.classList.add('bg-red-600', 'text-white', 'border-red-600', 'font-bold');
-
-        selectedTimeSlotStr = btn.getAttribute('data-time');
-        document.getElementById('selectedTimeSlotValue').value = selectedTimeSlotStr;
-      });
-    });
-
-    // Fetch Monthly Bookings from Supabase for Capacity Validation
-    async function fetchMonthBookings(year, month) {
-      const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-      const endDate = `${year}-${String(month + 1).padStart(2, '0')}-31`;
-
-      const { data, error } = await supabaseClient
-        .from('bookings')
-        .select('service_date, time_slot')
-        .gte('service_date', startDate)
-        .lte('service_date', endDate);
-
-      if (error) {
-        console.error('Error fetching calendar availability:', error);
-        return [];
-      }
-      return data || [];
-    }
-
-    // Filter Time Slot Grid Based on Selected Date & Cap (TIME_SLOT_MAX = 4)
-    function updateTimeSlotAvailability(selectedDateStr, monthBookings) {
-      const timeGrid = document.getElementById('timeSlotGrid');
-      const timePrompt = document.getElementById('timeSlotPrompt');
-      timeGrid.classList.remove('opacity-50', 'pointer-events-none');
-      timePrompt.textContent = 'Tap to select an available time window:';
-      timePrompt.classList.remove('text-gray-500');
-      timePrompt.classList.add('text-red-400');
-
-      const bookedSlots = monthBookings
-        .filter(b => b.service_date === selectedDateStr)
-        .map(b => b.time_slot);
-
-      timeSlotBtns.forEach(btn => {
-        const slotValue = btn.getAttribute('data-time');
-        const countForSlot = bookedSlots.filter(s => s === slotValue).length;
-
-        if (countForSlot >= TIME_SLOT_MAX) {
-          btn.disabled = true;
-          btn.classList.add('opacity-30', 'cursor-not-allowed', 'line-through', 'bg-zinc-950');
-          btn.classList.remove('hover:bg-zinc-800', 'bg-zinc-900', 'text-gray-300', 'bg-red-600', 'text-white');
-          btn.title = 'Slot Fully Booked (4/4)';
-          if (selectedTimeSlotStr === slotValue) {
-            selectedTimeSlotStr = '';
-            document.getElementById('selectedTimeSlotValue').value = '';
-          }
-        } else {
-          btn.disabled = false;
-          btn.classList.remove('opacity-30', 'cursor-not-allowed', 'line-through', 'bg-zinc-950');
-          if (selectedTimeSlotStr === slotValue) {
-            btn.classList.add('bg-red-600', 'text-white', 'border-red-600', 'font-bold');
-          } else {
-            btn.classList.add('bg-zinc-900', 'text-gray-300');
-          }
-          btn.title = `${countForSlot}/${TIME_SLOT_MAX} booked`;
-        }
-      });
-    }
-
-    // Initialize Stripe & Elements
-    const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    const elements = stripe.elements({ mode: 'payment', amount: 27500, currency: 'usd' });
-
-    // Express Checkout
-    const expressCheckoutElement = elements.create('expressCheckout', {
-      buttonHeight: 44,
-      buttonTheme: { applePay: 'white-outline', googlePay: 'black' },
-      wallets: { applePay: 'always', googlePay: 'always', link: 'never', amazonPay: 'never' }
-    });
-    expressCheckoutElement.mount('#express-checkout-element');
-
-    expressCheckoutElement.on('confirm', async (event) => {
-      if (!selectedDateStr) {
-        alert('Please select a date from the calendar grid before paying.');
-        event.decline();
-        return;
-      }
-      if (!selectedTimeSlotStr) {
-        alert('Please select a time slot from the grid under the calendar.');
-        event.decline();
-        return;
-      }
-
-      const totalAmount = calculateTotalPrice();
-      const serviceSelect = document.getElementById('serviceType');
-      const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
-      const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
-
-      const billingDetails = event.billingDetails || {};
-      const clientName = billingDetails.name || document.getElementById('clientName').value || 'Express Checkout Customer';
-      const clientEmail = billingDetails.email || document.getElementById('email').value || 'express@checkout.com';
-      const clientPhone = billingDetails.phone || document.getElementById('phone').value || 'N/A';
-      
-      let serviceAddress = document.getElementById('serviceAddress').value;
-      if (!serviceAddress && billingDetails.address) {
-        const addr = billingDetails.address;
-        serviceAddress = `${addr.line1 || ''} ${addr.city || ''}, ${addr.state || ''} ${addr.postal_code || ''}`.trim();
-      }
-      if (!serviceAddress) serviceAddress = 'Service Address Provided via Mobile Unit';
-
-      try {
-        const response = await fetch(EDGE_FUNCTION_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      if (setupFee && setupFee > 0) {
+        oneTimeInvoiceItems.push({
+          price_data: {
+            currency: 'usd',
+            unit_amount: setupFee, // 5000 for $50.00 setup fee
+            product_data: { name: 'Non-refundable Setup Fee' },
           },
-          body: JSON.stringify({
-            amount: totalAmount * 100,
-            isSubscription: isSubscription,
-            packageName: serviceSelect.value,
-            clientName: clientName,
-            email: clientEmail
-          })
         });
-
-        const resData = await response.json();
-        if (!response.ok || resData.error) throw new Error(resData.error || 'Payment initialization failed');
-
-        const { error, paymentIntent } = await stripe.confirmPayment({
-          elements,
-          clientSecret: resData.clientSecret,
-          confirmParams: { return_url: window.location.href },
-          redirect: 'if_required'
-        });
-
-        if (error) {
-          document.getElementById('card-errors').textContent = error.message;
-          event.decline();
-        } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-          const statusLabel = isSubscription ? 'Active Subscription (Express Wallet Monthly Auto-Pay)' : 'Paid & Confirmed (Express Wallet One-Time)';
-          
-          await saveBookingToSupabaseWithDetails({
-            clientName,
-            phone: clientPhone,
-            email: clientEmail,
-            serviceAddress,
-            amountPaid: totalAmount,
-            stripePaymentId: paymentIntent.id,
-            paymentStatus: statusLabel,
-            isSubscription
-          });
-
-          event.complete('success');
-        }
-      } catch (err) {
-        console.error('Express Checkout Error:', err);
-        document.getElementById('card-errors').textContent = err.message;
-        event.decline();
-      }
-    });
-
-    // Standard Card Element
-    const card = elements.create('card', {
-      style: {
-        base: { color: '#ffffff', fontFamily: 'inherit', fontSize: '14px', '::placeholder': { color: '#71717a' } },
-        invalid: { color: '#ef4444', iconColor: '#ef4444' }
-      }
-    });
-    card.mount('#card-element');
-
-    card.on('change', (event) => {
-      document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
-    });
-
-    let currentDate = new Date();
-    let selectedDateStr = '';
-    let currentMonthBookings = [];
-
-    // Calendar Renderer with Capacity Enforcement & DD:MM:YYYY Format
-    async function renderCalendar() {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
-      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      document.getElementById('monthYearDisplay').textContent = `${monthNames[month]} ${year}`;
-
-      currentMonthBookings = await fetchMonthBookings(year, month);
-
-      const firstDayIndex = new Date(year, month, 1).getDay();
-      const totalDays = new Date(year, month + 1, 0).getDate();
-      const todayStr = new Date().toISOString().split('T')[0];
-
-      const grid = document.getElementById('calendarDaysGrid');
-      grid.innerHTML = '';
-
-      for (let i = 0; i < firstDayIndex; i++) {
-        grid.appendChild(document.createElement('div'));
       }
 
-      for (let day = 1; day <= totalDays; day++) {
-        const dayDiv = document.createElement('div');
-        const formattedMonth = String(month + 1).padStart(2, '0');
-        const formattedDay = String(day).padStart(2, '0');
-        const dateStr = `${year}-${formattedMonth}-${formattedDay}`;
-
-        const dateObj = new Date(year, month, day);
-        const dayOfWeek = dateObj.getDay();
-
-        const totalOrdersOnDate = currentMonthBookings.filter(b => b.service_date === dateStr).length;
-
-        dayDiv.textContent = day;
-        dayDiv.className = "h-9 sm:h-11 text-xs sm:text-sm rounded-lg cursor-pointer transition flex items-center justify-center font-bold border border-zinc-900/60 ";
-
-        if (dateStr < todayStr) {
-          dayDiv.classList.add('text-zinc-700', 'cursor-not-allowed', 'bg-zinc-950/40');
-        } else if (dayOfWeek === 0) {
-          dayDiv.classList.add('text-zinc-700', 'line-through', 'cursor-not-allowed', 'bg-zinc-950/40');
-          dayDiv.title = 'Closed on Sundays';
-        } else if (totalOrdersOnDate >= DAILY_MAX_LIMIT) {
-          dayDiv.classList.add('text-zinc-600', 'line-through', 'cursor-not-allowed', 'bg-zinc-950/80');
-          dayDiv.title = 'Fully Booked (4/4)';
-        } else {
-          dayDiv.classList.add('text-gray-200', 'bg-zinc-900', 'hover:bg-zinc-800', 'hover:text-red-400', 'hover:border-red-900/50');
-          if (dateStr === selectedDateStr) {
-            dayDiv.classList.remove('bg-zinc-900', 'text-gray-200');
-            dayDiv.classList.add('bg-red-600', 'text-white', 'font-black', 'shadow-lg', 'shadow-red-900/50', 'border-red-500');
-          }
-
-          dayDiv.addEventListener('click', () => {
-            selectedDateStr = dateStr;
-            document.getElementById('serviceDate').value = selectedDateStr;
-            
-            const formattedDisplayDate = `${formattedDay}:${formattedMonth}:${year}`;
-            document.getElementById('selectedDateDisplay').textContent = formattedDisplayDate;
-
-            updateTimeSlotAvailability(selectedDateStr, currentMonthBookings);
-            renderCalendar();
-          });
-        }
-        grid.appendChild(dayDiv);
-      }
-    }
-
-    document.getElementById('prevMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
-    document.getElementById('nextMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
-    renderCalendar();
-
-    // Form Submission Handler
-    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!selectedDateStr) {
-        alert('Please select a date from the calendar grid.');
-        return;
-      }
-      if (!selectedTimeSlotStr) {
-        alert('Please select a time slot from the grid under the calendar.');
-        return;
-      }
-
-      const cardErrors = document.getElementById('card-errors');
-      submitBtn.disabled = true;
-      const totalAmount = calculateTotalPrice();
-      const serviceSelect = document.getElementById('serviceType');
-      const selectedPlanOpt = serviceSelect.options[serviceSelect.selectedIndex];
-      const isSubscription = selectedPlanOpt ? selectedPlanOpt.getAttribute('data-is-subscription') === 'true' : false;
-
-      // Path A: Pay in Person / Zelle
-      if (currentPaymentMethod === 'in_person') {
-        submitBtn.textContent = 'Saving Booking...';
-        const statusLabel = isSubscription ? 'Active Subscription (Pending - Cash_Zelle)' : 'Pending - Cash_Zelle';
-        await saveBookingToSupabaseWithDetails({
-          clientName: document.getElementById('clientName').value,
-          phone: document.getElementById('phone').value,
-          email: document.getElementById('email').value,
-          serviceAddress: document.getElementById('serviceAddress').value,
-          amountPaid: totalAmount,
-          stripePaymentId: 'IN_PERSON_ZELLE',
-          paymentStatus: statusLabel,
-          isSubscription
-        });
-        return;
-      }
-
-      // Path B: Online Card Payment via Stripe
-      submitBtn.textContent = isSubscription ? 'Setting Up Monthly Auto-Pay...' : 'Processing Payment...';
-      if (cardErrors) cardErrors.textContent = '';
-
-      try {
-        const response = await fetch(EDGE_FUNCTION_URL, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      if (addonsAmount && addonsAmount > 0) {
+        oneTimeInvoiceItems.push({
+          price_data: {
+            currency: 'usd',
+            unit_amount: addonsAmount, // One-time add-on total in cents
+            product_data: { name: 'Selected One-Time Add-On Services' },
           },
-          body: JSON.stringify({
-            amount: totalAmount * 100,
-            isSubscription: isSubscription,
-            packageName: serviceSelect.value,
-            clientName: document.getElementById('clientName').value,
-            email: document.getElementById('email').value
-          })
         });
-
-        const resData = await response.json();
-        if (!response.ok || resData.error) throw new Error(resData.error || 'Failed to initialize payment');
-
-        const paymentResult = await stripe.confirmCardPayment(resData.clientSecret, {
-          payment_method: {
-            card: card,
-            billing_details: {
-              name: document.getElementById('clientName').value,
-              email: document.getElementById('email').value,
-              phone: document.getElementById('phone').value
-            }
-          }
-        });
-
-        if (paymentResult.error) {
-          if (cardErrors) cardErrors.textContent = paymentResult.error.message;
-          submitBtn.disabled = false;
-          submitBtn.textContent = `Pay & Confirm Booking ($${totalAmount})`;
-          return;
-        }
-
-        if (paymentResult.paymentIntent.status === 'succeeded') {
-          const statusLabel = isSubscription ? 'Active Subscription (Stripe Monthly Auto-Pay)' : 'Paid & Confirmed (Stripe Card)';
-          await saveBookingToSupabaseWithDetails({
-            clientName: document.getElementById('clientName').value,
-            phone: document.getElementById('phone').value,
-            email: document.getElementById('email').value,
-            serviceAddress: document.getElementById('serviceAddress').value,
-            amountPaid: totalAmount,
-            stripePaymentId: paymentResult.paymentIntent.id,
-            paymentStatus: statusLabel,
-            isSubscription
-          });
-        }
-      } catch (err) {
-        console.error(err);
-        if (cardErrors) cardErrors.textContent = err.message || 'Payment processing failed.';
-        submitBtn.disabled = false;
-        submitBtn.textContent = `Pay & Confirm Booking ($${totalAmount})`;
-      }
-    });
-
-    // Write Record to Supabase
-    async function saveBookingToSupabaseWithDetails({ clientName, phone, email, serviceAddress, amountPaid, stripePaymentId, paymentStatus, isSubscription }) {
-      const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
-      const packageSelected = document.getElementById('serviceType').value;
-
-      const fullServiceDescription = `${packageSelected} + $25 Setup Fee` + (selectedAddons ? ` + Addons: [${selectedAddons}]` : '');
-
-      const { data, error: dbError } = await supabaseClient
-        .from('bookings')
-        .insert([{
-          client_name: clientName,
-          phone: phone,
-          email: email,
-          vehicle_category: document.getElementById('vehicleCategory').value,
-          service_type: fullServiceDescription,
-          service_date: selectedDateStr,
-          time_slot: selectedTimeSlotStr,
-          service_address: serviceAddress,
-          payment_status: paymentStatus,
-          stripe_payment_id: stripePaymentId,
-          amount_paid: amountPaid,
-          is_subscription: isSubscription
-        }])
-        .select();
-
-      if (dbError) {
-        console.error('Supabase DB Insert Error:', dbError);
-        alert('Booking error: ' + dbError.message);
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Retry Confirmation';
-        return;
       }
 
-      document.getElementById('bookingForm').classList.add('hidden');
-      document.getElementById('successMessage').classList.remove('hidden');
+      // 3. Create the subscription with setup fee & add-ons added ONLY to the first invoice
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{ price: price.id }],
+        add_invoice_items: oneTimeInvoiceItems, // Automatically bills $50 setup fee & add-ons on day 1 only
+        payment_behavior: 'default_incomplete',
+        payment_settings: { save_default_payment_method: 'on_subscription' },
+        expand: ['latest_invoice.payment_intent'],
+        metadata: {
+          package_name: packageName,
+          is_subscription: 'true',
+        },
+      });
+
+      const invoice = subscription.latest_invoice as Stripe.Invoice;
+      const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
+
+      return new Response(
+        JSON.stringify({ 
+          clientSecret: paymentIntent.client_secret, 
+          subscriptionId: subscription.id,
+          customerId: customer.id 
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+
+    } else {
+      // Handle One-Time Bookings (Base Plan + $50 Setup Fee + Add-ons all bundled together)
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount + (setupFee || 0) + (addonsAmount || 0),
+        currency: 'usd',
+        customer: customer.id,
+        metadata: {
+          is_subscription: 'false',
+          package_name: packageName,
+          billing_cycle: 'one_time'
+        },
+        automatic_payment_methods: { enabled: true }
+      });
+
+      return new Response(
+        JSON.stringify({ 
+          clientSecret: paymentIntent.client_secret, 
+          customerId: customer.id 
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
     }
-  </script>
-</body>
-</html>
+
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+    );
+  }
+});
