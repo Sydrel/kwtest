@@ -53,7 +53,7 @@
       <!-- Modal Body Text -->
       <div class="bg-zinc-900 border border-zinc-800 p-3.5 sm:p-4 rounded-lg my-4 text-center">
         <p class="text-xs sm:text-sm font-semibold text-white leading-relaxed">
-          Your vehicle gets serviced twice, and you pay exactly the price you see.
+          Your vehicle gets serviced twice monthly, and you pay exactly the price you see.
         </p>
       </div>
 
@@ -159,26 +159,31 @@
           </div>
         </div>
 
-        <!-- Single Unified Dropdown: Subscription Plan - Vehicle -->
+        <!-- Single Unified Dropdown: Subscription Plan - Vehicle Category -->
         <div>
           <label class="block text-xs font-medium mb-1 text-gray-300">Select Subscription Plan & Vehicle Category</label>
           <select id="servicePackageCombined" onchange="calculateTotalPrice()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-red-600 font-semibold">
-            <!-- Full Luxury Detail Subscription Options -->
-            <optgroup label="Full Luxury Detail Plans">
-              <option value="Full Luxury Detail - Coupe" data-plan="Full Luxury Detail" data-vehicle="Coupe" data-price="250" data-is-subscription="true" selected>Full Luxury Detail - Coupe ($250/mo)</option>
-              <option value="Full Luxury Detail - Sedan" data-plan="Full Luxury Detail" data-vehicle="Sedan" data-price="290" data-is-subscription="true">Full Luxury Detail - Sedan ($290/mo)</option>
-              <option value="Full Luxury Detail - Midsize SUV / Crossover" data-plan="Full Luxury Detail" data-vehicle="Midsize SUV / Crossover" data-price="330" data-is-subscription="true">Full Luxury Detail - Midsize SUV / Crossover ($330/mo)</option>
-              <option value="Full Luxury Detail - Pickup Truck" data-plan="Full Luxury Detail" data-vehicle="Pickup Truck" data-price="350" data-is-subscription="true">Full Luxury Detail - Pickup Truck ($350/mo)</option>
-              <option value="Full Luxury Detail - Large SUV" data-plan="Full Luxury Detail" data-vehicle="Large SUV" data-price="350" data-is-subscription="true">Full Luxury Detail - Large SUV ($350/mo)</option>
-            </optgroup>
-
-            <!-- KW Signature Wash 365 -->
+            
+            <!-- KW Signature Wash 365 Plans ($220 - $300) -->
             <optgroup label="KW Signature Wash 365">
-              <option value="KW Signature Wash 365 - All Vehicles" data-plan="KW Signature Wash 365" data-vehicle="All Vehicles" data-price="220" data-is-subscription="true">KW Signature Wash 365 - All Vehicles ($220/mo)</option>
+              <option value="KW Signature Wash 365 - Coupe" data-plan="KW Signature Wash 365" data-vehicle="Coupe" data-price="220" data-is-subscription="true" selected>KW Signature Wash 365 - Coupe ($220/mo)</option>
+              <option value="KW Signature Wash 365 - Sedan" data-plan="KW Signature Wash 365" data-vehicle="Sedan" data-price="240" data-is-subscription="true">KW Signature Wash 365 - Sedan ($240/mo)</option>
+              <option value="KW Signature Wash 365 - Midsize SUV / Crossover" data-plan="KW Signature Wash 365" data-vehicle="Midsize SUV / Crossover" data-price="260" data-is-subscription="true">KW Signature Wash 365 - Midsize SUV / Crossover ($260/mo)</option>
+              <option value="KW Signature Wash 365 - Pickup Truck" data-plan="KW Signature Wash 365" data-vehicle="Pickup Truck" data-price="280" data-is-subscription="true">KW Signature Wash 365 - Pickup Truck ($280/mo)</option>
+              <option value="KW Signature Wash 365 - Large SUV" data-plan="KW Signature Wash 365" data-vehicle="Large SUV" data-price="300" data-is-subscription="true">KW Signature Wash 365 - Large SUV ($300/mo)</option>
             </optgroup>
 
-            <!-- Black Label 365 Subscription Options -->
-            <optgroup label="Black Label 365 Plans">
+            <!-- 365 AutoCare Plans ($280 - $400) -->
+            <optgroup label="365 AutoCare">
+              <option value="365 AutoCare - Coupe" data-plan="365 AutoCare" data-vehicle="Coupe" data-price="280" data-is-subscription="true">365 AutoCare - Coupe ($280/mo)</option>
+              <option value="365 AutoCare - Sedan" data-plan="365 AutoCare" data-vehicle="Sedan" data-price="310" data-is-subscription="true">365 AutoCare - Sedan ($310/mo)</option>
+              <option value="365 AutoCare - Midsize SUV / Crossover" data-plan="365 AutoCare" data-vehicle="Midsize SUV / Crossover" data-price="340" data-is-subscription="true">365 AutoCare - Midsize SUV / Crossover ($340/mo)</option>
+              <option value="365 AutoCare - Pickup Truck" data-plan="365 AutoCare" data-vehicle="Pickup Truck" data-price="370" data-is-subscription="true">365 AutoCare - Pickup Truck ($370/mo)</option>
+              <option value="365 AutoCare - Large SUV" data-plan="365 AutoCare" data-vehicle="Large SUV" data-price="400" data-is-subscription="true">365 AutoCare - Large SUV ($400/mo)</option>
+            </optgroup>
+
+            <!-- Black Label 365 Plans ($449 - $700) -->
+            <optgroup label="Black Label 365">
               <option value="Black Label 365 ($449) - Coupe" data-plan="Black Label 365 ($449)" data-vehicle="Coupe" data-price="449" data-is-subscription="true">Black Label 365 - Coupe ($449/mo)</option>
               <option value="Black Label 365 ($499) - Sedan" data-plan="Black Label 365 ($499)" data-vehicle="Sedan" data-price="499" data-is-subscription="true">Black Label 365 - Sedan ($499/mo)</option>
               <option value="Black Label 365 ($549) - Midsize SUV" data-plan="Black Label 365 ($549)" data-vehicle="Midsize SUV / Crossover" data-price="549" data-is-subscription="true">Black Label 365 - Midsize SUV / Crossover ($549/mo)</option>
@@ -186,6 +191,7 @@
               <option value="Black Label 365 ($649) - Large SUV" data-plan="Black Label 365 ($649)" data-vehicle="Large SUV" data-price="649" data-is-subscription="true">Black Label 365 - Large SUV ($649/mo)</option>
               <option value="Black Label 365 ($700) - Premium Fleet / Executive" data-plan="Black Label 365 ($700)" data-vehicle="Executive Vehicle" data-price="700" data-is-subscription="true">Black Label 365 - Premium Fleet / Executive ($700/mo)</option>
             </optgroup>
+
           </select>
         </div>
 
@@ -378,7 +384,7 @@
         </div>
 
         <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg text-xs sm:text-sm transition duration-200 mt-2 shadow-lg shadow-red-900/40">
-          Confirm Subscription Booking (<span id="payBtnAmount">$300</span>)
+          Confirm Subscription Booking (<span id="payBtnAmount">$270</span>)
         </button>
       </form>
       
@@ -556,10 +562,10 @@
       const packageSelect = document.getElementById('servicePackageCombined');
       const payBtnAmount = document.getElementById('payBtnAmount');
       
-      if (!packageSelect) return 300;
+      if (!packageSelect) return 270;
 
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
-      const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 250, 10);
+      const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
 
       let addonTotal = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
@@ -655,7 +661,7 @@
 
     // Initialize Stripe & Elements
     const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    const elements = stripe.elements({ mode: 'payment', amount: 30000, currency: 'usd' });
+    const elements = stripe.elements({ mode: 'payment', amount: 27000, currency: 'usd' });
 
     // Express Checkout
     const expressCheckoutElement = elements.create('expressCheckout', {
@@ -680,7 +686,7 @@
       const totalAmount = calculateTotalPrice();
       const packageSelect = document.getElementById('servicePackageCombined');
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
-      const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 250, 10);
+      const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
 
       let addonsAmount = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
@@ -852,7 +858,7 @@
 
       const packageSelect = document.getElementById('servicePackageCombined');
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
-      const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 250, 10);
+      const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
 
       let addonsAmount = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
@@ -946,7 +952,7 @@
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
       
       const vehicleCategory = selectedOpt ? selectedOpt.getAttribute('data-vehicle') : 'Unknown';
-      const packageSelected = selectedOpt ? selectedOpt.value : 'Full Luxury Detail';
+      const packageSelected = selectedOpt ? selectedOpt.value : 'KW Signature Wash 365';
 
       const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
       const fullServiceDescription = `${packageSelected} + $50 Setup Fee` + (selectedAddons ? ` + Addons: [${selectedAddons}]` : '');
