@@ -24,7 +24,7 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Leaflet Map CSS & JS for Interactive Dark Florida Map -->
+    <!-- Leaflet Map CSS & JS for Interactive Florida Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -621,20 +621,20 @@
         #florida-map {
             height: 460px;
             width: 100%;
-            background-color: #0d0d0d;
+            background-color: #171717;
             z-index: 10;
         }
         .leaflet-container {
-            background: #0d0d0d !important;
+            background: #171717 !important;
             font-family: var(--font-sans) !important;
         }
         .kw-red-dot {
-            width: 14px;
-            height: 14px;
+            width: 15px;
+            height: 15px;
             background-color: #E31B23;
-            border: 2px solid #ffffff;
+            border: 2.5px solid #ffffff;
             border-radius: 50%;
-            box-shadow: 0 0 10px rgba(227, 27, 35, 0.95);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), 0 0 10px rgba(227, 27, 35, 0.9);
             transition: transform 0.2s ease, background-color 0.2s ease;
             cursor: pointer;
         }
@@ -642,15 +642,15 @@
             transform: scale(1.3);
         }
         .kw-red-dot.active {
-            width: 18px;
-            height: 18px;
-            background-color: #ff2a32;
-            border: 2.5px solid #ffffff;
+            width: 20px;
+            height: 20px;
+            background-color: #ff1e27;
+            border: 3px solid #ffffff;
             animation: dot-pulse 1.6s infinite;
         }
         @keyframes dot-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(227, 27, 35, 0.85); }
-            70% { box-shadow: 0 0 0 14px rgba(227, 27, 35, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(227, 27, 35, 0.9); }
+            70% { box-shadow: 0 0 0 15px rgba(227, 27, 35, 0); }
             100% { box-shadow: 0 0 0 0 rgba(227, 27, 35, 0); }
         }
         .kw-map-tooltip {
@@ -667,12 +667,12 @@
             border-top-color: #E31B23 !important;
         }
         .leaflet-control-attribution {
-            background: rgba(10, 10, 10, 0.7) !important;
-            color: #666 !important;
+            background: rgba(10, 10, 10, 0.75) !important;
+            color: #999 !important;
             font-size: 10px !important;
         }
         .leaflet-control-attribution a {
-            color: #888 !important;
+            color: #ccc !important;
         }
 
 
@@ -1715,9 +1715,7 @@
             }
         });
 
-        // --- INTERACTIVE FLORIDA MAP WITH CARTO API & RED DOTS ---
-        const CARTO_API_KEY = 'cb1_581f_1_33ea9c270abd01855e4ca056';
-
+        // --- INTERACTIVE FLORIDA MAP WITH CARTO VOYAGER & RED DOTS ---
         const cities = [
             { name: "Saint Petersburg", lat: 27.7676, lng: -82.6403, region: "Pinellas County (Primary Hub)", desc: "Our main headquarters and primary service hub for Pinellas County residential and commercial fleets.", isPrimary: true },
             { name: "Tampa", lat: 27.9506, lng: -82.4572, region: "Hillsborough County", desc: "Full commercial fleet washing and mobile detailing across Tampa Bay and surrounding business parks.", isPrimary: false },
@@ -1737,21 +1735,20 @@
         let activeCityIndex = 0;
         let mapMarkers = [];
 
-        // Initialize Dark Florida Leaflet Map with CARTO API Key
+        // Initialize Florida Leaflet Map with CARTO Voyager Endpoint
         const floridaMap = L.map('florida-map', {
             center: [27.35, -81.45],
             zoom: 7,
             scrollWheelZoom: false
         });
 
-        L.tileLayer(`https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?api_key=${CARTO_API_KEY}`, {
+        L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_581f_1_33ea9c270abd01855e4ca056', {
             attribution: '&copy; OpenStreetMap &copy; CARTO',
-            subdomains: 'abcd',
             maxZoom: 18
         }).addTo(floridaMap);
 
         function createRedDotIcon(isActive) {
-            const size = isActive ? 18 : 14;
+            const size = isActive ? 20 : 15;
             return L.divIcon({
                 className: '',
                 html: `<div class="kw-red-dot ${isActive ? 'active' : ''}"></div>`,
@@ -1768,7 +1765,7 @@
 
             marker.bindTooltip(city.name, {
                 direction: 'top',
-                offset: [0, -8],
+                offset: [0, -10],
                 className: 'kw-map-tooltip'
             });
 
