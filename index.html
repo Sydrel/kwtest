@@ -24,6 +24,9 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet Map CSS & JS for Interactive Dark Florida Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
         /* --- CSS VARIABLES --- */
@@ -614,6 +617,64 @@
         .h-addon-name { font-size: 0.98rem; font-weight: 600; color: var(--kw-white); }
         .h-addon-price { font-size: 1.05rem; font-weight: 700; color: var(--kw-red); transition: color 0.2s ease; }
 
+        /* --- INTERACTIVE FLORIDA MAP WITH RED DOTS --- */
+        #florida-map {
+            height: 460px;
+            width: 100%;
+            background-color: #0d0d0d;
+            z-index: 10;
+        }
+        .leaflet-container {
+            background: #0d0d0d !important;
+            font-family: var(--font-sans) !important;
+        }
+        .kw-red-dot {
+            width: 14px;
+            height: 14px;
+            background-color: #E31B23;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(227, 27, 35, 0.95);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            cursor: pointer;
+        }
+        .kw-red-dot:hover {
+            transform: scale(1.3);
+        }
+        .kw-red-dot.active {
+            width: 18px;
+            height: 18px;
+            background-color: #ff2a32;
+            border: 2.5px solid #ffffff;
+            animation: dot-pulse 1.6s infinite;
+        }
+        @keyframes dot-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(227, 27, 35, 0.85); }
+            70% { box-shadow: 0 0 0 14px rgba(227, 27, 35, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(227, 27, 35, 0); }
+        }
+        .kw-map-tooltip {
+            background-color: rgba(12, 12, 12, 0.95) !important;
+            border: 1px solid #E31B23 !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            font-size: 12px !important;
+            padding: 4px 10px !important;
+            border-radius: 6px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.65) !important;
+        }
+        .kw-map-tooltip::before {
+            border-top-color: #E31B23 !important;
+        }
+        .leaflet-control-attribution {
+            background: rgba(10, 10, 10, 0.7) !important;
+            color: #666 !important;
+            font-size: 10px !important;
+        }
+        .leaflet-control-attribution a {
+            color: #888 !important;
+        }
+
 
         /* --- VIDEO SHOWCASE SECTION --- */
         .video-section { padding: 100px 0; background: var(--kw-black); border-top: 1px solid #1a1a1a; text-align: center; }
@@ -747,6 +808,8 @@
 
             .services-section, .master-membership-section, .video-section { padding: 75px 0; }
             .section-header, .section-heading, .video-header { margin-bottom: 35px; }
+
+            #florida-map { height: 360px; }
 
             .scroll-indicator { display: none; }
         }
@@ -1416,14 +1479,14 @@
         </div>
     </section>
 
-    <!-- SERVICE TERRITORIES SECTION -->
+    <!-- SERVICE TERRITORIES SECTION (INTERACTIVE CARTO MAP WITH RED DOTS) -->
     <section id="location" class="py-20 bg-brandDark border-t border-neutral-900">
         <div class="max-w-6xl mx-auto px-4">
             <!-- Header Section -->
             <div class="text-center mb-8">
                 <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">Our Florida Service Territories</h2>
                 <p class="text-neutral-400 max-w-2xl mx-auto text-sm sm:text-base">
-                    Select a city below to view coverage details and book your mobile detailing or commercial fleet wash service.
+                    Click any red dot on the Florida map below to view coverage details and book your mobile detailing or commercial fleet wash service.
                 </p>
             </div>
 
@@ -1438,11 +1501,20 @@
                 </div>
             </div>
 
-            <!-- Main Layout: Grid + Detail View -->
+            <!-- Main Layout: Interactive Florida Map + Detail View -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- City List -->
-                <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3" id="city-grid">
-                    <!-- Cities will be injected via JS -->
+                <!-- Interactive Map Container -->
+                <div class="lg:col-span-2 bg-brandCard border border-brandBorder rounded-2xl overflow-hidden shadow-xl flex flex-col">
+                    <div class="px-5 py-3.5 border-b border-brandBorder flex items-center justify-between bg-neutral-900/80">
+                        <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold text-white">
+                            <span class="w-2.5 h-2.5 rounded-full bg-brandRed inline-block animate-pulse"></span>
+                            <span>Interactive Florida Coverage Map (13 Service Hubs)</span>
+                        </div>
+                        <span class="text-xs text-neutral-400">Click a red dot</span>
+                    </div>
+                    <div id="florida-map"></div>
+                    <!-- Quick City Pills below map -->
+                    <div id="city-pills" class="p-3.5 bg-neutral-950 border-t border-brandBorder flex flex-wrap gap-2"></div>
                 </div>
 
                 <!-- Selected City Info Card -->
@@ -1453,7 +1525,8 @@
                             <i class="fa-solid fa-shield-halved text-neutral-500 ml-auto"></i>
                         </div>
                         <h3 id="selected-city-name" class="text-2xl font-bold mb-1 text-white">Saint Petersburg</h3>
-                        <p id="selected-city-region" class="text-sm text-neutral-400 mb-6">Pinellas County & Surrounding Areas</p>
+                        <p id="selected-city-county" class="text-xs font-semibold uppercase tracking-wider text-brandRed mb-3">Pinellas County (Primary Hub)</p>
+                        <p id="selected-city-region" class="text-sm text-neutral-400 mb-6">Our main headquarters and primary service hub for Pinellas County residential and commercial fleets.</p>
                         
                         <div class="space-y-4 border-t border-brandBorder pt-4 text-sm">
                             <div class="flex items-start gap-3">
@@ -1642,80 +1715,123 @@
             }
         });
 
-        // --- TERRITORY SELECTOR LOGIC ---
+        // --- INTERACTIVE FLORIDA MAP WITH CARTO API & RED DOTS ---
+        const CARTO_API_KEY = 'cb1_581f_1_33ea9c270abd01855e4ca056';
+
         const cities = [
-            { name: "Saint Petersburg", region: "Pinellas County (Primary Hub)", desc: "Our main headquarters and primary service hub for Pinellas County residential and commercial fleets.", isPrimary: true },
-            { name: "Tampa", region: "Hillsborough County", desc: "Full commercial fleet washing and mobile detailing across Tampa Bay and surrounding business parks.", isPrimary: false },
-            { name: "Sarasota", region: "Sarasota County", desc: "Dedicated mobile units serving residential communities and commercial properties.", isPrimary: false },
-            { name: "Bradenton", region: "Manatee County", desc: "Complete automotive detailing and truck fleet maintenance packages.", isPrimary: false },
-            { name: "Naples", region: "Collier County", desc: "High-end luxury detailing, ceramic coatings, and recurring maintenance plans.", isPrimary: false },
-            { name: "Bonita Springs", region: "Lee County", desc: "Prompt on-site mobile service for residential driveways and commercial lots.", isPrimary: false },
-            { name: "Fort Myers", region: "Lee County", desc: "Comprehensive fleet washing and professional mobile detailing services.", isPrimary: false },
-            { name: "Cape Coral", region: "Lee County", desc: "Residential mobile detailing and multi-vehicle neighborhood routes.", isPrimary: false },
-            { name: "Punta Gorda", region: "Charlotte County", desc: "Specialized mobile detailing for cars, trucks, and recreational vehicles.", isPrimary: false },
-            { name: "Orlando", region: "Orange / Central FL", desc: "Commercial fleet contracts and premium mobile detailing throughout the Orlando metro area.", isPrimary: false },
-            { name: "West Palm Beach", region: "Palm Beach County", desc: "Palm Beach county mobile service catering to private fleets and luxury automobiles.", isPrimary: false },
-            { name: "Fort Lauderdale", region: "Broward County", desc: "High-volume fleet maintenance and expert mobile detailing across Broward.", isPrimary: false },
-            { name: "Miami", region: "Miami-Dade County", desc: "Full coverage across Miami-Dade for commercial fleets, exotics, and daily drivers.", isPrimary: false }
+            { name: "Saint Petersburg", lat: 27.7676, lng: -82.6403, region: "Pinellas County (Primary Hub)", desc: "Our main headquarters and primary service hub for Pinellas County residential and commercial fleets.", isPrimary: true },
+            { name: "Tampa", lat: 27.9506, lng: -82.4572, region: "Hillsborough County", desc: "Full commercial fleet washing and mobile detailing across Tampa Bay and surrounding business parks.", isPrimary: false },
+            { name: "Sarasota", lat: 27.3364, lng: -82.5307, region: "Sarasota County", desc: "Dedicated mobile units serving residential communities and commercial properties.", isPrimary: false },
+            { name: "Bradenton", lat: 27.4989, lng: -82.5748, region: "Manatee County", desc: "Complete automotive detailing and truck fleet maintenance packages.", isPrimary: false },
+            { name: "Naples", lat: 26.1420, lng: -81.7948, region: "Collier County", desc: "High-end luxury detailing, ceramic coatings, and recurring maintenance plans.", isPrimary: false },
+            { name: "Bonita Springs", lat: 26.3398, lng: -81.7787, region: "Lee County", desc: "Prompt on-site mobile service for residential driveways and commercial lots.", isPrimary: false },
+            { name: "Fort Myers", lat: 26.6406, lng: -81.8723, region: "Lee County", desc: "Comprehensive fleet washing and professional mobile detailing services.", isPrimary: false },
+            { name: "Cape Coral", lat: 26.5629, lng: -81.9495, region: "Lee County", desc: "Residential mobile detailing and multi-vehicle neighborhood routes.", isPrimary: false },
+            { name: "Punta Gorda", lat: 26.9298, lng: -82.0454, region: "Charlotte County", desc: "Specialized mobile detailing for cars, trucks, and recreational vehicles.", isPrimary: false },
+            { name: "Orlando", lat: 28.5383, lng: -81.3792, region: "Orange / Central FL", desc: "Commercial fleet contracts and premium mobile detailing throughout the Orlando metro area.", isPrimary: false },
+            { name: "West Palm Beach", lat: 26.7153, lng: -80.0534, region: "Palm Beach County", desc: "Palm Beach county mobile service catering to private fleets and luxury automobiles.", isPrimary: false },
+            { name: "Fort Lauderdale", lat: 26.1224, lng: -80.1373, region: "Broward County", desc: "High-volume fleet maintenance and expert mobile detailing across Broward.", isPrimary: false },
+            { name: "Miami", lat: 25.7617, lng: -80.1918, region: "Miami-Dade County", desc: "Full coverage across Miami-Dade for commercial fleets, exotics, and daily drivers.", isPrimary: false }
         ];
 
         let activeCityIndex = 0;
+        let mapMarkers = [];
 
-        function renderCities() {
-            const grid = document.getElementById('city-grid');
-            grid.innerHTML = '';
+        // Initialize Dark Florida Leaflet Map with CARTO API Key
+        const floridaMap = L.map('florida-map', {
+            center: [27.35, -81.45],
+            zoom: 7,
+            scrollWheelZoom: false
+        });
 
-            cities.forEach((city, index) => {
-                const isSelected = index === activeCityIndex;
-                const card = document.createElement('div');
-                card.className = `p-4 rounded-xl border cursor-pointer transition-all duration-200 flex items-center justify-between ${
-                    isSelected 
-                        ? 'bg-red-600/10 border-brandRed text-white shadow-lg shadow-red-600/10' 
-                        : 'bg-brandCard border-brandBorder text-neutral-300 hover:border-neutral-700 hover:bg-neutral-800/50'
-                }`;
-                
-                card.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center ${isSelected ? 'bg-brandRed text-white' : 'bg-neutral-800 text-neutral-400'}">
-                            <i class="fa-solid fa-location-dot text-xs"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-sm sm:text-base">${city.name}</h3>
-                                ${city.isPrimary ? '<span class="bg-brandRed text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Primary</span>' : ''}
-                            </div>
-                            <p class="text-xs text-neutral-400">${city.region}</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-xs ${isSelected ? 'text-brandRed' : 'text-neutral-600'}"></i>
-                `;
+        L.tileLayer(`https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?api_key=${CARTO_API_KEY}`, {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 18
+        }).addTo(floridaMap);
 
-                card.onclick = () => {
-                    activeCityIndex = index;
-                    updateDetails();
-                    renderCities();
-                };
-
-                grid.appendChild(card);
+        function createRedDotIcon(isActive) {
+            const size = isActive ? 18 : 14;
+            return L.divIcon({
+                className: '',
+                html: `<div class="kw-red-dot ${isActive ? 'active' : ''}"></div>`,
+                iconSize: [size, size],
+                iconAnchor: [size / 2, size / 2]
             });
         }
 
-        function updateDetails() {
-            const city = cities[activeCityIndex];
+        // Plot Red Dots on Map
+        cities.forEach((city, index) => {
+            const marker = L.marker([city.lat, city.lng], {
+                icon: createRedDotIcon(index === activeCityIndex)
+            }).addTo(floridaMap);
+
+            marker.bindTooltip(city.name, {
+                direction: 'top',
+                offset: [0, -8],
+                className: 'kw-map-tooltip'
+            });
+
+            marker.on('click', () => {
+                selectCity(index);
+            });
+
+            mapMarkers.push(marker);
+        });
+
+        // Open initial tooltip
+        mapMarkers[0].openTooltip();
+
+        function renderCityPills() {
+            const pillsContainer = document.getElementById('city-pills');
+            pillsContainer.innerHTML = '';
+
+            cities.forEach((city, index) => {
+                const isSelected = index === activeCityIndex;
+                const pill = document.createElement('button');
+                pill.type = 'button';
+                pill.className = `px-2.5 py-1 rounded-full text-xs font-medium transition flex items-center gap-1.5 border ${
+                    isSelected
+                        ? 'bg-brandRed text-white border-brandRed shadow-md shadow-brandRed/30'
+                        : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:border-brandRed/60 hover:text-white'
+                }`;
+                pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-brandRed'}"></span>${city.name}`;
+                pill.onclick = () => selectCity(index);
+                pillsContainer.appendChild(pill);
+            });
+        }
+
+        function selectCity(index) {
+            activeCityIndex = index;
+            const city = cities[index];
+
+            // Update card details
             document.getElementById('selected-city-name').innerText = city.name;
+            document.getElementById('selected-city-county').innerText = city.region;
             document.getElementById('selected-city-region').innerText = city.desc;
             document.getElementById('btn-city-name').innerText = city.name;
-            
+
             const primaryBadge = document.getElementById('primary-badge');
             if (city.isPrimary) {
                 primaryBadge.classList.remove('hidden');
             } else {
                 primaryBadge.classList.add('hidden');
             }
+
+            // Update red dot styles & tooltip
+            mapMarkers.forEach((marker, i) => {
+                marker.setIcon(createRedDotIcon(i === index));
+                if (i === index) {
+                    marker.openTooltip();
+                } else {
+                    marker.closeTooltip();
+                }
+            });
+
+            renderCityPills();
         }
 
-        renderCities();
-        updateDetails();
+        renderCityPills();
 
         // --- OPTIMIZED SCROLL ANIMATION LOGIC ---
         const observerOptions = {
