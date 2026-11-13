@@ -212,53 +212,10 @@
           </p>
         </div>
 
-        <!-- Ceramic Coatings Information Card -->
-        <div class="p-3.5 bg-black border border-red-900/60 rounded-lg space-y-2.5">
-          <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span> Premium & Ultimate Ceramic Coatings
-            </h4>
-            <span class="text-[10px] bg-red-950 text-red-400 border border-red-800/50 px-2 py-0.5 rounded font-bold uppercase">Showroom Protection</span>
-          </div>
-
-          <p class="text-[11px] text-gray-300 leading-relaxed">
-            Enhance your shine and protect your investment with our hydrophobic ceramic coatings. Repels water, dirt, road grime, and environmental contaminants while delivering exceptional clarity and long-term durability.
-          </p>
-
-          <!-- Quick Tier Reference Table -->
-          <div class="bg-zinc-900/80 rounded border border-zinc-800 p-2 text-[10px] sm:text-[11px]">
-            <div class="grid grid-cols-3 font-bold text-red-400 border-b border-zinc-800 pb-1 mb-1">
-              <span>Vehicle Type</span>
-              <span>1–2 Year Protection</span>
-              <span>4–5 Year Ultimate</span>
-            </div>
-            <div class="grid grid-cols-3 text-gray-300 border-b border-zinc-800/50 py-0.5">
-              <span>Sedan / Coupe</span>
-              <span>$499</span>
-              <span>$1,299</span>
-            </div>
-            <div class="grid grid-cols-3 text-gray-300 border-b border-zinc-800/50 py-0.5">
-              <span>Midsize SUV</span>
-              <span>$599</span>
-              <span>$1,499</span>
-            </div>
-            <div class="grid grid-cols-3 text-gray-300 border-b border-zinc-800/50 py-0.5">
-              <span>Large SUV / Pickup</span>
-              <span>$699</span>
-              <span>$1,699</span>
-            </div>
-            <div class="grid grid-cols-3 text-gray-300 py-0.5">
-              <span>Luxury / Exotic</span>
-              <span class="text-red-400 font-semibold">Custom Quote</span>
-              <span>$1,899+</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Add-ons Selection Section -->
+        <!-- Standard Add-ons Selection Section -->
         <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg space-y-2">
           <label class="block text-xs font-medium text-gray-300">Select Add-On Services</label>
-          <div class="space-y-3 text-xs text-gray-300 max-h-56 overflow-y-auto pr-1">
+          <div class="space-y-3 text-xs text-gray-300 max-h-48 overflow-y-auto pr-1">
             
             <!-- Pet Hair Removal ($50 - $90) -->
             <div>
@@ -320,39 +277,56 @@
               </div>
             </div>
 
-            <!-- Paint Polishing ($175 - $350) -->
+          </div>
+        </div>
+
+        <!-- Dedicated Box: KW Elite Paint Restoration & Ceramic Protection -->
+        <div class="p-3.5 bg-zinc-900 border border-red-800/70 rounded-lg space-y-3 shadow-md">
+          <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
             <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Paint Polishing</p>
+              <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span> KW Elite Paint Restoration & Ceramic Protection
+              </h4>
+              <p class="text-[10px] text-gray-400 mt-0.5">Professional defect removal & long-term hydrophobic shielding</p>
+            </div>
+            <span class="text-[10px] bg-red-950 text-red-400 border border-red-800/50 px-2 py-0.5 rounded font-bold uppercase">Elite Tier</span>
+          </div>
+
+          <div class="space-y-3 text-xs text-gray-300 max-h-60 overflow-y-auto pr-1">
+            <!-- Paint Correction Sub-section -->
+            <div>
+              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Paint Correction (Luxury/Exotic: Custom Quote)</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Polishing (Gloss)" data-price="175" onchange="calculateTotalPrice()">
-                  <span>Gloss ($175)</span>
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (1-Step - Sedan/Coupe)" data-price="399" onchange="calculateTotalPrice()">
+                  <span>1-Step Sedan/Coupe ($399)</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Polishing (Ultra Gloss)" data-price="350" onchange="calculateTotalPrice()">
-                  <span>Ultra ($350)</span>
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (1-Step - Midsize SUV)" data-price="499" onchange="calculateTotalPrice()">
+                  <span>1-Step Midsize SUV ($499)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (1-Step - Large SUV/Pickup)" data-price="599" onchange="calculateTotalPrice()">
+                  <span>1-Step Large SUV/Pickup ($599)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (2-Step - Sedan/Coupe)" data-price="749" onchange="calculateTotalPrice()">
+                  <span>2-Step Sedan/Coupe ($749)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (2-Step - Midsize SUV)" data-price="899" onchange="calculateTotalPrice()">
+                  <span>2-Step Midsize SUV ($899)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
+                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (2-Step - Large SUV/Pickup)" data-price="1099" onchange="calculateTotalPrice()">
+                  <span>2-Step Large SUV/Pickup ($1,099)</span>
                 </label>
               </div>
             </div>
 
-            <!-- Paint Correction ($250 - $450) -->
+            <!-- Ceramic Coating Protection Sub-section -->
             <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Paint Correction</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (Minor Scratch)" data-price="250" onchange="calculateTotalPrice()">
-                  <span>Minor ($250)</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
-                  <input type="checkbox" class="addon-checkbox accent-red-600" value="Paint Correction (Full Multi-Stage)" data-price="450" onchange="calculateTotalPrice()">
-                  <span>Full ($450)</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Ceramic Coating Add-ons ($499 - $1699) -->
-            <div>
-              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Ceramic Coating Protection</p>
+              <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Ceramic Coating Protection (Luxury/Exotic: $1,899+ / Custom)</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-zinc-700">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Premium Ceramic Coating (1-2 Year Protection - Sedan/Coupe)" data-price="499" onchange="calculateTotalPrice()">
@@ -380,7 +354,6 @@
                 </label>
               </div>
             </div>
-
           </div>
         </div>
 
