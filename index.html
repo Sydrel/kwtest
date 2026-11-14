@@ -505,24 +505,6 @@
         .v-col ul li { font-size: 0.92rem; color: #dddddd; margin-bottom: 8px; font-weight: 300; display: flex; align-items: center; gap: 10px;}
         .v-col ul li::before { content: "—"; color: var(--kw-red); font-weight: bold; }
 
-        /* IN-PLAN VISUAL PREVIEW UNDER EXTERIOR/INTERIOR */
-        .plan-inline-preview {
-            margin-top: 22px;
-            padding-top: 18px;
-            border-top: 1px solid #262626;
-            display: flex;
-            justify-content: flex-start;
-        }
-        .plan-inline-preview img {
-            max-width: 340px;
-            max-height: 150px;
-            width: 100%;
-            object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid #2d2d2d;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.65);
-        }
-
 
         /* ADD-ONS SECTION */
         .addons-division {
@@ -746,6 +728,13 @@
             border: 1px solid #333;
             overflow: hidden;
         }
+        .lightbox-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
         .lightbox-img-wrap {
             background: #050505;
             display: flex;
@@ -946,7 +935,6 @@
             .v-details-side h3 { font-size: 1.5rem; color: #ffffff; }
             .v-desc { font-size: 0.95rem; color: #cccccc; }
             .v-features { grid-template-columns: 1fr; gap: 18px;}
-            .plan-inline-preview img { max-width: 100%; max-height: 130px; }
             
             .horizontal-addons-grid { grid-template-columns: 1fr; gap: 14px; }
             .h-addon-card { padding: 18px 20px; }
@@ -1350,9 +1338,8 @@
     <!-- GALLERY LIGHTBOX MODAL -->
     <div class="modal-overlay" id="galleryModal">
         <div class="modal-content lightbox-content">
-            <div class="modal-header">
-                <h3 id="lightboxTitle">Fleet & Detailing Showcase</h3>
-                <button class="close-btn" onclick="closeGalleryModal()">&times;</button>
+            <div class="lightbox-header">
+                <button class="close-btn" onclick="closeGalleryModal()" aria-label="Close">&times;</button>
             </div>
             <div class="lightbox-img-wrap">
                 <img id="lightboxImg" src="" alt="KW Commercial Work">
@@ -1427,11 +1414,6 @@
                                         <li>Dust removal</li>
                                     </ul>
                                 </div>
-                            </div>
-
-                            <!-- Compact Image Preview inside Plan Box -->
-                            <div class="plan-inline-preview">
-                                <img src="https://imagepaste.org/i/3z7jdf8d.png" alt="KW Signature Wash 365 Overview">
                             </div>
                         </div>
                     </div>
@@ -1646,7 +1628,7 @@
 
             <div class="gallery-grid" id="workGalleryGrid">
                 <!-- Photo 1 -->
-                <div class="gallery-card fade-in" onclick="openGalleryModal('https://i.imgur.com/dqt7acL.jpeg', 'Commercial & Fleet Detailing', 'On-site exterior wash & showroom finish')">
+                <div class="gallery-card fade-in" onclick="openGalleryModal('https://i.imgur.com/dqt7acL.jpeg', 'On-site exterior wash & showroom finish')">
                     <img src="https://i.imgur.com/dqt7acL.jpeg" alt="KW Commercial Detailing Work #1" loading="lazy">
                     <div class="gallery-overlay">
                         <span class="gallery-tag">Featured Work</span>
@@ -1924,12 +1906,10 @@
         // --- GALLERY LIGHTBOX MODAL LOGIC ---
         const galleryModal = document.getElementById('galleryModal');
         const lightboxImg = document.getElementById('lightboxImg');
-        const lightboxTitle = document.getElementById('lightboxTitle');
         const lightboxCaption = document.getElementById('lightboxCaption');
 
-        function openGalleryModal(imgSrc, title, caption) {
+        function openGalleryModal(imgSrc, caption) {
             lightboxImg.src = imgSrc;
-            lightboxTitle.innerText = title;
             lightboxCaption.innerText = caption;
             galleryModal.classList.add('active');
         }
