@@ -122,7 +122,7 @@
         .nav-wrap { display: flex; justify-content: space-between; align-items: center; position: relative; width: 100%;}
         .logo-img { height: 48px; width: auto; transition: height 0.4s ease;}
 
-        nav ul { display: flex; gap: 30px; align-items: center;}
+        nav ul { display: flex; gap: 28px; align-items: center;}
         nav a { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--kw-light-gray); transition: color 0.3s; cursor: pointer;}
         nav a:hover { color: var(--kw-white); }
         nav .nav-btn { color: var(--kw-white); background: var(--kw-red); padding: 10px 22px; border-radius: 2px; }
@@ -505,6 +505,24 @@
         .v-col ul li { font-size: 0.92rem; color: #dddddd; margin-bottom: 8px; font-weight: 300; display: flex; align-items: center; gap: 10px;}
         .v-col ul li::before { content: "—"; color: var(--kw-red); font-weight: bold; }
 
+        /* IN-PLAN VISUAL PREVIEW UNDER EXTERIOR/INTERIOR */
+        .plan-inline-preview {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid #262626;
+            display: flex;
+            justify-content: flex-start;
+        }
+        .plan-inline-preview img {
+            max-width: 340px;
+            max-height: 150px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #2d2d2d;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.65);
+        }
+
 
         /* ADD-ONS SECTION */
         .addons-division {
@@ -616,6 +634,131 @@
         }
         .h-addon-name { font-size: 0.98rem; font-weight: 600; color: var(--kw-white); }
         .h-addon-price { font-size: 1.05rem; font-weight: 700; color: var(--kw-red); transition: color 0.2s ease; }
+
+        /* --- OUR WORK GALLERY SECTION --- */
+        .gallery-section {
+            padding: 110px 0;
+            background: var(--kw-dark);
+            border-top: 1px solid #1a1a1a;
+            position: relative;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 26px;
+        }
+        .gallery-card {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            background: var(--kw-card);
+            border: 1px solid #222;
+            aspect-ratio: 4 / 3;
+            cursor: pointer;
+            transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+        }
+        .gallery-card:hover {
+            border-color: var(--kw-red);
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.75);
+        }
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+        .gallery-card:hover img {
+            transform: scale(1.06);
+        }
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(5, 5, 5, 0.9) 0%, rgba(5, 5, 5, 0.2) 55%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 22px;
+            opacity: 0.95;
+            transition: opacity 0.3s ease;
+        }
+        .gallery-tag {
+            display: inline-block;
+            width: fit-content;
+            background: rgba(227, 27, 35, 0.2);
+            border: 1px solid rgba(227, 27, 35, 0.5);
+            color: var(--kw-red);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 6px;
+        }
+        .gallery-caption {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--kw-white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .gallery-caption i {
+            color: var(--kw-red);
+            font-size: 0.9rem;
+        }
+        .gallery-placeholder {
+            border: 1px dashed #333;
+            background: #0d0d0d;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            cursor: default;
+        }
+        .gallery-placeholder:hover {
+            border-color: #444;
+            transform: none;
+            box-shadow: none;
+        }
+        .gallery-placeholder i {
+            font-size: 1.8rem;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        .gallery-placeholder span {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* LIGHTBOX MODAL */
+        .lightbox-content {
+            max-width: 960px !important;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+        .lightbox-img-wrap {
+            background: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-height: 75vh;
+            overflow: hidden;
+        }
+        .lightbox-img-wrap img {
+            max-height: 75vh;
+            width: auto;
+            object-fit: contain;
+        }
 
         /* --- INTERACTIVE FLORIDA MAP WITH RED DOTS --- */
         #florida-map {
@@ -729,6 +872,7 @@
             .v-price-side { border-right: none; border-bottom: 1px solid #2a2a2a; padding: 35px 22px;}
             .v-details-side { padding: 35px 25px;}
             .horizontal-addons-grid { grid-template-columns: repeat(2, 1fr); }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
             .grid-6 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
         }
 
@@ -802,11 +946,14 @@
             .v-details-side h3 { font-size: 1.5rem; color: #ffffff; }
             .v-desc { font-size: 0.95rem; color: #cccccc; }
             .v-features { grid-template-columns: 1fr; gap: 18px;}
+            .plan-inline-preview img { max-width: 100%; max-height: 130px; }
             
             .horizontal-addons-grid { grid-template-columns: 1fr; gap: 14px; }
             .h-addon-card { padding: 18px 20px; }
 
-            .services-section, .master-membership-section, .video-section { padding: 75px 0; }
+            .gallery-grid { grid-template-columns: 1fr; gap: 20px; }
+
+            .services-section, .master-membership-section, .gallery-section, .video-section { padding: 75px 0; }
             .section-header, .section-heading, .video-header { margin-bottom: 35px; }
 
             #florida-map { height: 360px; }
@@ -843,6 +990,7 @@
                 <ul>
                     <li><a href="#services">Fleet Services</a></li>
                     <li><a href="#membership">Membership & Plans</a></li>
+                    <li><a href="#gallery">Our Work</a></li>
                     <li><a href="#location">Service Area</a></li>
                     <li><a onclick="openContactModal()">Contact Us</a></li>
                     <li><a href="tel:2398986008" class="nav-btn">Book Us</a></li>
@@ -1199,6 +1347,23 @@
         </div>
     </div>
 
+    <!-- GALLERY LIGHTBOX MODAL -->
+    <div class="modal-overlay" id="galleryModal">
+        <div class="modal-content lightbox-content">
+            <div class="modal-header">
+                <h3 id="lightboxTitle">Fleet & Detailing Showcase</h3>
+                <button class="close-btn" onclick="closeGalleryModal()">&times;</button>
+            </div>
+            <div class="lightbox-img-wrap">
+                <img id="lightboxImg" src="" alt="KW Commercial Work">
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <span id="lightboxCaption" style="color: var(--kw-light-gray); font-size: 0.95rem;"></span>
+                <a href="tel:2398986008" class="btn btn-red" style="padding: 12px 24px;">Book Similar Service</a>
+            </div>
+        </div>
+    </div>
+
     <!-- MEMBERSHIP & ADD-ONS SECTION -->
     <section id="membership" class="master-membership-section">
         <div class="container">
@@ -1262,6 +1427,11 @@
                                         <li>Dust removal</li>
                                     </ul>
                                 </div>
+                            </div>
+
+                            <!-- Compact Image Preview inside Plan Box -->
+                            <div class="plan-inline-preview">
+                                <img src="https://imagepaste.org/i/3z7jdf8d.png" alt="KW Signature Wash 365 Overview">
                             </div>
                         </div>
                     </div>
@@ -1462,6 +1632,42 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </section>
+
+    <!-- OUR WORK GALLERY SECTION -->
+    <section id="gallery" class="gallery-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Our Work <span class="text-red">Gallery</span></h2>
+                <p>Recent Fleet Washing & Mobile Detailing Results</p>
+            </div>
+
+            <div class="gallery-grid" id="workGalleryGrid">
+                <!-- Photo 1 -->
+                <div class="gallery-card fade-in" onclick="openGalleryModal('https://i.imgur.com/dqt7acL.jpeg', 'Commercial & Fleet Detailing', 'On-site exterior wash & showroom finish')">
+                    <img src="https://i.imgur.com/dqt7acL.jpeg" alt="KW Commercial Detailing Work #1" loading="lazy">
+                    <div class="gallery-overlay">
+                        <span class="gallery-tag">Featured Work</span>
+                        <div class="gallery-caption">
+                            <span>On-Site Exterior Detail</span>
+                            <i class="fa-solid fa-expand"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Placeholder Slot 2 -->
+                <div class="gallery-card gallery-placeholder fade-in">
+                    <i class="fa-solid fa-camera"></i>
+                    <span>Next Project Photo</span>
+                </div>
+
+                <!-- Placeholder Slot 3 -->
+                <div class="gallery-card gallery-placeholder fade-in">
+                    <i class="fa-solid fa-camera"></i>
+                    <span>Next Project Photo</span>
+                </div>
             </div>
         </div>
     </section>
@@ -1712,6 +1918,29 @@
         contactModal.addEventListener('click', function(e) {
             if (e.target === contactModal) {
                 closeContactModal();
+            }
+        });
+
+        // --- GALLERY LIGHTBOX MODAL LOGIC ---
+        const galleryModal = document.getElementById('galleryModal');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxTitle = document.getElementById('lightboxTitle');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+
+        function openGalleryModal(imgSrc, title, caption) {
+            lightboxImg.src = imgSrc;
+            lightboxTitle.innerText = title;
+            lightboxCaption.innerText = caption;
+            galleryModal.classList.add('active');
+        }
+
+        function closeGalleryModal() {
+            galleryModal.classList.remove('active');
+        }
+
+        galleryModal.addEventListener('click', function(e) {
+            if (e.target === galleryModal) {
+                closeGalleryModal();
             }
         });
 
