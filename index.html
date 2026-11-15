@@ -720,34 +720,6 @@
             color: var(--kw-red);
             font-size: 0.9rem;
         }
-        .gallery-placeholder {
-            border: 1px dashed #333;
-            background: #0d0d0d;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 24px;
-            cursor: default;
-        }
-        .gallery-placeholder:hover {
-            border-color: #444;
-            transform: none;
-            box-shadow: none;
-        }
-        .gallery-placeholder i {
-            font-size: 1.8rem;
-            color: #444;
-            margin-bottom: 10px;
-        }
-        .gallery-placeholder span {
-            font-size: 0.85rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 600;
-        }
         .gallery-controls {
             display: flex;
             justify-content: space-between;
@@ -1684,9 +1656,9 @@
 
             <div class="gallery-carousel-wrapper fade-in">
                 <div class="gallery-track" id="workGalleryTrack">
-                    <!-- Item 1: Featured Photo -->
-                    <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/dqt7acL.jpeg', 'On-site exterior wash & showroom finish', 'KW SIGNATURE LUXURY COLLECTION VIP')">
-                        <img src="https://i.imgur.com/dqt7acL.jpeg" alt="KW Commercial Detailing Work #1" loading="lazy">
+                    <!-- Item 1: Featured Photo (Replaced dqt7acL with 3vIb0pL) -->
+                    <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/3vIb0pL.png', 'On-site exterior wash & showroom finish', 'KW SIGNATURE LUXURY COLLECTION VIP')">
+                        <img src="https://i.imgur.com/3vIb0pL.png" alt="KW Commercial Detailing Work #1" loading="lazy">
                         <div class="gallery-overlay">
                             <span class="gallery-tag">Featured Work</span>
                             <div class="gallery-caption">
@@ -1701,16 +1673,76 @@
                         <iframe src="https://www.youtube.com/embed/N1zjVCufo6o" title="KW Commercial LLC Fleet Detailing in Action" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
 
-                    <!-- Placeholder Slot 3 -->
-                    <div class="gallery-card gallery-placeholder">
-                        <i class="fa-solid fa-camera"></i>
-                        <span>Next Project Photo</span>
+                    <!-- Item 3 -->
+                    <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/c1NVIed.png', 'Precision exterior wash & deep gloss finish', '')">
+                        <img src="https://i.imgur.com/c1NVIed.png" alt="KW Commercial Detailing Work #2" loading="lazy">
+                        <div class="gallery-overlay">
+                            <span class="gallery-tag">Gallery</span>
+                            <div class="gallery-caption">
+                                <span>Showroom Gloss Finish</span>
+                                <i class="fa-solid fa-expand"></i>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Placeholder Slot 4 -->
-                    <div class="gallery-card gallery-placeholder">
-                        <i class="fa-solid fa-camera"></i>
-                        <span>Next Project Photo</span>
+                    <!-- Item 4 -->
+                    <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/HabJEOW.png', 'Mobile detailing & paint protection care', '')">
+                        <img src="https://i.imgur.com/HabJEOW.png" alt="KW Commercial Detailing Work #3" loading="lazy">
+                        <div class="gallery-overlay">
+                            <span class="gallery-tag">Gallery</span>
+                            <div class="gallery-caption">
+                                <span>Mobile Concierge Detail</span>
+                                <i class="fa-solid fa-expand"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 5 -->
+                    <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/qXN2wGJ.png', 'Complete exterior & wheel detailing', '')">
+                        <img src="https://i.imgur.com/qXN2wGJ.png" alt="KW Commercial Detailing Work #4" loading="lazy">
+                        <div class="gallery-overlay">
+                            <span class="gallery-tag">Gallery</span>
+                            <div class="gallery-caption">
+                                <span>Exterior & Wheel Care</span>
+                                <i class="fa-solid fa-expand"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 6 -->
+                    <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/aDgiAdo.png', 'High-clarity paint finish & surface care', '')">
+                        <img src="https://i.imgur.com/aDgiAdo.png" alt="KW Commercial Detailing Work #5" loading="lazy">
+                        <div class="gallery-overlay">
+                            <span class="gallery-tag">Gallery</span>
+                            <div class="gallery-caption">
+                                <span>Paint Clarity & Protection</span>
+                                <i class="fa-solid fa-expand"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 7 -->
+                    <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/ONhgdFl.png', 'Fleet & commercial vehicle maintenance', '')">
+                        <img src="https://i.imgur.com/ONhgdFl.png" alt="KW Commercial Detailing Work #6" loading="lazy">
+                        <div class="gallery-overlay">
+                            <span class="gallery-tag">Gallery</span>
+                            <div class="gallery-caption">
+                                <span>Commercial Fleet Care</span>
+                                <i class="fa-solid fa-expand"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 8 -->
+                    <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/pZ5VFVd.png', 'Full white-glove detailing result', '')">
+                        <img src="https://i.imgur.com/pZ5VFVd.png" alt="KW Commercial Detailing Work #7" loading="lazy">
+                        <div class="gallery-overlay">
+                            <span class="gallery-tag">Gallery</span>
+                            <div class="gallery-caption">
+                                <span>White-Glove Finish</span>
+                                <i class="fa-solid fa-expand"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
