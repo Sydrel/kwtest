@@ -617,25 +617,41 @@
         .h-addon-name { font-size: 0.98rem; font-weight: 600; color: var(--kw-white); }
         .h-addon-price { font-size: 1.05rem; font-weight: 700; color: var(--kw-red); transition: color 0.2s ease; }
 
-        /* --- OUR WORK GALLERY SECTION --- */
+        /* --- COMBINED WORK GALLERY & VIDEO CAROUSEL SECTION --- */
         .gallery-section {
             padding: 110px 0;
             background: var(--kw-dark);
             border-top: 1px solid #1a1a1a;
             position: relative;
         }
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .gallery-carousel-wrapper {
+            position: relative;
+        }
+        .gallery-track {
+            display: flex;
+            flex-direction: row;
             gap: 26px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            padding: 8px 4px 16px 4px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .gallery-track::-webkit-scrollbar {
+            display: none;
         }
         .gallery-card {
+            flex: 0 0 460px;
+            max-width: 86vw;
+            scroll-snap-align: start;
             position: relative;
             border-radius: 6px;
             overflow: hidden;
             background: var(--kw-card);
             border: 1px solid #222;
-            aspect-ratio: 4 / 3;
+            aspect-ratio: 16 / 10;
             cursor: pointer;
             transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
         }
@@ -653,6 +669,18 @@
         }
         .gallery-card:hover img {
             transform: scale(1.06);
+        }
+        .gallery-video-card {
+            cursor: default;
+        }
+        .gallery-video-card:hover {
+            transform: none;
+        }
+        .gallery-video-card iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
         }
         .gallery-overlay {
             position: absolute;
@@ -719,6 +747,46 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             font-weight: 600;
+        }
+        .gallery-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+        }
+        .gallery-swipe-hint {
+            font-size: 0.8rem;
+            color: var(--kw-gray);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .gallery-swipe-hint i {
+            color: var(--kw-red);
+        }
+        .gallery-nav-btns {
+            display: flex;
+            gap: 12px;
+        }
+        .gallery-nav-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--kw-card);
+            border: 1px solid #2e2e2e;
+            color: var(--kw-white);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .gallery-nav-btn:hover {
+            background: var(--kw-red);
+            border-color: var(--kw-red);
+            color: var(--kw-white);
         }
 
         /* LIGHTBOX MODAL */
@@ -822,34 +890,6 @@
             color: #ccc !important;
         }
 
-
-        /* --- VIDEO SHOWCASE SECTION --- */
-        .video-section { padding: 100px 0; background: var(--kw-black); border-top: 1px solid #1a1a1a; text-align: center; }
-        .video-header { margin-bottom: 45px; }
-        .video-header h2 { font-family: var(--font-serif); font-size: 3rem; margin-bottom: 12px; }
-        .video-header p { color: var(--kw-gray); font-size: 1rem; text-transform: uppercase; letter-spacing: 3px; }
-        
-        .video-container {
-            max-width: 950px;
-            margin: 0 auto;
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            background: var(--kw-card);
-            border: 1px solid #222;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-
         /* --- FOOTER --- */
         footer { background: var(--kw-black); padding: 50px 0 35px 0; text-align: center; border-top: 1px solid #111;}
         footer .footer-logo { height: 45px; opacity: 0.5; margin-bottom: 15px;}
@@ -876,7 +916,7 @@
             .v-price-side { border-right: none; border-bottom: 1px solid #2a2a2a; padding: 35px 22px;}
             .v-details-side { padding: 35px 25px;}
             .horizontal-addons-grid { grid-template-columns: repeat(2, 1fr); }
-            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+            .gallery-card { flex: 0 0 380px; }
             .grid-6 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
         }
 
@@ -954,11 +994,11 @@
             .horizontal-addons-grid { grid-template-columns: 1fr; gap: 14px; }
             .h-addon-card { padding: 18px 20px; }
 
-            .gallery-grid { grid-template-columns: 1fr; gap: 20px; }
+            .gallery-card { flex: 0 0 85vw; }
             .lightbox-vip-title { font-size: 0.72rem; letter-spacing: 1.5px; }
 
-            .services-section, .master-membership-section, .gallery-section, .video-section { padding: 75px 0; }
-            .section-header, .section-heading, .video-header { margin-bottom: 35px; }
+            .services-section, .master-membership-section, .gallery-section { padding: 75px 0; }
+            .section-header, .section-heading { margin-bottom: 35px; }
 
             #florida-map { height: 360px; }
 
@@ -970,7 +1010,6 @@
             .section-heading h2 { font-size: 1.8rem; }
             .section-header h2 { font-size: 1.6rem; }
             .service-info h3 { font-size: 1.3rem; }
-            .video-header h2 { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -1635,51 +1674,57 @@
         </div>
     </section>
 
-    <!-- OUR WORK GALLERY SECTION -->
+    <!-- COMBINED OUR WORK GALLERY & VIDEO SHOWCASE SECTION -->
     <section id="gallery" class="gallery-section">
         <div class="container">
             <div class="section-header fade-in">
-                <h2>Our Work <span class="text-red">Gallery</span></h2>
-                <p>Recent Fleet Washing & Mobile Detailing Results</p>
+                <h2>Our Work <span class="text-red">In Action</span></h2>
+                <p>Recent Fleet Washing, Mobile Detailing & Video Showcase</p>
             </div>
 
-            <div class="gallery-grid" id="workGalleryGrid">
-                <!-- Photo 1 -->
-                <div class="gallery-card fade-in" onclick="openGalleryModal('https://i.imgur.com/dqt7acL.jpeg', 'On-site exterior wash & showroom finish', 'KW SIGNATURE LUXURY COLLECTION VIP')">
-                    <img src="https://i.imgur.com/dqt7acL.jpeg" alt="KW Commercial Detailing Work #1" loading="lazy">
-                    <div class="gallery-overlay">
-                        <span class="gallery-tag">Featured Work</span>
-                        <div class="gallery-caption">
-                            <span>On-Site Exterior Detail</span>
-                            <i class="fa-solid fa-expand"></i>
+            <div class="gallery-carousel-wrapper fade-in">
+                <div class="gallery-track" id="workGalleryTrack">
+                    <!-- Item 1: Featured Photo -->
+                    <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/dqt7acL.jpeg', 'On-site exterior wash & showroom finish', 'KW SIGNATURE LUXURY COLLECTION VIP')">
+                        <img src="https://i.imgur.com/dqt7acL.jpeg" alt="KW Commercial Detailing Work #1" loading="lazy">
+                        <div class="gallery-overlay">
+                            <span class="gallery-tag">Featured Work</span>
+                            <div class="gallery-caption">
+                                <span>On-Site Exterior Detail</span>
+                                <i class="fa-solid fa-expand"></i>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- Item 2: Video Showcase -->
+                    <div class="gallery-card gallery-video-card">
+                        <iframe src="https://www.youtube.com/embed/N1zjVCufo6o" title="KW Commercial LLC Fleet Detailing in Action" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+
+                    <!-- Placeholder Slot 3 -->
+                    <div class="gallery-card gallery-placeholder">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Next Project Photo</span>
+                    </div>
+
+                    <!-- Placeholder Slot 4 -->
+                    <div class="gallery-card gallery-placeholder">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Next Project Photo</span>
                     </div>
                 </div>
 
-                <!-- Placeholder Slot 2 -->
-                <div class="gallery-card gallery-placeholder fade-in">
-                    <i class="fa-solid fa-camera"></i>
-                    <span>Next Project Photo</span>
+                <div class="gallery-controls">
+                    <span class="gallery-swipe-hint"><i class="fa-solid fa-arrows-left-right"></i> Swipe or scroll sideways</span>
+                    <div class="gallery-nav-btns">
+                        <button type="button" class="gallery-nav-btn" onclick="scrollGallery(-1)" aria-label="Scroll Left">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button type="button" class="gallery-nav-btn" onclick="scrollGallery(1)" aria-label="Scroll Right">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
-
-                <!-- Placeholder Slot 3 -->
-                <div class="gallery-card gallery-placeholder fade-in">
-                    <i class="fa-solid fa-camera"></i>
-                    <span>Next Project Photo</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- VIDEO SHOWCASE SECTION -->
-    <section class="video-section">
-        <div class="container">
-            <div class="video-header fade-in">
-                <h2>See Our Work in <span class="text-red">Action</span></h2>
-                <p>Professional Fleet Washing & Mobile Detailing Standards</p>
-            </div>
-            <div class="video-container fade-in">
-                <iframe src="https://www.youtube.com/embed/N1zjVCufo6o" title="KW Commercial LLC Fleet Detailing in Action" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </section>
@@ -1920,7 +1965,17 @@
             }
         });
 
-        // --- GALLERY LIGHTBOX MODAL LOGIC ---
+        // --- GALLERY CAROUSEL & LIGHTBOX LOGIC ---
+        function scrollGallery(direction) {
+            const track = document.getElementById('workGalleryTrack');
+            const card = track.querySelector('.gallery-card');
+            const scrollAmount = card ? card.offsetWidth + 26 : 420;
+            track.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+
         const galleryModal = document.getElementById('galleryModal');
         const lightboxImg = document.getElementById('lightboxImg');
         const lightboxCaption = document.getElementById('lightboxCaption');
