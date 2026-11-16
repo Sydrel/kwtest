@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>KW Commercial Fleet Care — Admin Dispatch Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS Client Library -->
@@ -13,40 +15,64 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Lucide Crisp Vector Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* iOS Safari & Touch Device Optimizations */
+    html, body {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    body {
+      padding-top: max(0.75rem, env(safe-area-inset-top));
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+      padding-left: max(0.75rem, env(safe-area-inset-left));
+      padding-right: max(0.75rem, env(safe-area-inset-right));
+    }
+    .ios-scroll {
+      -webkit-overflow-scrolling: touch;
+    }
+    /* Hide scrollbar on horizontal mobile strip while preserving scroll */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
 </head>
-<body class="bg-black text-white min-h-screen p-3 sm:p-6 font-sans antialiased flex flex-col justify-center items-center selection:bg-red-600 selection:text-white">
+<body class="bg-black text-white min-h-dvh sm:p-6 font-sans antialiased flex flex-col justify-center items-center selection:bg-red-600 selection:text-white">
 
   <!-- POPUP TOAST NOTIFICATION CONTAINER -->
-  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
+  <div id="toastContainer" class="fixed top-5 right-5 left-5 sm:left-auto z-50 flex flex-col gap-2.5 sm:max-w-sm pointer-events-none"></div>
 
   <!-- CLEAN & ENHANCED ORDER DETAILS MODAL (TAP TO VIEW) -->
-  <div id="orderDetailsModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5">
-    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+  <div id="orderDetailsModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-5">
+    <div class="bg-zinc-950 border-t sm:border border-zinc-800 rounded-t-2xl sm:rounded-2xl w-full max-w-xl shadow-2xl flex flex-col max-h-[90dvh] overflow-hidden">
       
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-zinc-800/80 bg-zinc-900/40 flex justify-between items-center shrink-0">
+      <div class="px-5 sm:px-6 py-4 border-b border-zinc-800/80 bg-zinc-900/40 flex justify-between items-center shrink-0">
         <div class="flex items-center gap-3">
           <span id="detailOrderIdBadge" class="bg-red-600 text-white font-black text-xs px-2.5 py-1 rounded-md tracking-wider">#--</span>
           <div>
-            <h3 id="detailClientName" class="text-lg font-bold text-white leading-tight">--</h3>
+            <h3 id="detailClientName" class="text-base sm:text-lg font-bold text-white leading-tight">--</h3>
             <p id="detailCreatedDate" class="text-[11px] text-zinc-400">Booked: --</p>
           </div>
         </div>
-        <button onclick="closeOrderDetailsModal()" aria-label="Close modal" class="text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 w-8 h-8 rounded-full flex items-center justify-center transition">
+        <button onclick="closeOrderDetailsModal()" aria-label="Close modal" class="text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 w-9 h-9 rounded-full flex items-center justify-center transition">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
       <!-- Modal Content Body -->
-      <div class="p-6 overflow-y-auto space-y-4 text-xs">
+      <div class="p-5 sm:p-6 overflow-y-auto ios-scroll space-y-4 text-xs">
 
         <!-- LOYALTY DISCOUNT STATUS BANNER -->
-        <div id="detailLoyaltyBanner" class="hidden p-3.5 rounded-xl border bg-amber-950/30 border-amber-600/60 text-amber-300 flex justify-between items-center">
+        <div id="detailLoyaltyBanner" class="hidden p-3.5 rounded-xl border bg-amber-950/30 border-amber-600/60 text-amber-300 flex justify-between items-center gap-2">
           <div>
             <span id="detailServiceNumBadge" class="font-bold block text-amber-400">Service #--</span>
             <span id="detailLoyaltySubtext" class="text-[11px] text-zinc-300">Loyalty Tracker Status</span>
           </div>
-          <span id="detailLoyaltyTag" class="bg-amber-500/20 border border-amber-600 text-amber-300 px-2.5 py-1 rounded-lg text-[11px] font-extrabold tracking-wide uppercase">
+          <span id="detailLoyaltyTag" class="bg-amber-500/20 border border-amber-600 text-amber-300 px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-extrabold tracking-wide uppercase shrink-0">
             25% Off Add-Ons
           </span>
         </div>
@@ -63,12 +89,12 @@
             </span>
           </div>
 
-          <div class="flex justify-between items-start">
+          <div class="flex justify-between items-start gap-2">
             <div>
               <span class="text-zinc-400 text-[10px] uppercase tracking-wider font-semibold block mb-0.5">Base Service Package</span>
               <p id="detailServiceType" class="text-sm font-extrabold text-white">--</p>
             </div>
-            <span id="detailOrderTypeBadge" class="bg-zinc-900 text-zinc-400 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+            <span id="detailOrderTypeBadge" class="bg-zinc-900 text-zinc-400 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0">
               One-Time
             </span>
           </div>
@@ -117,8 +143,8 @@
               <i data-lucide="map-pin" class="w-3.5 h-3.5 text-red-500"></i>
               Dispatch Location
             </span>
-            <a id="detailMapsUrl" href="#" target="_blank" class="text-[11px] text-red-400 hover:text-red-300 font-bold inline-flex items-center gap-1 transition">
-              <span>Open in Google Maps</span>
+            <a id="detailMapsUrl" href="#" target="_blank" class="text-[11px] text-red-400 hover:text-red-300 font-bold inline-flex items-center gap-1 transition py-0.5">
+              <span>Open in Maps</span>
               <i data-lucide="external-link" class="w-3 h-3"></i>
             </a>
           </div>
@@ -133,7 +159,7 @@
           </span>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
             <div><span class="text-zinc-500 block">Phone:</span><a id="detailPhone" href="#" class="font-bold text-red-400 hover:underline">--</a></div>
-            <div><span class="text-zinc-500 block">Email:</span><span id="detailEmail" class="font-mono text-zinc-300">--</span></div>
+            <div><span class="text-zinc-500 block">Email:</span><span id="detailEmail" class="font-mono text-zinc-300 break-all">--</span></div>
           </div>
         </div>
 
@@ -151,12 +177,12 @@
       </div>
 
       <!-- Action Footer -->
-      <div class="px-6 py-3.5 border-t border-zinc-800 bg-zinc-900/60 flex flex-wrap gap-2 justify-between items-center shrink-0">
-        <a id="detailCallBtn" href="#" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-red-400 font-bold px-3.5 py-2 rounded-lg text-xs transition inline-flex items-center gap-1.5">
+      <div class="px-5 sm:px-6 py-3.5 border-t border-zinc-800 bg-zinc-900/60 flex flex-wrap gap-2 justify-between items-center shrink-0" style="padding-bottom: max(0.875rem, env(safe-area-inset-bottom));">
+        <a id="detailCallBtn" href="#" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-red-400 font-bold px-4 py-2.5 rounded-lg text-xs transition inline-flex items-center gap-1.5">
           <i data-lucide="phone" class="w-3.5 h-3.5"></i>
           <span>Call Client</span>
         </a>
-        <button onclick="closeOrderDetailsModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition shadow-lg shadow-red-900/30">
+        <button onclick="closeOrderDetailsModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-lg text-xs transition shadow-lg shadow-red-900/30">
           Close Window
         </button>
       </div>
@@ -166,34 +192,34 @@
 
   <!-- DIGITAL SIGNATURE MODAL -->
   <div id="signatureModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 sm:p-6 max-w-lg w-full shadow-2xl space-y-4">
       <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
         <div>
           <h3 class="text-lg font-bold text-white">Client Signature</h3>
           <p id="modalClientInfo" class="text-xs text-zinc-400">Order # -- | Client</p>
         </div>
-        <button onclick="closeSignatureModal()" aria-label="Close signature pad" class="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-900 transition">
+        <button onclick="closeSignatureModal()" aria-label="Close signature pad" class="text-zinc-400 hover:text-white p-2 rounded-lg hover:bg-zinc-900 transition">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <p class="text-xs text-zinc-300">Have the client sign below to acknowledge completion of service.</p>
+      <p class="text-xs text-zinc-300">Have the client sign below with their finger or stylus to acknowledge completion of service.</p>
 
       <div class="border border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative">
-        <canvas id="signatureCanvas" class="w-full h-44 cursor-crosshair"></canvas>
+        <canvas id="signatureCanvas" class="w-full h-48 sm:h-44 cursor-crosshair block"></canvas>
         <span class="absolute bottom-2 right-3 text-[10px] text-zinc-400 uppercase tracking-wider font-semibold pointer-events-none">Sign Above</span>
       </div>
 
-      <div class="flex justify-between items-center pt-2">
-        <button onclick="clearSignature()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-400 font-bold py-2 px-3.5 rounded-lg transition inline-flex items-center gap-1.5">
+      <div class="flex justify-between items-center pt-2 gap-2">
+        <button onclick="clearSignature()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-400 font-bold py-2.5 px-3.5 rounded-lg transition inline-flex items-center gap-1.5">
           <i data-lucide="eraser" class="w-3.5 h-3.5"></i>
           <span>Clear</span>
         </button>
         <div class="flex gap-2">
-          <button onclick="closeSignatureModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-bold py-2 px-4 rounded-lg transition">
+          <button onclick="closeSignatureModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-bold py-2.5 px-4 rounded-lg transition">
             Cancel
           </button>
-          <button onclick="proceedToConfirmation()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-lg shadow-red-900/30 inline-flex items-center gap-1.5">
+          <button onclick="proceedToConfirmation()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition shadow-lg shadow-red-900/30 inline-flex items-center gap-1.5">
             <span>Review &amp; Confirm</span>
             <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
           </button>
@@ -204,7 +230,7 @@
 
   <!-- COMPLETION CONFIRMATION MODAL -->
   <div id="confirmationModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4">
       <div class="pb-3 border-b border-zinc-800 text-center">
         <h3 class="text-lg font-bold text-white">Confirm Job Completion</h3>
         <p class="text-xs text-zinc-400">Review details before moving order to Completed Tab</p>
@@ -213,8 +239,8 @@
       <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2 text-xs">
         <div class="flex justify-between"><span class="text-zinc-400">Order ID:</span><span id="confirmOrderId" class="font-bold text-white">#--</span></div>
         <div class="flex justify-between"><span class="text-zinc-400">Client:</span><span id="confirmClientName" class="font-bold text-white">--</span></div>
-        <div class="flex justify-between"><span class="text-zinc-400">Send Receipt To:</span><span id="confirmClientEmail" class="font-bold text-red-400">--</span></div>
-        <div class="flex justify-between"><span class="text-zinc-400">Service:</span><span id="confirmService" class="font-bold text-zinc-200 truncate max-w-[200px]">--</span></div>
+        <div class="flex justify-between"><span class="text-zinc-400">Send Receipt To:</span><span id="confirmClientEmail" class="font-bold text-red-400 truncate max-w-[180px]">--</span></div>
+        <div class="flex justify-between"><span class="text-zinc-400">Service:</span><span id="confirmService" class="font-bold text-zinc-200 truncate max-w-[180px]">--</span></div>
         <div class="flex justify-between"><span class="text-zinc-400">Total Paid:</span><span id="confirmAmount" class="font-bold text-green-400">$0.00</span></div>
         
         <div class="pt-2 border-t border-zinc-800">
@@ -226,11 +252,11 @@
       </div>
 
       <div class="flex gap-2 pt-2">
-        <button onclick="backToSignature()" class="w-1/2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-bold py-2.5 rounded-lg transition inline-flex items-center justify-center gap-1.5">
+        <button onclick="backToSignature()" class="w-1/2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-bold py-3 rounded-lg transition inline-flex items-center justify-center gap-1.5">
           <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
           <span>Back to Sign</span>
         </button>
-        <button onclick="confirmAndMoveToComplete()" class="w-1/2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2.5 rounded-lg transition shadow-lg shadow-green-900/30 inline-flex items-center justify-center gap-1.5">
+        <button onclick="confirmAndMoveToComplete()" class="w-1/2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-3 rounded-lg transition shadow-lg shadow-green-900/30 inline-flex items-center justify-center gap-1.5">
           <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
           <span>Confirm &amp; Complete</span>
         </button>
@@ -238,8 +264,8 @@
     </div>
   </div>
 
-  <!-- CLEAN LOGIN SCREEN CONTAINER (STRICT SUPABASE AUTH) -->
-  <div id="loginScreen" class="w-full max-w-md bg-zinc-950 p-8 rounded-2xl border border-zinc-800 shadow-2xl my-auto">
+  <!-- CLEAN LOGIN SCREEN CONTAINER (STRICT SUPABASE AUTH + iOS 16px INPUTS) -->
+  <div id="loginScreen" class="w-full max-w-md bg-zinc-950 p-6 sm:p-8 rounded-2xl border border-zinc-800 shadow-2xl my-auto">
     <div class="flex flex-col items-center mb-6 text-center">
       <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Care Logo" class="h-16 object-contain mb-3 filter drop-shadow-[0_0_12px_rgba(239,68,68,0.4)]">
       <h1 class="text-2xl font-black tracking-wider text-white uppercase">KW PORTAL</h1>
@@ -252,21 +278,21 @@
       <div>
         <label class="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider">Administrator Email</label>
         <input type="email" id="loginEmail" required placeholder="Enter email address" autocomplete="off" 
-          class="w-full bg-black border border-zinc-800 rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-red-600 transition">
+          class="w-full bg-black border border-zinc-800 rounded-lg px-3.5 py-3 sm:py-2.5 text-base sm:text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-red-600 transition">
       </div>
 
       <div>
         <label class="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider">Password</label>
         <div class="relative">
           <input type="password" id="loginPassword" required placeholder="Enter password" autocomplete="new-password"
-            class="w-full bg-black border border-zinc-800 rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-red-600 transition pr-10">
-          <button type="button" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility" class="absolute right-3 top-2.5 text-zinc-400 hover:text-white transition">
+            class="w-full bg-black border border-zinc-800 rounded-lg px-3.5 py-3 sm:py-2.5 text-base sm:text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-red-600 transition pr-11">
+          <button type="button" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility" class="absolute right-3 top-3 sm:top-2.5 text-zinc-400 hover:text-white transition p-0.5">
             <i id="eyeIcon" data-lucide="eye" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
 
-      <button type="submit" id="loginBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs tracking-widest uppercase transition shadow-lg shadow-red-900/20 flex items-center justify-center gap-2">
+      <button type="submit" id="loginBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 sm:py-2.5 rounded-lg text-xs tracking-widest uppercase transition shadow-lg shadow-red-900/20 flex items-center justify-center gap-2">
         <i data-lucide="shield-check" class="w-4 h-4"></i>
         <span>Sign In to Portal</span>
       </button>
@@ -274,10 +300,10 @@
   </div>
 
   <!-- MAIN PORTAL DASHBOARD -->
-  <div id="portalDashboard" class="w-full max-w-7xl mx-auto hidden space-y-6">
+  <div id="portalDashboard" class="w-full max-w-7xl mx-auto hidden space-y-5 sm:space-y-6">
 
     <!-- Header Section -->
-    <header class="flex flex-row justify-between items-center gap-4 pb-4 border-b border-zinc-800">
+    <header class="flex flex-row justify-between items-center gap-3 pb-4 border-b border-zinc-800">
       <div class="flex items-center gap-3.5">
         <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Care Logo" class="h-10 sm:h-12 object-contain filter drop-shadow-[0_0_8px_rgba(239,68,68,0.3)]">
         <div class="hidden sm:block border-l border-zinc-800 pl-3.5">
@@ -285,93 +311,110 @@
           <span class="text-[11px] text-zinc-500">KW Commercial Fleet Washing &amp; Mobile Detailing</span>
         </div>
       </div>
-      <div class="flex flex-wrap items-center gap-2.5">
-        <button onclick="fetchBookings()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-bold py-2 px-3 rounded-xl transition inline-flex items-center gap-1.5">
-          <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-zinc-400"></i>
+      <div class="flex items-center gap-2 sm:gap-2.5">
+        <button onclick="fetchBookings()" aria-label="Refresh Data" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-bold py-2.5 sm:py-2 px-3 rounded-xl transition inline-flex items-center gap-1.5">
+          <i data-lucide="refresh-cw" class="w-4 h-4 sm:w-3.5 sm:h-3.5 text-zinc-400"></i>
           <span class="hidden sm:inline">Refresh Data</span>
         </button>
-        <div id="statusBadge" class="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl text-xs font-semibold text-zinc-400 inline-flex items-center gap-2">
+        <div id="statusBadge" class="bg-zinc-900 border border-zinc-800 px-3 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-zinc-400 inline-flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
           <span class="hidden sm:inline">Live Sync</span>
         </div>
-        <button onclick="handleLogout()" class="bg-red-950/40 hover:bg-red-900/60 border border-red-800 text-xs text-red-400 font-bold py-2 px-3 rounded-xl transition inline-flex items-center gap-1.5">
-          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+        <button onclick="handleLogout()" aria-label="Sign Out" class="bg-red-950/40 hover:bg-red-900/60 border border-red-800 text-xs text-red-400 font-bold py-2.5 sm:py-2 px-3 rounded-xl transition inline-flex items-center gap-1.5">
+          <i data-lucide="log-out" class="w-4 h-4 sm:w-3.5 sm:h-3.5"></i>
           <span class="hidden sm:inline">Sign Out</span>
         </button>
       </div>
     </header>
 
-    <main class="space-y-6">
+    <main class="space-y-5 sm:space-y-6">
 
-      <!-- Navigation Bar with Vector Icon Buttons -->
-      <div class="flex flex-wrap gap-2 items-center justify-between bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-xs">
-        <div class="flex flex-wrap gap-1.5 sm:gap-2">
-          <button id="filterUpcoming" onclick="filterStatus('Upcoming')" title="Upcoming Orders" class="filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5">
+      <!-- Navigation Bar with Touch-Friendly Vector Icon Buttons -->
+      <div class="flex flex-col sm:flex-row gap-2.5 sm:items-center justify-between bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-xs">
+        <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-0.5 sm:pb-0">
+          <button id="filterUpcoming" onclick="filterStatus('Upcoming')" title="Upcoming Orders" class="filter-btn shrink-0 bg-red-600 text-white font-bold py-2.5 sm:py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5">
             <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
-            <span class="hidden md:inline">Upcoming</span>
+            <span>Upcoming</span>
           </button>
-          <button id="filterCalendar" onclick="filterStatus('Calendar')" title="Work Calendar" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+          <button id="filterCalendar" onclick="filterStatus('Calendar')" title="Work Calendar" class="filter-btn shrink-0 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2.5 sm:py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
             <i data-lucide="calendar" class="w-3.5 h-3.5 text-red-400"></i>
-            <span class="hidden md:inline">Calendar</span>
+            <span>Calendar</span>
           </button>
-          <button id="filterPending" onclick="filterStatus('Pending')" title="Pending Only" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+          <button id="filterPending" onclick="filterStatus('Pending')" title="Pending Only" class="filter-btn shrink-0 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2.5 sm:py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
             <i data-lucide="clock" class="w-3.5 h-3.5 text-yellow-400"></i>
-            <span class="hidden md:inline">Pending</span>
+            <span class="hidden sm:inline">Pending</span>
           </button>
-          <button id="filterSub" onclick="filterStatus('Subscription')" title="Subscriptions Only" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+          <button id="filterSub" onclick="filterStatus('Subscription')" title="Subscriptions Only" class="filter-btn shrink-0 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2.5 sm:py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
             <i data-lucide="repeat" class="w-3.5 h-3.5 text-purple-400"></i>
-            <span class="hidden md:inline">Subscriptions</span>
+            <span class="hidden sm:inline">Subscriptions</span>
           </button>
-          <button id="filterCompleted" onclick="filterStatus('Completed')" title="Completed Orders" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+          <button id="filterCompleted" onclick="filterStatus('Completed')" title="Completed Orders" class="filter-btn shrink-0 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2.5 sm:py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
             <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-green-400"></i>
-            <span class="hidden md:inline">Completed</span>
+            <span class="hidden sm:inline">Completed</span>
           </button>
-          <button id="filterContacts" onclick="filterStatus('Contacts')" title="Client Contacts" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+          <button id="filterContacts" onclick="filterStatus('Contacts')" title="Client Contacts" class="filter-btn shrink-0 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2.5 sm:py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
             <i data-lucide="users" class="w-3.5 h-3.5 text-cyan-400"></i>
-            <span class="hidden md:inline">Contacts</span>
+            <span class="hidden sm:inline">Contacts</span>
           </button>
-          <button id="filterReports" onclick="filterStatus('Reports')" title="Revenue Reports" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+          <button id="filterReports" onclick="filterStatus('Reports')" title="Revenue Reports" class="filter-btn shrink-0 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2.5 sm:py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
             <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-blue-400"></i>
-            <span class="hidden md:inline">Reports</span>
+            <span class="hidden sm:inline">Reports</span>
           </button>
         </div>
-        <span id="orderCount" class="text-zinc-400 font-semibold px-2">Loading...</span>
+        <span id="orderCount" class="text-zinc-400 font-semibold px-1 sm:px-2 text-[11px] sm:text-xs">Loading...</span>
       </div>
 
-      <!-- WORK CALENDAR TAB VIEW -->
+      <!-- RESPONSIVE WORK CALENDAR TAB VIEW (MOBILE/TABLET AGENDA + DESKTOP GRID) -->
       <div id="calendarSection" class="hidden space-y-4">
-        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
             <h2 class="text-base font-bold text-white flex items-center gap-2">
               <i data-lucide="calendar-days" class="w-4 h-4 text-red-500"></i>
               <span>Fleet Detailing Schedule</span>
             </h2>
-            <p class="text-xs text-zinc-400 mt-0.5">View upcoming bookings organized day-by-day. Select any booking card to inspect specifications.</p>
+            <p class="text-xs text-zinc-400 mt-0.5">Tap any scheduled job card to inspect specifications, address, and contact details.</p>
           </div>
           
-          <!-- Month Control Bar -->
-          <div class="flex items-center gap-2 bg-zinc-900 p-1.5 rounded-xl border border-zinc-800">
-            <button onclick="changeCalendarMonth(-1)" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-3 py-1 rounded-lg text-xs transition border border-zinc-800 inline-flex items-center gap-1">
-              <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
-              <span>Prev</span>
-            </button>
-            <span id="calendarMonthTitle" class="text-xs font-extrabold text-white px-3 tracking-wider min-w-[130px] text-center">
-              -- 2026
-            </span>
-            <button onclick="changeCalendarMonth(1)" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-3 py-1 rounded-lg text-xs transition border border-zinc-800 inline-flex items-center gap-1">
-              <span>Next</span>
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-            </button>
-            <button onclick="resetCalendarToToday()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs transition ml-1">
-              Today
-            </button>
+          <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-between lg:justify-end">
+            <!-- Mobile Filter Toggle (Scheduled Days vs All Days) -->
+            <div class="flex md:hidden bg-zinc-900 p-1 rounded-xl border border-zinc-800 text-[11px]">
+              <button id="calFilterScheduledBtn" onclick="setMobileCalendarMode('scheduled')" class="px-2.5 py-1.5 rounded-lg font-bold bg-zinc-800 text-white transition">
+                Jobs Only
+              </button>
+              <button id="calFilterAllBtn" onclick="setMobileCalendarMode('all')" class="px-2.5 py-1.5 rounded-lg font-semibold text-zinc-400 transition">
+                All Days
+              </button>
+            </div>
+
+            <!-- Month Control Bar -->
+            <div class="flex items-center gap-1.5 sm:gap-2 bg-zinc-900 p-1.5 rounded-xl border border-zinc-800">
+              <button onclick="changeCalendarMonth(-1)" aria-label="Previous Month" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-xs transition border border-zinc-800 inline-flex items-center gap-1">
+                <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">Prev</span>
+              </button>
+              <span id="calendarMonthTitle" class="text-xs font-extrabold text-white px-2 sm:px-3 tracking-wider min-w-[115px] sm:min-w-[130px] text-center">
+                -- 2026
+              </span>
+              <button onclick="changeCalendarMonth(1)" aria-label="Next Month" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-xs transition border border-zinc-800 inline-flex items-center gap-1">
+                <span class="hidden sm:inline">Next</span>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="resetCalendarToToday()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1.5 rounded-lg text-xs transition ml-0.5">
+                Today
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- CALENDAR GRID -->
-        <div class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl p-4 overflow-x-auto">
+        <!-- MOBILE & PORTRAIT TABLET AGENDA VIEW (< 768px) -->
+        <div id="mobileCalendarAgenda" class="md:hidden space-y-3">
+          <!-- Rendered dynamically for iPhone / iPad Portrait -->
+        </div>
+
+        <!-- DESKTOP & LANDSCAPE IPAD 7-COLUMN GRID (>= 768px) -->
+        <div class="hidden md:block bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl p-4">
           <!-- Day Name Headers -->
-          <div class="grid grid-cols-7 gap-2 min-w-[750px] mb-2 text-center text-xs font-bold text-zinc-400 uppercase tracking-wider">
+          <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-zinc-400 uppercase tracking-wider">
             <div class="p-2 bg-zinc-900/60 rounded-lg text-red-500">Sun</div>
             <div class="p-2 bg-zinc-900/60 rounded-lg">Mon</div>
             <div class="p-2 bg-zinc-900/60 rounded-lg">Tue</div>
@@ -382,7 +425,7 @@
           </div>
 
           <!-- Calendar Days Box Grid -->
-          <div id="calendarDaysGrid" class="grid grid-cols-7 gap-2 min-w-[750px] auto-rows-fr">
+          <div id="calendarDaysGrid" class="grid grid-cols-7 gap-2 auto-rows-fr">
             <!-- Rendered by JS -->
           </div>
         </div>
@@ -399,14 +442,14 @@
             <p class="text-xs text-zinc-400">Track client names, contact info, and service addresses saved in Supabase.</p>
           </div>
           <div class="relative w-full md:w-72">
-            <i data-lucide="search" class="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-2.5"></i>
+            <i data-lucide="search" class="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-3 sm:top-2.5"></i>
             <input type="text" id="contactSearchInput" oninput="renderContactsTable()" placeholder="Search name, email, phone, or address..."
-              class="bg-black border border-zinc-800 rounded-lg pl-8 pr-3 py-2 text-xs text-white w-full placeholder-zinc-600 focus:outline-none focus:border-cyan-500 transition">
+              class="bg-black border border-zinc-800 rounded-lg pl-8 pr-3 py-2.5 sm:py-2 text-base sm:text-xs text-white w-full placeholder-zinc-600 focus:outline-none focus:border-cyan-500 transition">
           </div>
         </div>
 
         <div class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto ios-scroll">
             <table class="w-full text-left text-xs">
               <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase tracking-wider font-semibold">
                 <tr>
@@ -441,7 +484,7 @@
           </div>
           <div class="flex items-center gap-2">
             <span class="text-xs text-zinc-400">Chart Range:</span>
-            <select id="chartTimeframeSelect" onchange="renderCharts()" class="bg-black border border-zinc-800 text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-red-600">
+            <select id="chartTimeframeSelect" onchange="renderCharts()" class="bg-black border border-zinc-800 text-base sm:text-xs text-white rounded-lg px-2.5 py-2 sm:py-1.5 focus:outline-none focus:border-red-600">
               <option value="6">Last 6 Months</option>
               <option value="12" selected>Last 12 Months</option>
             </select>
@@ -521,7 +564,7 @@
                 Add-On Total: $0.00
               </span>
             </div>
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto ios-scroll">
               <table class="w-full text-left text-xs">
                 <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase font-semibold">
                   <tr>
@@ -543,7 +586,7 @@
 
         <div class="bg-zinc-950 rounded-xl border border-zinc-800 p-4">
           <h3 class="text-xs font-bold text-zinc-300 uppercase tracking-wider mb-3">Revenue Breakdown by Booking Type</h3>
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto ios-scroll">
             <table class="w-full text-left text-xs">
               <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase font-semibold">
                 <tr>
@@ -578,9 +621,9 @@
       <div id="ordersTableSection" class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
         <div class="px-4 py-2.5 bg-zinc-900/50 border-b border-zinc-800 text-zinc-400 text-[11px] flex items-center gap-2">
           <i data-lucide="info" class="w-3.5 h-3.5 text-red-500 shrink-0"></i>
-          <span>Select any order row to inspect complete specifications, add-ons, and client contact details.</span>
+          <span>Tap any order row to inspect complete specifications, add-ons, and client contact details.</span>
         </div>
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto ios-scroll">
           <table class="w-full text-left text-xs">
             <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase tracking-wider font-semibold">
               <tr>
@@ -620,6 +663,7 @@
     let pendingSignatureDataUrl = null;
 
     let calendarCurrentDate = new Date();
+    let mobileCalendarMode = 'scheduled'; // 'scheduled' or 'all'
 
     let monthlyRevenueChartInstance = null;
     let revenueMixChartInstance = null;
@@ -659,7 +703,6 @@
       document.getElementById('loginEmail').value = '';
       document.getElementById('loginPassword').value = '';
 
-      // Check active Supabase auth session
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
         sessionStorage.setItem('kw_auth', 'true');
@@ -744,6 +787,24 @@
       return 'Cash / Zelle';
     }
 
+    // iOS-Safe Date Parser (avoids Safari hyphenated date parsing bugs)
+    function parseSafeDateParts(b) {
+      const raw = (b.service_date || (b.created_at ? b.created_at.split('T')[0] : '')).trim();
+      const match = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (match) {
+        return {
+          year: parseInt(match[1], 10),
+          month: parseInt(match[2], 10) - 1,
+          day: parseInt(match[3], 10)
+        };
+      }
+      const d = new Date(raw);
+      if (!isNaN(d.getTime())) {
+        return { year: d.getFullYear(), month: d.getMonth(), day: d.getDate() };
+      }
+      return null;
+    }
+
     function openOrderDetailsModal(bookingId) {
       const b = allBookings.find(item => item.id === bookingId);
       if (!b) return;
@@ -776,7 +837,8 @@
       document.getElementById('detailTimeSlot').textContent = b.time_slot || 'Standard Window';
       document.getElementById('detailServiceAddress').textContent = b.service_address || 'Address Not Provided';
       
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.service_address || '')}`;
+      // Universal Maps link (works smoothly on iOS Apple Maps / Google Maps)
+      const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(b.service_address || '')}`;
       document.getElementById('detailMapsUrl').href = mapsUrl;
 
       document.getElementById('detailVehicleCategory').textContent = (b.vehicle_category || 'Vehicle').toUpperCase();
@@ -786,8 +848,8 @@
       const subBadge = document.getElementById('detailOrderTypeBadge');
       subBadge.textContent = isSub ? 'Subscription Plan' : 'One-Time Service';
       subBadge.className = isSub 
-        ? 'bg-purple-900/40 text-purple-400 border border-purple-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider'
-        : 'bg-zinc-900 text-zinc-400 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider';
+        ? 'bg-purple-900/40 text-purple-400 border border-purple-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0'
+        : 'bg-zinc-900 text-zinc-400 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0';
 
       const addOnsContainer = document.getElementById('detailAddOnsList');
       const addOnText = (b.add_ons || b.service_type || '').toLowerCase();
@@ -848,6 +910,12 @@
       canvas.getContext("2d").scale(ratio, ratio);
       if (signaturePad) signaturePad.clear();
     }
+
+    window.addEventListener('resize', () => {
+      if (!document.getElementById('signatureModal').classList.contains('hidden')) {
+        resizeCanvas();
+      }
+    });
 
     function openSignatureModal(bookingId) {
       pendingCompletionBookingId = bookingId;
@@ -1482,7 +1550,7 @@
     }
 
     /* ----------------------------------------------------
-       ORGANIZED WORK CALENDAR ENGINE
+       RESPONSIVE WORK CALENDAR (MOBILE AGENDA + DESKTOP GRID)
     ---------------------------------------------------- */
     function changeCalendarMonth(offset) {
       calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + offset);
@@ -1494,9 +1562,41 @@
       renderCalendarView();
     }
 
+    function setMobileCalendarMode(mode) {
+      mobileCalendarMode = mode;
+      const schedBtn = document.getElementById('calFilterScheduledBtn');
+      const allBtn = document.getElementById('calFilterAllBtn');
+      if (mode === 'scheduled') {
+        schedBtn.className = 'px-2.5 py-1.5 rounded-lg font-bold bg-zinc-800 text-white transition';
+        allBtn.className = 'px-2.5 py-1.5 rounded-lg font-semibold text-zinc-400 transition';
+      } else {
+        allBtn.className = 'px-2.5 py-1.5 rounded-lg font-bold bg-zinc-800 text-white transition';
+        schedBtn.className = 'px-2.5 py-1.5 rounded-lg font-semibold text-zinc-400 transition';
+      }
+      renderCalendarView();
+    }
+
+    function getJobBadgeStyle(b) {
+      const pmLabel = getPaymentMethodLabel(b);
+      const isCashZelle = pmLabel === 'Cash / Zelle';
+      const isSub = getIsSubscription(b);
+
+      if (b.payment_status === 'Completed') {
+        return 'bg-zinc-900/80 text-zinc-400 border-zinc-700';
+      } else if (b.payment_status === 'Paid & Confirmed') {
+        return 'bg-green-950/30 text-green-300 border-green-700/60';
+      } else if (isSub) {
+        return 'bg-purple-950/30 text-purple-300 border-purple-700/60';
+      } else if (isCashZelle) {
+        return 'bg-amber-950/30 text-amber-300 border-amber-700/60';
+      }
+      return 'bg-yellow-950/30 text-yellow-300 border-yellow-700/60';
+    }
+
     function renderCalendarView() {
       const monthTitleEl = document.getElementById('calendarMonthTitle');
       const gridEl = document.getElementById('calendarDaysGrid');
+      const mobileAgendaEl = document.getElementById('mobileCalendarAgenda');
 
       const year = calendarCurrentDate.getFullYear();
       const month = calendarCurrentDate.getMonth();
@@ -1517,26 +1617,17 @@
       const bookingsByDay = {};
       allBookings.forEach(b => {
         if (b.payment_status === 'Cancelled') return;
-        const dateStr = b.service_date || (b.created_at ? b.created_at.split('T')[0] : '');
-        if (!dateStr) return;
-
-        const parts = dateStr.split('-');
-        if (parts.length === 3) {
-          const bYear = parseInt(parts[0]);
-          const bMonth = parseInt(parts[1]) - 1;
-          const bDay = parseInt(parts[2]);
-
-          if (bYear === year && bMonth === month) {
-            if (!bookingsByDay[bDay]) bookingsByDay[bDay] = [];
-            bookingsByDay[bDay].push(b);
-          }
+        const parsed = parseSafeDateParts(b);
+        if (parsed && parsed.year === year && parsed.month === month) {
+          if (!bookingsByDay[parsed.day]) bookingsByDay[parsed.day] = [];
+          bookingsByDay[parsed.day].push(b);
         }
       });
 
-      let html = '';
-
+      // 1. RENDER DESKTOP / TABLET LANDSCAPE 7-COLUMN GRID
+      let desktopHtml = '';
       for (let i = 0; i < startingDayIndex; i++) {
-        html += `<div class="bg-zinc-950/40 border border-zinc-900 rounded-xl p-2 min-h-[110px]"></div>`;
+        desktopHtml += `<div class="bg-zinc-950/40 border border-zinc-900 rounded-xl p-2 min-h-[115px]"></div>`;
       }
 
       for (let day = 1; day <= totalDaysInMonth; day++) {
@@ -1544,8 +1635,8 @@
         const dayBookings = bookingsByDay[day] || [];
         dayBookings.sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
 
-        html += `
-          <div class="bg-zinc-900/40 border ${isToday ? 'border-red-600 bg-red-950/10' : 'border-zinc-800/80'} rounded-xl p-2 min-h-[120px] flex flex-col justify-start transition hover:border-zinc-700">
+        desktopHtml += `
+          <div class="bg-zinc-900/40 border ${isToday ? 'border-red-600 bg-red-950/10' : 'border-zinc-800/80'} rounded-xl p-2 min-h-[125px] flex flex-col justify-start transition hover:border-zinc-700">
             <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-zinc-800/60">
               <span class="text-xs font-black ${isToday ? 'bg-red-600 text-white px-2 py-0.5 rounded-full' : 'text-zinc-300'}">
                 ${day}
@@ -1553,23 +1644,9 @@
               ${dayBookings.length > 0 ? `<span class="text-[10px] font-bold text-red-400 bg-red-950/60 px-1.5 py-0.5 rounded-md border border-red-900/50">${dayBookings.length} job(s)</span>` : ''}
             </div>
 
-            <div class="space-y-1.5 overflow-y-auto max-h-[140px] pr-0.5">
+            <div class="space-y-1.5 overflow-y-auto max-h-[145px] pr-0.5">
               ${dayBookings.map(b => {
-                const pmLabel = getPaymentMethodLabel(b);
-                const isCashZelle = pmLabel === 'Cash / Zelle';
-                const isSub = getIsSubscription(b);
-
-                let badgeColor = 'bg-yellow-500/20 text-yellow-300 border-yellow-600/50';
-                if (b.payment_status === 'Completed') {
-                  badgeColor = 'bg-zinc-800 text-zinc-400 border-zinc-700';
-                } else if (b.payment_status === 'Paid & Confirmed') {
-                  badgeColor = 'bg-green-500/20 text-green-300 border-green-600/50';
-                } else if (isSub) {
-                  badgeColor = 'bg-purple-500/20 text-purple-300 border-purple-600/50';
-                } else if (isCashZelle) {
-                  badgeColor = 'bg-amber-500/20 text-amber-300 border-amber-600/50';
-                }
-
+                const badgeColor = getJobBadgeStyle(b);
                 return `
                   <div onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer bg-zinc-950 hover:bg-zinc-900 border ${badgeColor} p-1.5 rounded-lg text-[10px] space-y-0.5 transition shadow-sm">
                     <div class="flex justify-between font-bold truncate">
@@ -1591,8 +1668,94 @@
           </div>
         `;
       }
+      gridEl.innerHTML = desktopHtml;
 
-      gridEl.innerHTML = html;
+      // 2. RENDER MOBILE & PORTRAIT TABLET AGENDA VIEW (iPhone / iPad Safari Friendly)
+      let mobileHtml = '';
+      let renderedDaysCount = 0;
+
+      for (let day = 1; day <= totalDaysInMonth; day++) {
+        const isToday = isCurrentMonth && day === todayDateNumber;
+        const dayBookings = bookingsByDay[day] || [];
+
+        if (mobileCalendarMode === 'scheduled' && dayBookings.length === 0 && !isToday) {
+          continue;
+        }
+
+        renderedDaysCount++;
+        dayBookings.sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
+        const weekdayLabel = new Date(year, month, day).toLocaleString('default', { weekday: 'short' });
+
+        mobileHtml += `
+          <div class="bg-zinc-950 border ${isToday ? 'border-red-600' : 'border-zinc-800'} rounded-xl overflow-hidden shadow-lg">
+            <div class="px-4 py-2.5 ${isToday ? 'bg-red-950/30 border-b border-red-900/50' : 'bg-zinc-900/60 border-b border-zinc-800'} flex justify-between items-center">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-black uppercase tracking-wider ${isToday ? 'text-red-400' : 'text-zinc-400'}">${weekdayLabel}</span>
+                <span class="text-sm font-black text-white">${monthName.slice(0, 3)} ${day}</span>
+                ${isToday ? `<span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Today</span>` : ''}
+              </div>
+              <span class="text-[11px] font-bold ${dayBookings.length > 0 ? 'text-red-400' : 'text-zinc-500'}">
+                ${dayBookings.length} ${dayBookings.length === 1 ? 'Job' : 'Jobs'}
+              </span>
+            </div>
+
+            <div class="p-3 space-y-2.5">
+              ${dayBookings.length === 0 ? `
+                <p class="text-xs text-zinc-500 italic py-1">No detailing jobs scheduled for this date.</p>
+              ` : dayBookings.map(b => {
+                const badgeColor = getJobBadgeStyle(b);
+                const pmLabel = getPaymentMethodLabel(b);
+                return `
+                  <div onclick="openOrderDetailsModal(${b.id})" class="active:scale-[0.99] cursor-pointer bg-zinc-900/70 hover:bg-zinc-900 border ${badgeColor} p-3.5 rounded-xl space-y-2 transition">
+                    <div class="flex justify-between items-start gap-2">
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <span class="text-xs font-black text-red-400">#${b.id}</span>
+                          <span class="text-sm font-extrabold text-white">${escapeHtml(b.client_name || 'Client')}</span>
+                        </div>
+                        <p class="text-xs text-zinc-300 font-medium mt-0.5">${escapeHtml(b.service_type || 'Detailing Package')}</p>
+                      </div>
+                      <div class="text-right shrink-0">
+                        <span class="text-sm font-extrabold text-green-400 block">$${parseFloat(b.amount_paid || 0).toFixed(2)}</span>
+                        <span class="text-[10px] text-zinc-400 font-semibold">${pmLabel}</span>
+                      </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
+                      <span class="inline-flex items-center gap-1 font-semibold text-zinc-200">
+                        <i data-lucide="clock" class="w-3.5 h-3.5 text-red-400"></i>
+                        ${escapeHtml(b.time_slot || 'Standard Window')}
+                      </span>
+                      <span class="inline-flex items-center gap-1">
+                        <i data-lucide="truck" class="w-3.5 h-3.5 text-zinc-500"></i>
+                        ${escapeHtml(b.vehicle_category || 'Vehicle')}
+                      </span>
+                    </div>
+
+                    ${b.service_address ? `
+                      <div class="text-[11px] text-zinc-400 truncate flex items-center gap-1">
+                        <i data-lucide="map-pin" class="w-3 h-3 text-red-500 shrink-0"></i>
+                        <span class="truncate">${escapeHtml(b.service_address)}</span>
+                      </div>
+                    ` : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (renderedDaysCount === 0) {
+        mobileHtml = `
+          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6 text-center space-y-2">
+            <p class="text-xs text-zinc-400">No jobs scheduled in ${monthName} ${year}.</p>
+            <button onclick="setMobileCalendarMode('all')" class="text-xs text-red-400 font-bold underline">Show all days in ${monthName}</button>
+          </div>
+        `;
+      }
+
+      mobileAgendaEl.innerHTML = mobileHtml;
       refreshIcons();
     }
 
@@ -1673,7 +1836,7 @@
       }
 
       tbody.innerHTML = contactList.map(c => {
-        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address || '')}`;
+        const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(c.address || '')}`;
         return `
           <tr class="hover:bg-zinc-900/50 transition">
             <td class="p-3.5 font-bold text-white">${escapeHtml(c.firstName)}</td>
@@ -1696,7 +1859,7 @@
               </span>
             </td>
             <td class="p-3.5">
-              <a href="mailto:${c.email}" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-2.5 py-1 rounded text-[10px] font-bold inline-flex items-center gap-1 transition">
+              <a href="mailto:${c.email}" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-2.5 py-1.5 rounded text-[10px] font-bold inline-flex items-center gap-1 transition">
                 <i data-lucide="mail" class="w-3 h-3 text-cyan-400"></i>
                 <span>Email Client</span>
               </a>
@@ -1770,7 +1933,7 @@
       }
 
       tbody.innerHTML = filtered.map(b => {
-        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.service_address || '')}`;
+        const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(b.service_address || '')}`;
         const isSub = getIsSubscription(b);
         const hasSignature = !!b.client_signature;
         const status = b.payment_status || 'Pending';
@@ -1828,7 +1991,7 @@
 
             <!-- COLUMN 5: Status Dropdown & Signature Action -->
             <td class="p-3.5 space-y-1" onclick="event.stopPropagation()">
-              <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(status)}">
+              <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(status)}">
                 <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
                 <option value="Paid & Confirmed" ${status === 'Paid & Confirmed' ? 'selected' : ''}>Paid &amp; Confirmed</option>
                 <option value="Dispatched" ${status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
@@ -1865,23 +2028,23 @@
       currentFilter = status;
 
       document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.className = 'filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5';
+        btn.className = 'filter-btn shrink-0 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2.5 sm:py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5';
       });
 
       if (status === 'Upcoming') {
-        document.getElementById('filterUpcoming').className = 'filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
+        document.getElementById('filterUpcoming').className = 'filter-btn shrink-0 bg-red-600 text-white font-bold py-2.5 sm:py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Calendar') {
-        document.getElementById('filterCalendar').className = 'filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
+        document.getElementById('filterCalendar').className = 'filter-btn shrink-0 bg-red-600 text-white font-bold py-2.5 sm:py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Pending') {
-        document.getElementById('filterPending').className = 'filter-btn bg-yellow-900/60 text-yellow-300 border border-yellow-700 font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
+        document.getElementById('filterPending').className = 'filter-btn shrink-0 bg-yellow-900/60 text-yellow-300 border border-yellow-700 font-bold py-2.5 sm:py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Subscription') {
-        document.getElementById('filterSub').className = 'filter-btn bg-purple-900/60 text-purple-300 border border-purple-700 font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
+        document.getElementById('filterSub').className = 'filter-btn shrink-0 bg-purple-900/60 text-purple-300 border border-purple-700 font-bold py-2.5 sm:py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Completed') {
-        document.getElementById('filterCompleted').className = 'filter-btn bg-green-900/60 text-green-300 border border-green-700 font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
+        document.getElementById('filterCompleted').className = 'filter-btn shrink-0 bg-green-900/60 text-green-300 border border-green-700 font-bold py-2.5 sm:py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Contacts') {
-        document.getElementById('filterContacts').className = 'filter-btn bg-cyan-600 text-white font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
+        document.getElementById('filterContacts').className = 'filter-btn shrink-0 bg-cyan-600 text-white font-bold py-2.5 sm:py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Reports') {
-        document.getElementById('filterReports').className = 'filter-btn bg-blue-600 text-white font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
+        document.getElementById('filterReports').className = 'filter-btn shrink-0 bg-blue-600 text-white font-bold py-2.5 sm:py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       }
 
       renderTable();
