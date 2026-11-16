@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KW Detailing - Admin Dispatch Portal</title>
+  <title>KW Commercial Fleet Care — Admin Dispatch Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS Client Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -11,11 +11,13 @@
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
   <!-- Chart.js Engine for Visual Widgets -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Crisp Vector Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-black text-white min-h-screen p-3 sm:p-6 font-sans flex flex-col justify-center items-center">
+<body class="bg-black text-white min-h-screen p-3 sm:p-6 font-sans antialiased flex flex-col justify-center items-center selection:bg-red-600 selection:text-white">
 
   <!-- POPUP TOAST NOTIFICATION CONTAINER -->
-  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
 
   <!-- CLEAN & ENHANCED ORDER DETAILS MODAL (TAP TO VIEW) -->
   <div id="orderDetailsModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5">
@@ -30,46 +32,49 @@
             <p id="detailCreatedDate" class="text-[11px] text-zinc-400">Booked: --</p>
           </div>
         </div>
-        <button onclick="closeOrderDetailsModal()" class="text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition">✕</button>
+        <button onclick="closeOrderDetailsModal()" aria-label="Close modal" class="text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 w-8 h-8 rounded-full flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
       </div>
 
       <!-- Modal Content Body -->
       <div class="p-6 overflow-y-auto space-y-4 text-xs">
 
         <!-- LOYALTY DISCOUNT STATUS BANNER -->
-        <div id="detailLoyaltyBanner" class="hidden p-3 rounded-xl border bg-amber-950/30 border-amber-600/60 text-amber-300 flex justify-between items-center">
+        <div id="detailLoyaltyBanner" class="hidden p-3.5 rounded-xl border bg-amber-950/30 border-amber-600/60 text-amber-300 flex justify-between items-center">
           <div>
             <span id="detailServiceNumBadge" class="font-bold block text-amber-400">Service #--</span>
             <span id="detailLoyaltySubtext" class="text-[11px] text-zinc-300">Loyalty Tracker Status</span>
           </div>
-          <span id="detailLoyaltyTag" class="bg-amber-500/20 border border-amber-600 text-amber-300 px-2.5 py-1 rounded-lg text-[11px] font-extrabold animate-pulse">
-            25% OFF Add-Ons!
+          <span id="detailLoyaltyTag" class="bg-amber-500/20 border border-amber-600 text-amber-300 px-2.5 py-1 rounded-lg text-[11px] font-extrabold tracking-wide uppercase">
+            25% Off Add-Ons
           </span>
         </div>
 
         <!-- WORK ORDER & ADD-ONS (PRIMARY VISUAL AREA) -->
-        <div class="bg-zinc-900/60 border border-amber-900/40 rounded-xl p-4 space-y-3">
-          <div class="flex items-center justify-between pb-2 border-b border-zinc-800">
-            <span class="font-extrabold text-amber-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-              🛠️ Job Specification & Add-Ons
+        <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between pb-2.5 border-b border-zinc-800">
+            <span class="font-bold text-zinc-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <i data-lucide="wrench" class="w-3.5 h-3.5 text-red-500"></i>
+              Job Specification &amp; Add-Ons
             </span>
-            <span id="detailVehicleCategory" class="bg-zinc-950 border border-zinc-700 text-zinc-200 px-2.5 py-0.5 rounded-full font-bold text-[10px]">
+            <span id="detailVehicleCategory" class="bg-zinc-950 border border-zinc-700 text-zinc-200 px-2.5 py-0.5 rounded-full font-bold text-[10px] tracking-wide">
               --
             </span>
           </div>
 
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-zinc-400 text-[10px] uppercase font-semibold block mb-0.5">Base Service Package</span>
+              <span class="text-zinc-400 text-[10px] uppercase tracking-wider font-semibold block mb-0.5">Base Service Package</span>
               <p id="detailServiceType" class="text-sm font-extrabold text-white">--</p>
             </div>
-            <span id="detailOrderTypeBadge" class="bg-zinc-900 text-gray-400 border border-zinc-800 px-2 py-0.5 rounded text-[10px] font-bold">
+            <span id="detailOrderTypeBadge" class="bg-zinc-900 text-zinc-400 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
               One-Time
             </span>
           </div>
 
-          <div class="pt-2 border-t border-zinc-800/80">
-            <span class="text-zinc-400 text-[10px] uppercase font-semibold block mb-2">Requested Add-On Services</span>
+          <div class="pt-2.5 border-t border-zinc-800/80">
+            <span class="text-zinc-400 text-[10px] uppercase tracking-wider font-semibold block mb-2">Requested Add-On Services</span>
             <div id="detailAddOnsList" class="flex flex-wrap gap-2">
               <span class="text-zinc-500 italic">No add-ons selected for this job.</span>
             </div>
@@ -81,10 +86,11 @@
           
           <!-- Schedule Card -->
           <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-3.5 space-y-2">
-            <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px] block border-b border-zinc-800 pb-1">
-              📅 Appointment Window
+            <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5 border-b border-zinc-800 pb-1.5">
+              <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-red-500"></i>
+              Appointment Window
             </span>
-            <div class="space-y-1">
+            <div class="space-y-1.5 pt-0.5">
               <div class="flex justify-between"><span class="text-zinc-500">Service Date:</span><span id="detailServiceDate" class="font-bold text-red-500">--</span></div>
               <div class="flex justify-between"><span class="text-zinc-500">Time Slot:</span><span id="detailTimeSlot" class="font-semibold text-zinc-200">--</span></div>
             </div>
@@ -92,10 +98,11 @@
 
           <!-- Financial Card -->
           <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-3.5 space-y-2">
-            <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px] block border-b border-zinc-800 pb-1">
-              💳 Payment & Status
+            <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5 border-b border-zinc-800 pb-1.5">
+              <i data-lucide="credit-card" class="w-3.5 h-3.5 text-green-400"></i>
+              Payment &amp; Status
             </span>
-            <div class="space-y-1">
+            <div class="space-y-1.5 pt-0.5">
               <div class="flex justify-between"><span class="text-zinc-500">Total Amount:</span><span id="detailAmountPaid" class="font-extrabold text-green-400">$0.00</span></div>
               <div class="flex justify-between"><span class="text-zinc-500">Payment Type:</span><span id="detailPaymentMethod" class="font-bold text-amber-400">--</span></div>
             </div>
@@ -105,21 +112,26 @@
 
         <!-- LOCATION CARD -->
         <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-3.5 space-y-2">
-          <div class="flex justify-between items-center border-b border-zinc-800 pb-1">
-            <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px]">📍 Dispatch Location</span>
-            <a id="detailMapsUrl" href="#" target="_blank" class="text-[11px] text-red-400 hover:text-red-300 font-bold flex items-center gap-1">
-              🗺️ Open in Google Maps ➔
+          <div class="flex justify-between items-center border-b border-zinc-800 pb-1.5">
+            <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-red-500"></i>
+              Dispatch Location
+            </span>
+            <a id="detailMapsUrl" href="#" target="_blank" class="text-[11px] text-red-400 hover:text-red-300 font-bold inline-flex items-center gap-1 transition">
+              <span>Open in Google Maps</span>
+              <i data-lucide="external-link" class="w-3 h-3"></i>
             </a>
           </div>
-          <p id="detailServiceAddress" class="font-semibold text-zinc-200 text-xs">--</p>
+          <p id="detailServiceAddress" class="font-semibold text-zinc-200 text-xs pt-0.5">--</p>
         </div>
 
         <!-- CONTACT CARD -->
         <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-3.5 space-y-2">
-          <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px] block border-b border-zinc-800 pb-1">
-            📞 Client Direct Contact
+          <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5 border-b border-zinc-800 pb-1.5">
+            <i data-lucide="user-check" class="w-3.5 h-3.5 text-zinc-300"></i>
+            Client Direct Contact
           </span>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
             <div><span class="text-zinc-500 block">Phone:</span><a id="detailPhone" href="#" class="font-bold text-red-400 hover:underline">--</a></div>
             <div><span class="text-zinc-500 block">Email:</span><span id="detailEmail" class="font-mono text-zinc-300">--</span></div>
           </div>
@@ -127,8 +139,9 @@
 
         <!-- CAPTURED SIGNATURE SECTION -->
         <div id="detailSignatureContainer" class="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-3.5 space-y-2 hidden">
-          <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px] block border-b border-zinc-800 pb-1">
-            ✍️ Client Signature Confirmation
+          <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5 border-b border-zinc-800 pb-1.5">
+            <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-green-400"></i>
+            Client Signature Confirmation
           </span>
           <div class="bg-white p-2 rounded-lg flex justify-center">
             <img id="detailSignatureImg" src="" alt="Client Signature" class="h-20 object-contain">
@@ -139,8 +152,9 @@
 
       <!-- Action Footer -->
       <div class="px-6 py-3.5 border-t border-zinc-800 bg-zinc-900/60 flex flex-wrap gap-2 justify-between items-center shrink-0">
-        <a id="detailCallBtn" href="#" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-red-400 font-bold px-3 py-2 rounded-lg text-xs transition flex items-center gap-1.5">
-          📞 Call Client
+        <a id="detailCallBtn" href="#" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-red-400 font-bold px-3.5 py-2 rounded-lg text-xs transition inline-flex items-center gap-1.5">
+          <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+          <span>Call Client</span>
         </a>
         <button onclick="closeOrderDetailsModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition shadow-lg shadow-red-900/30">
           Close Window
@@ -156,28 +170,32 @@
       <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
         <div>
           <h3 class="text-lg font-bold text-white">Client Signature</h3>
-          <p id="modalClientInfo" class="text-xs text-gray-400">Order # -- | Client</p>
+          <p id="modalClientInfo" class="text-xs text-zinc-400">Order # -- | Client</p>
         </div>
-        <button onclick="closeSignatureModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
+        <button onclick="closeSignatureModal()" aria-label="Close signature pad" class="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-900 transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
       </div>
 
-      <p class="text-xs text-gray-300">Have the client sign below to acknowledge completion of service.</p>
+      <p class="text-xs text-zinc-300">Have the client sign below to acknowledge completion of service.</p>
 
       <div class="border border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative">
         <canvas id="signatureCanvas" class="w-full h-44 cursor-crosshair"></canvas>
-        <span class="absolute bottom-2 right-3 text-[10px] text-zinc-400 pointer-events-none">Sign Above</span>
+        <span class="absolute bottom-2 right-3 text-[10px] text-zinc-400 uppercase tracking-wider font-semibold pointer-events-none">Sign Above</span>
       </div>
 
       <div class="flex justify-between items-center pt-2">
-        <button onclick="clearSignature()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-400 font-bold py-2 px-3 rounded-lg transition">
-          Clear
+        <button onclick="clearSignature()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-400 font-bold py-2 px-3.5 rounded-lg transition inline-flex items-center gap-1.5">
+          <i data-lucide="eraser" class="w-3.5 h-3.5"></i>
+          <span>Clear</span>
         </button>
         <div class="flex gap-2">
-          <button onclick="closeSignatureModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2 px-4 rounded-lg transition">
+          <button onclick="closeSignatureModal()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-bold py-2 px-4 rounded-lg transition">
             Cancel
           </button>
-          <button onclick="proceedToConfirmation()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-lg shadow-red-900/30">
-            Review & Confirm ➔
+          <button onclick="proceedToConfirmation()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition shadow-lg shadow-red-900/30 inline-flex items-center gap-1.5">
+            <span>Review &amp; Confirm</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
           </button>
         </div>
       </div>
@@ -189,18 +207,18 @@
     <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
       <div class="pb-3 border-b border-zinc-800 text-center">
         <h3 class="text-lg font-bold text-white">Confirm Job Completion</h3>
-        <p class="text-xs text-gray-400">Review details before moving order to Completed Tab</p>
+        <p class="text-xs text-zinc-400">Review details before moving order to Completed Tab</p>
       </div>
 
       <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2 text-xs">
-        <div class="flex justify-between"><span class="text-gray-400">Order ID:</span><span id="confirmOrderId" class="font-bold text-white">#--</span></div>
-        <div class="flex justify-between"><span class="text-gray-400">Client:</span><span id="confirmClientName" class="font-bold text-white">--</span></div>
-        <div class="flex justify-between"><span class="text-gray-400">Send Receipt To:</span><span id="confirmClientEmail" class="font-bold text-red-400">--</span></div>
-        <div class="flex justify-between"><span class="text-gray-400">Service:</span><span id="confirmService" class="font-bold text-gray-200 truncate max-w-[200px]">--</span></div>
-        <div class="flex justify-between"><span class="text-gray-400">Total Paid:</span><span id="confirmAmount" class="font-bold text-green-400">$0.00</span></div>
+        <div class="flex justify-between"><span class="text-zinc-400">Order ID:</span><span id="confirmOrderId" class="font-bold text-white">#--</span></div>
+        <div class="flex justify-between"><span class="text-zinc-400">Client:</span><span id="confirmClientName" class="font-bold text-white">--</span></div>
+        <div class="flex justify-between"><span class="text-zinc-400">Send Receipt To:</span><span id="confirmClientEmail" class="font-bold text-red-400">--</span></div>
+        <div class="flex justify-between"><span class="text-zinc-400">Service:</span><span id="confirmService" class="font-bold text-zinc-200 truncate max-w-[200px]">--</span></div>
+        <div class="flex justify-between"><span class="text-zinc-400">Total Paid:</span><span id="confirmAmount" class="font-bold text-green-400">$0.00</span></div>
         
         <div class="pt-2 border-t border-zinc-800">
-          <span class="text-gray-400 block mb-1">Captured Signature:</span>
+          <span class="text-zinc-400 block mb-1.5">Captured Signature:</span>
           <div class="bg-white p-2 rounded-lg flex justify-center">
             <img id="confirmSignatureImg" src="" alt="Client Signature" class="h-16 object-contain">
           </div>
@@ -208,11 +226,13 @@
       </div>
 
       <div class="flex gap-2 pt-2">
-        <button onclick="backToSignature()" class="w-1/2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2.5 rounded-lg transition">
-          ← Back to Sign
+        <button onclick="backToSignature()" class="w-1/2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-bold py-2.5 rounded-lg transition inline-flex items-center justify-center gap-1.5">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          <span>Back to Sign</span>
         </button>
-        <button onclick="confirmAndMoveToComplete()" class="w-1/2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2.5 rounded-lg transition shadow-lg shadow-green-900/30 flex items-center justify-center gap-1">
-          Confirm & Move Order
+        <button onclick="confirmAndMoveToComplete()" class="w-1/2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2.5 rounded-lg transition shadow-lg shadow-green-900/30 inline-flex items-center justify-center gap-1.5">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+          <span>Confirm &amp; Complete</span>
         </button>
       </div>
     </div>
@@ -221,33 +241,34 @@
   <!-- CLEAN LOGIN SCREEN CONTAINER (STRICT SUPABASE AUTH) -->
   <div id="loginScreen" class="w-full max-w-md bg-zinc-950 p-8 rounded-2xl border border-zinc-800 shadow-2xl my-auto">
     <div class="flex flex-col items-center mb-6 text-center">
-      <img src="https://i.imgur.com/9Q025WO.png" alt="KW Logo" class="h-16 object-contain mb-3 filter drop-shadow-[0_0_12px_rgba(239,68,68,0.4)]">
-      <h1 class="text-2xl font-black tracking-wide text-white uppercase">KW PORTAL</h1>
-      <p class="text-xs text-gray-400 mt-1">Management, Revenue & Subscriptions</p>
+      <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Care Logo" class="h-16 object-contain mb-3 filter drop-shadow-[0_0_12px_rgba(239,68,68,0.4)]">
+      <h1 class="text-2xl font-black tracking-wider text-white uppercase">KW PORTAL</h1>
+      <p class="text-xs text-zinc-400 mt-1">Dispatch Management, Revenue &amp; Subscriptions</p>
     </div>
 
     <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4" autocomplete="off">
       <div id="loginError" class="hidden bg-red-950/60 border border-red-800 text-red-400 text-xs p-3 rounded-lg text-center font-medium"></div>
 
       <div>
-        <label class="block text-xs font-semibold text-gray-300 mb-1">Email / Username</label>
+        <label class="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider">Administrator Email</label>
         <input type="email" id="loginEmail" required placeholder="Enter email address" autocomplete="off" 
-          class="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-red-600 transition">
+          class="w-full bg-black border border-zinc-800 rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-red-600 transition">
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-gray-300 mb-1">Password</label>
+        <label class="block text-xs font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider">Password</label>
         <div class="relative">
           <input type="password" id="loginPassword" required placeholder="Enter password" autocomplete="new-password"
-            class="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-red-600 transition pr-10">
-          <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-gray-400 hover:text-white text-xs">
-            👁️
+            class="w-full bg-black border border-zinc-800 rounded-lg px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-red-600 transition pr-10">
+          <button type="button" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility" class="absolute right-3 top-2.5 text-zinc-400 hover:text-white transition">
+            <i id="eyeIcon" data-lucide="eye" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
 
-      <button type="submit" id="loginBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs tracking-wider uppercase transition shadow-lg shadow-red-900/20">
-        Sign In to Portal
+      <button type="submit" id="loginBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs tracking-widest uppercase transition shadow-lg shadow-red-900/20 flex items-center justify-center gap-2">
+        <i data-lucide="shield-check" class="w-4 h-4"></i>
+        <span>Sign In to Portal</span>
       </button>
     </form>
   </div>
@@ -257,50 +278,64 @@
 
     <!-- Header Section -->
     <header class="flex flex-row justify-between items-center gap-4 pb-4 border-b border-zinc-800">
-      <div class="flex items-center gap-3">
-        <img src="https://i.imgur.com/9Q025WO.png" alt="KW Logo" class="h-10 sm:h-12 object-contain filter drop-shadow-[0_0_8px_rgba(239,68,68,0.3)]">
+      <div class="flex items-center gap-3.5">
+        <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Care Logo" class="h-10 sm:h-12 object-contain filter drop-shadow-[0_0_8px_rgba(239,68,68,0.3)]">
+        <div class="hidden sm:block border-l border-zinc-800 pl-3.5">
+          <span class="text-xs font-black uppercase tracking-widest text-white block">Dispatch Command</span>
+          <span class="text-[11px] text-zinc-500">KW Commercial Fleet Washing &amp; Mobile Detailing</span>
+        </div>
       </div>
       <div class="flex flex-wrap items-center gap-2.5">
-        <button onclick="fetchBookings()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-gray-300 font-bold py-2 px-3 rounded-xl transition flex items-center gap-1.5">
-          🔄 <span class="hidden sm:inline">Refresh Data</span>
+        <button onclick="fetchBookings()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-bold py-2 px-3 rounded-xl transition inline-flex items-center gap-1.5">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-zinc-400"></i>
+          <span class="hidden sm:inline">Refresh Data</span>
         </button>
-        <div id="statusBadge" class="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl text-xs font-semibold text-gray-400 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> <span class="hidden sm:inline">Live Sync</span>
+        <div id="statusBadge" class="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl text-xs font-semibold text-zinc-400 inline-flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          <span class="hidden sm:inline">Live Sync</span>
         </div>
-        <button onclick="handleLogout()" class="bg-red-950/40 hover:bg-red-900/60 border border-red-800 text-xs text-red-400 font-bold py-2 px-3 rounded-xl transition flex items-center gap-1.5">
-          🔒 <span class="hidden sm:inline">Sign Out</span>
+        <button onclick="handleLogout()" class="bg-red-950/40 hover:bg-red-900/60 border border-red-800 text-xs text-red-400 font-bold py-2 px-3 rounded-xl transition inline-flex items-center gap-1.5">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Sign Out</span>
         </button>
       </div>
     </header>
 
     <main class="space-y-6">
 
-      <!-- Navigation Bar with Icon Buttons -->
+      <!-- Navigation Bar with Vector Icon Buttons -->
       <div class="flex flex-wrap gap-2 items-center justify-between bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-xs">
         <div class="flex flex-wrap gap-1.5 sm:gap-2">
-          <button id="filterUpcoming" onclick="filterStatus('Upcoming')" title="Upcoming Orders" class="filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5">
-            📋 <span class="hidden md:inline">Upcoming</span>
+          <button id="filterUpcoming" onclick="filterStatus('Upcoming')" title="Upcoming Orders" class="filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5">
+            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
+            <span class="hidden md:inline">Upcoming</span>
           </button>
-          <button id="filterCalendar" onclick="filterStatus('Calendar')" title="Work Calendar" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-red-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
-            📅 <span class="hidden md:inline">Calendar</span>
+          <button id="filterCalendar" onclick="filterStatus('Calendar')" title="Work Calendar" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-red-400"></i>
+            <span class="hidden md:inline">Calendar</span>
           </button>
-          <button id="filterPending" onclick="filterStatus('Pending')" title="Pending Only" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-yellow-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
-            ⏳ <span class="hidden md:inline">Pending</span>
+          <button id="filterPending" onclick="filterStatus('Pending')" title="Pending Only" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+            <i data-lucide="clock" class="w-3.5 h-3.5 text-yellow-400"></i>
+            <span class="hidden md:inline">Pending</span>
           </button>
-          <button id="filterSub" onclick="filterStatus('Subscription')" title="Subscriptions Only" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-purple-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
-            🔄 <span class="hidden md:inline">Subscriptions</span>
+          <button id="filterSub" onclick="filterStatus('Subscription')" title="Subscriptions Only" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+            <i data-lucide="repeat" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span class="hidden md:inline">Subscriptions</span>
           </button>
-          <button id="filterCompleted" onclick="filterStatus('Completed')" title="Completed Orders" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-green-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
-            ✅ <span class="hidden md:inline">Completed</span>
+          <button id="filterCompleted" onclick="filterStatus('Completed')" title="Completed Orders" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-green-400"></i>
+            <span class="hidden md:inline">Completed</span>
           </button>
-          <button id="filterContacts" onclick="filterStatus('Contacts')" title="Client Contacts" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-cyan-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
-            📇 <span class="hidden md:inline">Contacts</span>
+          <button id="filterContacts" onclick="filterStatus('Contacts')" title="Client Contacts" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+            <i data-lucide="users" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span class="hidden md:inline">Contacts</span>
           </button>
-          <button id="filterReports" onclick="filterStatus('Reports')" title="Revenue Reports" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-blue-400 font-bold py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5">
-            📊 <span class="hidden md:inline">Reports</span>
+          <button id="filterReports" onclick="filterStatus('Reports')" title="Revenue Reports" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
+            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-blue-400"></i>
+            <span class="hidden md:inline">Reports</span>
           </button>
         </div>
-        <span id="orderCount" class="text-gray-400 font-medium px-2">Loading...</span>
+        <span id="orderCount" class="text-zinc-400 font-semibold px-2">Loading...</span>
       </div>
 
       <!-- WORK CALENDAR TAB VIEW -->
@@ -308,21 +343,24 @@
         <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h2 class="text-base font-bold text-white flex items-center gap-2">
-              📅 Fleet Detailing Schedule
+              <i data-lucide="calendar-days" class="w-4 h-4 text-red-500"></i>
+              <span>Fleet Detailing Schedule</span>
             </h2>
-            <p class="text-xs text-gray-400">View upcoming bookings organized day-by-day. Tap any booking card to open details.</p>
+            <p class="text-xs text-zinc-400 mt-0.5">View upcoming bookings organized day-by-day. Select any booking card to inspect specifications.</p>
           </div>
           
           <!-- Month Control Bar -->
           <div class="flex items-center gap-2 bg-zinc-900 p-1.5 rounded-xl border border-zinc-800">
-            <button onclick="changeCalendarMonth(-1)" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-3 py-1 rounded-lg text-xs transition border border-zinc-800">
-              ← Prev
+            <button onclick="changeCalendarMonth(-1)" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-3 py-1 rounded-lg text-xs transition border border-zinc-800 inline-flex items-center gap-1">
+              <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+              <span>Prev</span>
             </button>
             <span id="calendarMonthTitle" class="text-xs font-extrabold text-white px-3 tracking-wider min-w-[130px] text-center">
               -- 2026
             </span>
-            <button onclick="changeCalendarMonth(1)" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-3 py-1 rounded-lg text-xs transition border border-zinc-800">
-              Next →
+            <button onclick="changeCalendarMonth(1)" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-3 py-1 rounded-lg text-xs transition border border-zinc-800 inline-flex items-center gap-1">
+              <span>Next</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
             </button>
             <button onclick="resetCalendarToToday()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs transition ml-1">
               Today
@@ -354,30 +392,36 @@
       <div id="contactsSection" class="hidden space-y-4">
         <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h2 class="text-base font-bold text-white mb-1">Client Directory & Contact Records</h2>
-            <p class="text-xs text-gray-400">Track client names, contact info, and home service addresses saved in Supabase.</p>
+            <h2 class="text-base font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="book-user" class="w-4 h-4 text-cyan-400"></i>
+              <span>Client Directory &amp; Contact Records</span>
+            </h2>
+            <p class="text-xs text-zinc-400">Track client names, contact info, and service addresses saved in Supabase.</p>
           </div>
-          <input type="text" id="contactSearchInput" oninput="renderContactsTable()" placeholder="🔍 Search name, email, phone, or address..."
-            class="bg-black border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white w-full md:w-72 focus:outline-none focus:border-cyan-500 transition">
+          <div class="relative w-full md:w-72">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-2.5"></i>
+            <input type="text" id="contactSearchInput" oninput="renderContactsTable()" placeholder="Search name, email, phone, or address..."
+              class="bg-black border border-zinc-800 rounded-lg pl-8 pr-3 py-2 text-xs text-white w-full placeholder-zinc-600 focus:outline-none focus:border-cyan-500 transition">
+          </div>
         </div>
 
         <div class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
-              <thead class="bg-zinc-900 border-b border-zinc-800 text-gray-400 uppercase tracking-wider font-semibold">
+              <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase tracking-wider font-semibold">
                 <tr>
-                  <th class="p-3">First Name</th>
-                  <th class="p-3">Last Name</th>
-                  <th class="p-3">Phone Number</th>
-                  <th class="p-3">Email Address</th>
-                  <th class="p-3">Home Address</th>
-                  <th class="p-3">Total Services</th>
-                  <th class="p-3">Quick Actions</th>
+                  <th class="p-3.5">First Name</th>
+                  <th class="p-3.5">Last Name</th>
+                  <th class="p-3.5">Phone Number</th>
+                  <th class="p-3.5">Email Address</th>
+                  <th class="p-3.5">Service Address</th>
+                  <th class="p-3.5">Total Services</th>
+                  <th class="p-3.5">Quick Actions</th>
                 </tr>
               </thead>
               <tbody id="contactsTableBody" class="divide-y divide-zinc-900">
                 <tr>
-                  <td colspan="7" class="p-6 text-center text-gray-500">Loading client contacts...</td>
+                  <td colspan="7" class="p-6 text-center text-zinc-500">Loading client contacts...</td>
                 </tr>
               </tbody>
             </table>
@@ -389,12 +433,15 @@
       <div id="revenueReportsSection" class="hidden space-y-6">
         <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 class="text-base font-bold text-white mb-1">Financial & Revenue Analytics</h2>
-            <p class="text-xs text-gray-400">Track revenue trajectories, service stream mix, and add-on breakdown.</p>
+            <h2 class="text-base font-bold text-white mb-1 flex items-center gap-2">
+              <i data-lucide="trending-up" class="w-4 h-4 text-blue-400"></i>
+              <span>Financial &amp; Revenue Analytics</span>
+            </h2>
+            <p class="text-xs text-zinc-400">Track revenue trajectories, service stream mix, and add-on breakdown.</p>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-xs text-gray-400">Chart Range:</span>
-            <select id="chartTimeframeSelect" onchange="renderCharts()" class="bg-black border border-zinc-800 text-xs text-white rounded-lg px-2 py-1 focus:outline-none focus:border-red-600">
+            <span class="text-xs text-zinc-400">Chart Range:</span>
+            <select id="chartTimeframeSelect" onchange="renderCharts()" class="bg-black border border-zinc-800 text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-red-600">
               <option value="6">Last 6 Months</option>
               <option value="12" selected>Last 12 Months</option>
             </select>
@@ -404,27 +451,27 @@
         <!-- Metric KPI Cards -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-            <p class="text-[11px] font-semibold text-gray-400 uppercase">This Week</p>
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">This Week</p>
             <p id="revWeek" class="text-xl font-extrabold text-green-400 mt-1">$0.00</p>
           </div>
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-            <p class="text-[11px] font-semibold text-gray-400 uppercase">This Month</p>
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">This Month</p>
             <p id="revMonth" class="text-xl font-extrabold text-green-400 mt-1">$0.00</p>
           </div>
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-            <p class="text-[11px] font-semibold text-gray-400 uppercase">This Year</p>
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">This Year</p>
             <p id="revYear" class="text-xl font-extrabold text-green-400 mt-1">$0.00</p>
           </div>
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-            <p class="text-[11px] font-semibold text-gray-400 uppercase">Total Revenue</p>
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Total Revenue</p>
             <p id="revTotal" class="text-xl font-extrabold text-white mt-1">$0.00</p>
           </div>
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-            <p class="text-[11px] font-semibold text-gray-400 uppercase">Subscriptions</p>
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Subscriptions</p>
             <p id="subCount" class="text-xl font-extrabold text-purple-400 mt-1">0</p>
           </div>
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-            <p class="text-[11px] font-semibold text-gray-400 uppercase">Pending Orders</p>
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Pending Orders</p>
             <p id="pendingCount" class="text-xl font-extrabold text-yellow-400 mt-1">0</p>
           </div>
         </div>
@@ -435,9 +482,9 @@
             <div class="flex justify-between items-center mb-4">
               <div>
                 <h3 class="text-xs font-bold text-white uppercase tracking-wider">Monthly Revenue Trend</h3>
-                <p class="text-[11px] text-gray-500">Gross revenue generated per month</p>
+                <p class="text-[11px] text-zinc-500">Gross revenue generated per month</p>
               </div>
-              <span class="bg-red-950/60 border border-red-800 text-red-400 text-[10px] px-2 py-0.5 rounded font-bold">Revenue Widget</span>
+              <span class="bg-red-950/60 border border-red-800 text-red-400 text-[10px] px-2.5 py-0.5 rounded font-bold uppercase tracking-wider">Gross Revenue</span>
             </div>
             <div class="h-64 relative w-full">
               <canvas id="monthlyRevenueChart"></canvas>
@@ -447,7 +494,7 @@
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
             <div class="mb-4">
               <h3 class="text-xs font-bold text-white uppercase tracking-wider">Revenue Stream Mix</h3>
-              <p class="text-[11px] text-gray-500">Subscriptions vs. One-Time Detailing Services</p>
+              <p class="text-[11px] text-zinc-500">Subscriptions vs. One-Time Detailing Services</p>
             </div>
             <div class="h-64 relative w-full flex items-center justify-center">
               <canvas id="revenueMixChart"></canvas>
@@ -460,7 +507,7 @@
           <div class="lg:col-span-1 bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
             <div class="mb-4">
               <h3 class="text-xs font-bold text-white uppercase tracking-wider">Top Add-On Revenue</h3>
-              <p class="text-[11px] text-gray-500">Gross earnings per add-on category</p>
+              <p class="text-[11px] text-zinc-500">Gross earnings per add-on category</p>
             </div>
             <div class="h-64 relative w-full flex items-center justify-center">
               <canvas id="addOnsChart"></canvas>
@@ -469,14 +516,14 @@
 
           <div class="lg:col-span-2 bg-zinc-950 rounded-xl border border-zinc-800 p-4">
             <div class="flex justify-between items-center mb-3">
-              <h3 class="text-xs font-bold text-amber-400 uppercase">Individual Add-On Revenue Breakdown</h3>
-              <span id="totalAddOnRevBadge" class="bg-amber-950/60 border border-amber-800 text-amber-300 text-[10px] font-extrabold px-2 py-0.5 rounded">
+              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Individual Add-On Revenue Breakdown</h3>
+              <span id="totalAddOnRevBadge" class="bg-amber-950/60 border border-amber-800 text-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider">
                 Add-On Total: $0.00
               </span>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
-                <thead class="bg-zinc-900 border-b border-zinc-800 text-gray-400 uppercase font-semibold">
+                <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase font-semibold">
                   <tr>
                     <th class="p-3">Add-On Service</th>
                     <th class="p-3">Unit Price Range</th>
@@ -484,9 +531,9 @@
                     <th class="p-3">Estimated Gross Revenue</th>
                   </tr>
                 </thead>
-                <tbody id="addOnsReportTableBody" class="divide-y divide-zinc-900 text-gray-300">
+                <tbody id="addOnsReportTableBody" class="divide-y divide-zinc-900 text-zinc-300">
                   <tr>
-                    <td colspan="4" class="p-4 text-center text-gray-500">Calculating add-on totals...</td>
+                    <td colspan="4" class="p-4 text-center text-zinc-500">Calculating add-on totals...</td>
                   </tr>
                 </tbody>
               </table>
@@ -495,24 +542,24 @@
         </div>
 
         <div class="bg-zinc-950 rounded-xl border border-zinc-800 p-4">
-          <h3 class="text-xs font-bold text-gray-300 uppercase mb-3">Revenue Breakdown by Booking Type</h3>
+          <h3 class="text-xs font-bold text-zinc-300 uppercase tracking-wider mb-3">Revenue Breakdown by Booking Type</h3>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
-              <thead class="bg-zinc-900 border-b border-zinc-800 text-gray-400 uppercase font-semibold">
+              <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase font-semibold">
                 <tr>
                   <th class="p-3">Category</th>
                   <th class="p-3">Total Orders</th>
                   <th class="p-3">Gross Revenue</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-zinc-900 text-gray-300">
+              <tbody class="divide-y divide-zinc-900 text-zinc-300">
                 <tr>
                   <td class="p-3 font-semibold text-purple-400">Monthly Subscriptions</td>
                   <td id="reportSubOrders" class="p-3">0</td>
                   <td id="reportSubRev" class="p-3 font-bold text-green-400">$0.00</td>
                 </tr>
                 <tr>
-                  <td class="p-3 font-semibold text-gray-300">One-Time Details</td>
+                  <td class="p-3 font-semibold text-zinc-300">One-Time Details</td>
                   <td id="reportOneTimeOrders" class="p-3">0</td>
                   <td id="reportOneTimeRev" class="p-3 font-bold text-green-400">$0.00</td>
                 </tr>
@@ -529,23 +576,24 @@
 
       <!-- STREAMLINED ORDERS TABLE CONTAINER (5 ESSENTIAL COLUMNS) -->
       <div id="ordersTableSection" class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
-        <div class="p-3 bg-zinc-900/50 border-b border-zinc-800 text-gray-400 text-[11px] flex items-center justify-between">
-          <span>💡 <strong>Tip:</strong> Tap any order row to expand complete specifications, add-ons, and contact info.</span>
+        <div class="px-4 py-2.5 bg-zinc-900/50 border-b border-zinc-800 text-zinc-400 text-[11px] flex items-center gap-2">
+          <i data-lucide="info" class="w-3.5 h-3.5 text-red-500 shrink-0"></i>
+          <span>Select any order row to inspect complete specifications, add-ons, and client contact details.</span>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
-            <thead class="bg-zinc-900 border-b border-zinc-800 text-gray-400 uppercase tracking-wider font-semibold">
+            <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase tracking-wider font-semibold">
               <tr>
-                <th class="p-3.5">Order ID & Client</th>
-                <th class="p-3.5">Schedule & Location</th>
-                <th class="p-3.5">Vehicle & Service</th>
+                <th class="p-3.5">Order ID &amp; Client</th>
+                <th class="p-3.5">Schedule &amp; Location</th>
+                <th class="p-3.5">Vehicle &amp; Service</th>
                 <th class="p-3.5">Amount / Method</th>
-                <th class="p-3.5">Status & Action</th>
+                <th class="p-3.5">Status &amp; Action</th>
               </tr>
             </thead>
             <tbody id="dispatchTableBody" class="divide-y divide-zinc-900">
               <tr>
-                <td colspan="5" class="p-6 text-center text-gray-500">Loading bookings...</td>
+                <td colspan="5" class="p-6 text-center text-zinc-500">Loading bookings...</td>
               </tr>
             </tbody>
           </table>
@@ -587,6 +635,12 @@
       { key: 'ceramic', name: 'Ceramic Coating', price: 500, range: '$400 - $600' }
     ];
 
+    function refreshIcons() {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
     window.addEventListener('click', initAudioContext, { once: true });
     window.addEventListener('touchstart', initAudioContext, { once: true });
 
@@ -601,6 +655,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
+      refreshIcons();
       document.getElementById('loginEmail').value = '';
       document.getElementById('loginPassword').value = '';
 
@@ -616,7 +671,7 @@
       initSignaturePad();
     });
 
-    // PART C: STRICT SUPABASE AUTH LOGIN FUNCTION
+    // STRICT SUPABASE AUTH LOGIN FUNCTION
     async function handleLogin(e) {
       e.preventDefault();
       initAudioContext();
@@ -640,7 +695,7 @@
         sessionStorage.setItem('kw_auth', 'true');
         showDashboard();
       } catch (err) {
-        errorEl.textContent = 'Invalid login credentials. Please check your email and password.';
+        errorEl.textContent = 'Invalid login credentials. Please verify your email and password.';
         errorEl.classList.remove('hidden');
       }
     }
@@ -661,9 +716,9 @@
       
       document.getElementById('loginEmail').value = '';
       document.getElementById('loginPassword').value = '';
+      refreshIcons();
     }
 
-    // Helper to strictly classify Subscription vs One-Time Order Type
     function getIsSubscription(b) {
       if (b.is_subscription === true) return true;
       const sType = (b.service_type || '').toLowerCase();
@@ -673,7 +728,6 @@
       return false;
     }
 
-    // Helper function to accurately detect Cash / Zelle vs Stripe
     function getPaymentMethodLabel(b) {
       const pStatus = (b.payment_status || '').toLowerCase();
       const pMethod = (b.payment_method || '').toLowerCase();
@@ -705,7 +759,7 @@
         document.getElementById('detailServiceNumBadge').textContent = `Loyalty Record: Service #${serviceNum}`;
         
         if (isDiscountEligible) {
-          document.getElementById('detailLoyaltySubtext').textContent = `Client reached 5th service milestone!`;
+          document.getElementById('detailLoyaltySubtext').textContent = `Client reached 5th service milestone.`;
           document.getElementById('detailLoyaltyTag').classList.remove('hidden');
         } else {
           document.getElementById('detailLoyaltySubtext').textContent = `${5 - (serviceNum % 5)} more service(s) until 25% off add-ons.`;
@@ -732,8 +786,8 @@
       const subBadge = document.getElementById('detailOrderTypeBadge');
       subBadge.textContent = isSub ? 'Subscription Plan' : 'One-Time Service';
       subBadge.className = isSub 
-        ? 'bg-purple-900/40 text-purple-400 border border-purple-800 px-2 py-0.5 rounded text-[10px] font-bold'
-        : 'bg-zinc-900 text-gray-400 border border-zinc-800 px-2 py-0.5 rounded text-[10px] font-bold';
+        ? 'bg-purple-900/40 text-purple-400 border border-purple-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider'
+        : 'bg-zinc-900 text-zinc-400 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider';
 
       const addOnsContainer = document.getElementById('detailAddOnsList');
       const addOnText = (b.add_ons || b.service_type || '').toLowerCase();
@@ -741,8 +795,10 @@
 
       if (matchedAddOns.length > 0) {
         addOnsContainer.innerHTML = matchedAddOns.map(item => `
-          <span class="bg-amber-500/10 text-amber-300 border border-amber-600/50 px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 shadow-sm">
-            ✨ ${escapeHtml(item.name)} <span class="text-[10px] text-amber-400/70 font-normal">(${item.range})</span>
+          <span class="bg-amber-500/10 text-amber-300 border border-amber-600/50 px-3 py-1.5 rounded-lg font-bold text-xs inline-flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>${escapeHtml(item.name)}</span>
+            <span class="text-[10px] text-amber-400/70 font-normal">(${item.range})</span>
           </span>
         `).join('');
       } else {
@@ -769,6 +825,7 @@
       }
 
       document.getElementById('orderDetailsModal').classList.remove('hidden');
+      refreshIcons();
     }
 
     function closeOrderDetailsModal() {
@@ -799,6 +856,7 @@
         document.getElementById('modalClientInfo').textContent = `Order #${booking.id} | ${booking.client_name || 'Client'}`;
       }
       document.getElementById('signatureModal').classList.remove('hidden');
+      refreshIcons();
       setTimeout(resizeCanvas, 100);
     }
 
@@ -833,6 +891,7 @@
 
       document.getElementById('signatureModal').classList.add('hidden');
       document.getElementById('confirmationModal').classList.remove('hidden');
+      refreshIcons();
     }
 
     function backToSignature() {
@@ -970,13 +1029,16 @@
       const toast = document.createElement('div');
       toast.className = 'pointer-events-auto bg-zinc-900 border border-zinc-700 text-white p-3.5 rounded-xl shadow-2xl flex items-start gap-3 transform transition-all duration-300 translate-y-[-10px] opacity-0';
       toast.innerHTML = `
-        <div class="text-xl">🔔</div>
+        <div class="w-8 h-8 rounded-lg bg-red-950/60 border border-red-800 flex items-center justify-center shrink-0 text-red-500">
+          <i data-lucide="bell-ring" class="w-4 h-4"></i>
+        </div>
         <div>
           <div class="font-bold text-xs text-red-500">${escapeHtml(title)}</div>
-          <div class="text-[11px] text-gray-300 mt-0.5">${escapeHtml(message)}</div>
+          <div class="text-[11px] text-zinc-300 mt-0.5">${escapeHtml(message)}</div>
         </div>
       `;
       container.appendChild(toast);
+      refreshIcons();
 
       setTimeout(() => {
         toast.classList.remove('translate-y-[-10px]', 'opacity-0');
@@ -990,13 +1052,20 @@
 
     function togglePasswordVisibility() {
       const pwdInput = document.getElementById('loginPassword');
-      pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
+      const eyeIcon = document.getElementById('eyeIcon');
+      const isPassword = pwdInput.type === 'password';
+      pwdInput.type = isPassword ? 'text' : 'password';
+      if (eyeIcon) {
+        eyeIcon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+        refreshIcons();
+      }
     }
 
     function showDashboard() {
       document.getElementById('loginScreen').classList.add('hidden');
       document.body.classList.remove('flex', 'flex-col', 'justify-center', 'items-center');
       document.getElementById('portalDashboard').classList.remove('hidden');
+      refreshIcons();
 
       fetchBookings();
       fetchContacts();
@@ -1023,7 +1092,7 @@
           calculateAnalytics();
           renderTable();
           playNotificationSound();
-          showToast('New Pending Order Received!', `${newBooking.client_name || 'Client'} booked ${newBooking.service_type || 'a service'} ($${newBooking.amount_paid || 0})`);
+          showToast('New Pending Order Received', `${newBooking.client_name || 'Client'} booked ${newBooking.service_type || 'a service'} ($${newBooking.amount_paid || 0})`);
         })
         .subscribe();
     }
@@ -1358,7 +1427,7 @@
       tbody.innerHTML = addOnList.map(item => `
         <tr class="hover:bg-zinc-900/50 transition">
           <td class="p-3 font-bold text-white">${escapeHtml(item.name)}</td>
-          <td class="p-3 text-gray-400 font-mono text-[11px]">${item.range}</td>
+          <td class="p-3 text-zinc-400 font-mono text-[11px]">${item.range}</td>
           <td class="p-3">
             <span class="bg-zinc-900 border border-zinc-800 text-amber-300 font-bold px-2 py-0.5 rounded text-[11px]">
               ${item.count} order(s)
@@ -1508,11 +1577,12 @@
                       <span class="text-red-400 font-extrabold ml-1">#${b.id}</span>
                     </div>
                     <div class="text-zinc-400 truncate text-[9px] flex items-center justify-between">
-                      <span>⏰ ${escapeHtml(b.time_slot || 'Standard')}</span>
+                      <span class="inline-flex items-center gap-1"><i data-lucide="clock" class="w-2.5 h-2.5"></i> ${escapeHtml(b.time_slot || 'Standard')}</span>
                       <span class="font-extrabold text-green-400">$${parseFloat(b.amount_paid || 0).toFixed(0)}</span>
                     </div>
-                    <div class="text-[9px] font-semibold text-zinc-400 truncate">
-                      🚗 ${escapeHtml(b.vehicle_category || 'Vehicle')}
+                    <div class="text-[9px] font-semibold text-zinc-400 truncate inline-flex items-center gap-1">
+                      <i data-lucide="truck" class="w-2.5 h-2.5 text-zinc-500"></i>
+                      <span>${escapeHtml(b.vehicle_category || 'Vehicle')}</span>
                     </div>
                   </div>
                 `;
@@ -1523,6 +1593,7 @@
       }
 
       gridEl.innerHTML = html;
+      refreshIcons();
     }
 
     function renderContactsTable() {
@@ -1596,7 +1667,7 @@
       if (contactList.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" class="p-6 text-center text-gray-500">No client contact records found.</td>
+            <td colspan="7" class="p-6 text-center text-zinc-500">No client contact records found.</td>
           </tr>`;
         return;
       }
@@ -1605,29 +1676,35 @@
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address || '')}`;
         return `
           <tr class="hover:bg-zinc-900/50 transition">
-            <td class="p-3 font-bold text-white">${escapeHtml(c.firstName)}</td>
-            <td class="p-3 font-semibold text-gray-200">${escapeHtml(c.lastName || '-')}</td>
-            <td class="p-3">
+            <td class="p-3.5 font-bold text-white">${escapeHtml(c.firstName)}</td>
+            <td class="p-3.5 font-semibold text-zinc-200">${escapeHtml(c.lastName || '-')}</td>
+            <td class="p-3.5">
               <a href="tel:${c.phone}" class="text-red-400 hover:underline font-semibold">${escapeHtml(c.phone)}</a>
             </td>
-            <td class="p-3 text-gray-400 font-mono text-[11px]">${escapeHtml(c.email)}</td>
-            <td class="p-3">
-              <div class="text-gray-300 max-w-xs truncate mb-1">${escapeHtml(c.address)}</div>
-              ${c.address !== 'N/A' ? `<a href="${mapsUrl}" target="_blank" class="text-[10px] text-red-500 hover:text-red-400 font-bold">🗺️ Open Map</a>` : ''}
+            <td class="p-3.5 text-zinc-400 font-mono text-[11px]">${escapeHtml(c.email)}</td>
+            <td class="p-3.5">
+              <div class="text-zinc-300 max-w-xs truncate mb-1">${escapeHtml(c.address)}</div>
+              ${c.address !== 'N/A' ? `
+                <a href="${mapsUrl}" target="_blank" class="text-[10px] text-red-500 hover:text-red-400 font-bold inline-flex items-center gap-1">
+                  <i data-lucide="map-pin" class="w-3 h-3"></i>
+                  <span>Open Map</span>
+                </a>` : ''}
             </td>
-            <td class="p-3">
-              <span class="bg-zinc-900 border border-zinc-800 text-gray-300 px-2 py-0.5 rounded text-[11px] font-bold">
+            <td class="p-3.5">
+              <span class="bg-zinc-900 border border-zinc-800 text-zinc-300 px-2.5 py-0.5 rounded text-[11px] font-bold">
                 ${c.serviceCount} Order(s)
               </span>
             </td>
-            <td class="p-3">
-              <a href="mailto:${c.email}" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-gray-300 px-2 py-1 rounded text-[10px] font-bold">
-                ✉️ Email Client
+            <td class="p-3.5">
+              <a href="mailto:${c.email}" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-2.5 py-1 rounded text-[10px] font-bold inline-flex items-center gap-1 transition">
+                <i data-lucide="mail" class="w-3 h-3 text-cyan-400"></i>
+                <span>Email Client</span>
               </a>
             </td>
           </tr>
         `;
       }).join('');
+      refreshIcons();
     }
 
     /* ----------------------------------------------------
@@ -1687,7 +1764,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="5" class="p-6 text-center text-gray-500">No ${currentFilter.toLowerCase()} orders found in this view.</td>
+            <td colspan="5" class="p-6 text-center text-zinc-500">No ${currentFilter.toLowerCase()} orders found in this view.</td>
           </tr>`;
         return;
       }
@@ -1707,40 +1784,44 @@
             <td class="p-3.5">
               <div class="flex items-center gap-1.5 mb-0.5">
                 <span class="font-bold text-white group-hover:text-red-400 transition text-sm">#${b.id}</span>
-                <span class="bg-zinc-900 border border-zinc-800 text-[9px] text-gray-400 px-1.5 py-0.5 rounded font-bold group-hover:border-red-600 transition">🔍 View Order</span>
+                <span class="bg-zinc-900 border border-zinc-800 text-[9px] text-zinc-400 px-1.5 py-0.5 rounded font-bold group-hover:border-red-600 transition inline-flex items-center gap-1">
+                  <i data-lucide="eye" class="w-2.5 h-2.5"></i>
+                  <span>Inspect</span>
+                </span>
               </div>
               <div class="font-extrabold text-white text-xs">${escapeHtml(b.client_name)}</div>
-              <div class="text-[10px] text-gray-400" onclick="event.stopPropagation()">
+              <div class="text-[10px] text-zinc-400" onclick="event.stopPropagation()">
                 <a href="tel:${b.phone}" class="hover:underline text-red-400 font-semibold">${escapeHtml(b.phone)}</a>
               </div>
             </td>
 
             <!-- COLUMN 2: Schedule & Service Address -->
             <td class="p-3.5">
-              <div class="text-red-500 font-bold text-xs">${b.service_date || 'N/A'} <span class="text-gray-300 font-normal">(${escapeHtml(b.time_slot || 'Standard')})</span></div>
-              <div class="text-gray-300 max-w-xs truncate text-[11px] mt-0.5">${escapeHtml(b.service_address || 'N/A')}</div>
+              <div class="text-red-500 font-bold text-xs">${b.service_date || 'N/A'} <span class="text-zinc-300 font-normal">(${escapeHtml(b.time_slot || 'Standard')})</span></div>
+              <div class="text-zinc-300 max-w-xs truncate text-[11px] mt-0.5">${escapeHtml(b.service_address || 'N/A')}</div>
               <a href="${mapsUrl}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-[10px] text-red-400 hover:text-red-300 font-bold mt-0.5">
-                🗺️ Open Maps
+                <i data-lucide="map-pin" class="w-3 h-3"></i>
+                <span>Open Maps</span>
               </a>
             </td>
 
             <!-- COLUMN 3: Vehicle & Service Package -->
             <td class="p-3.5">
               <div class="flex items-center gap-1.5 mb-1">
-                <span class="bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-[10px] font-bold text-gray-200">
+                <span class="bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-[10px] font-bold text-zinc-200">
                   ${escapeHtml(b.vehicle_category || 'Vehicle')}
                 </span>
                 ${isSub 
-                  ? `<span class="bg-purple-900/40 text-purple-400 border border-purple-800 px-2 py-0.5 rounded text-[9px] font-bold">Sub</span>` 
-                  : `<span class="bg-zinc-900 text-gray-400 border border-zinc-800 px-1.5 py-0.5 rounded text-[9px]">One-Time</span>`}
+                  ? `<span class="bg-purple-900/40 text-purple-400 border border-purple-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Sub</span>` 
+                  : `<span class="bg-zinc-900 text-zinc-400 border border-zinc-800 px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider">One-Time</span>`}
               </div>
-              <div class="text-[11px] text-gray-300 font-semibold max-w-xs truncate">${escapeHtml(b.service_type || 'Detailing Package')}</div>
+              <div class="text-[11px] text-zinc-300 font-semibold max-w-xs truncate">${escapeHtml(b.service_type || 'Detailing Package')}</div>
             </td>
 
             <!-- COLUMN 4: Amount & Payment Type -->
             <td class="p-3.5">
               <div class="font-extrabold text-green-400 text-sm">$${parseFloat(b.amount_paid || 0).toFixed(2)}</div>
-              <div class="text-[10px] ${isCashZelle ? 'text-amber-400 font-bold' : 'text-gray-400 font-semibold'} truncate max-w-[110px]" title="${paymentLabel}">
+              <div class="text-[10px] ${isCashZelle ? 'text-amber-400 font-bold' : 'text-zinc-400 font-semibold'} truncate max-w-[120px]" title="${paymentLabel}">
                 ${paymentLabel}
               </div>
             </td>
@@ -1749,18 +1830,23 @@
             <td class="p-3.5 space-y-1" onclick="event.stopPropagation()">
               <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1 text-xs font-semibold focus:outline-none focus:border-red-600 ${getStatusColorClass(status)}">
                 <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
-                <option value="Paid & Confirmed" ${status === 'Paid & Confirmed' ? 'selected' : ''}>Paid & Confirmed</option>
+                <option value="Paid & Confirmed" ${status === 'Paid & Confirmed' ? 'selected' : ''}>Paid &amp; Confirmed</option>
                 <option value="Dispatched" ${status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
                 <option value="In Progress" ${status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                 <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
                 <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
               </select>
-              ${hasSignature ? `<div class="text-[9px] text-green-400 font-semibold flex items-center gap-1">✍️ Signed</div>` : ''}
+              ${hasSignature ? `
+                <div class="text-[9px] text-green-400 font-semibold inline-flex items-center gap-1">
+                  <i data-lucide="check-circle" class="w-3 h-3"></i>
+                  <span>Signed</span>
+                </div>` : ''}
             </td>
 
           </tr>
         `;
       }).join('');
+      refreshIcons();
     }
 
     function getStatusColorClass(status) {
@@ -1769,7 +1855,7 @@
         case 'Paid & Confirmed': return 'text-green-400';
         case 'Dispatched': return 'text-amber-300';
         case 'In Progress': return 'text-blue-400';
-        case 'Completed': return 'text-gray-400';
+        case 'Completed': return 'text-zinc-400';
         case 'Cancelled': return 'text-red-500';
         default: return 'text-yellow-400';
       }
@@ -1779,23 +1865,23 @@
       currentFilter = status;
 
       document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.className = 'filter-btn bg-zinc-900 hover:bg-zinc-800 text-gray-300 py-2 px-3 rounded-lg border border-zinc-800 transition flex items-center gap-1.5';
+        btn.className = 'filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-semibold py-2 px-3 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5';
       });
 
       if (status === 'Upcoming') {
-        document.getElementById('filterUpcoming').className = 'filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
+        document.getElementById('filterUpcoming').className = 'filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Calendar') {
-        document.getElementById('filterCalendar').className = 'filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
+        document.getElementById('filterCalendar').className = 'filter-btn bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Pending') {
-        document.getElementById('filterPending').className = 'filter-btn bg-yellow-900/60 text-yellow-300 border border-yellow-700 font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
+        document.getElementById('filterPending').className = 'filter-btn bg-yellow-900/60 text-yellow-300 border border-yellow-700 font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Subscription') {
-        document.getElementById('filterSub').className = 'filter-btn bg-purple-900/60 text-purple-300 border border-purple-700 font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
+        document.getElementById('filterSub').className = 'filter-btn bg-purple-900/60 text-purple-300 border border-purple-700 font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Completed') {
-        document.getElementById('filterCompleted').className = 'filter-btn bg-green-900/60 text-green-300 border border-green-700 font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
+        document.getElementById('filterCompleted').className = 'filter-btn bg-green-900/60 text-green-300 border border-green-700 font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Contacts') {
-        document.getElementById('filterContacts').className = 'filter-btn bg-cyan-600 text-white font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
+        document.getElementById('filterContacts').className = 'filter-btn bg-cyan-600 text-white font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       } else if (status === 'Reports') {
-        document.getElementById('filterReports').className = 'filter-btn bg-blue-600 text-white font-bold py-2 px-3 rounded-lg transition flex items-center gap-1.5';
+        document.getElementById('filterReports').className = 'filter-btn bg-blue-600 text-white font-bold py-2 px-3 rounded-lg transition inline-flex items-center gap-1.5';
       }
 
       renderTable();
