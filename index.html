@@ -381,6 +381,92 @@
             margin-bottom: 10px;
         }
 
+        /* --- OFFICIAL POLICIES MODAL STYLING --- */
+        .policies-modal-content {
+            max-width: 880px !important;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .policies-scroll-body {
+            padding: 26px 30px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 0.93rem;
+            color: #d4d4d4;
+            line-height: 1.7;
+        }
+        .policy-banner-strip {
+            background: rgba(227, 27, 35, 0.1);
+            border: 1px solid rgba(227, 27, 35, 0.35);
+            color: var(--kw-red);
+            font-size: 0.74rem;
+            font-weight: 700;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            text-align: center;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+        }
+        .policy-section-block {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 6px;
+            padding: 22px 24px;
+            margin-bottom: 20px;
+        }
+        .policy-section-block h4 {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            color: var(--kw-white);
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #262626;
+        }
+        .policy-section-block h5 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--kw-white);
+            margin-top: 16px;
+            margin-bottom: 6px;
+        }
+        .policy-section-block p {
+            margin-bottom: 10px;
+            color: #cccccc;
+        }
+        .policy-section-block ul, .policy-section-block ol {
+            padding-left: 20px;
+            margin-bottom: 12px;
+            color: #cccccc;
+        }
+        .policy-section-block ul {
+            list-style-type: disc;
+        }
+        .policy-section-block ol {
+            list-style-type: decimal;
+        }
+        .policy-section-block li {
+            margin-bottom: 6px;
+        }
+        .policy-highlight-alert {
+            background: rgba(227, 27, 35, 0.12);
+            border-left: 3px solid var(--kw-red);
+            padding: 10px 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 10px 0;
+            font-size: 0.88rem;
+        }
+        .policy-acceptance-box {
+            background: #0d0d0d;
+            border: 1px solid rgba(227, 27, 35, 0.45);
+            border-radius: 6px;
+            padding: 18px 20px;
+            margin-top: 18px;
+        }
+
         /* --- CONTACT MODAL SPECIFIC STYLING --- */
         .contact-info-list { display: flex; flex-direction: column; gap: 20px; }
         .contact-item { display: flex; align-items: flex-start; gap: 16px; background: #161616; padding: 16px; border: 1px solid #222; border-radius: 4px; }
@@ -859,8 +945,11 @@
         footer .footer-logo { height: 45px; opacity: 0.5; margin-bottom: 15px;}
         footer p { color: #444; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;}
         footer .footer-address { color: #666; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;}
-        footer .footer-email { color: var(--kw-gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 18px;}
+        footer .footer-email { color: var(--kw-gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;}
         footer .footer-email a:hover { color: var(--kw-red); text-decoration: underline; }
+        .footer-policy-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+        .footer-policy-btn { background: none; border: 1px solid #262626; color: var(--kw-light-gray); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; padding: 7px 16px; border-radius: 20px; cursor: pointer; transition: all 0.25s ease; }
+        .footer-policy-btn:hover { border-color: var(--kw-red); color: var(--kw-white); background: rgba(227, 27, 35, 0.12); }
         
         .footer-payment-img {
             max-width: 300px;
@@ -948,6 +1037,8 @@
             .service-info p { font-size: 0.98rem; }
 
             .modal-image-banner { height: 170px; }
+            .policies-scroll-body { padding: 20px 18px; }
+            .policy-section-block { padding: 16px; }
 
             .vertical-plans-stack { gap: 30px; }
             .v-details-side { padding: 28px 22px; background-color: #141414; }
@@ -1002,6 +1093,7 @@
                     <li><a href="#gallery">Our Work</a></li>
                     <li><a href="#location">Service Area</a></li>
                     <li><a href="#mission">Our Mission</a></li>
+                    <li><a onclick="openPoliciesModal()">Policies</a></li>
                     <li><a onclick="openContactModal()">Contact Us</a></li>
                     <li><a href="tel:2398986008" class="nav-btn">Book Us</a></li>
                 </ul>
@@ -1315,6 +1407,164 @@
             </div>
             <div class="modal-footer">
                 <a href="tel:2398986008" class="btn btn-red" style="width:100%;">Schedule Ceramic Coating</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- OFFICIAL SERVICE POLICIES & CUSTOMER TERMS MODAL -->
+    <div class="modal-overlay" id="policiesModal">
+        <div class="modal-content policies-modal-content">
+            <div class="modal-header">
+                <div>
+                    <span style="font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--kw-red); font-weight: 700; display: block;">KW Commercial Fleet Washing &amp; Mobile Detailing LLC</span>
+                    <h3>Official Service <span class="text-red">Policies &amp; Terms</span></h3>
+                </div>
+                <button class="close-btn" onclick="closePoliciesModal()" aria-label="Close">&times;</button>
+            </div>
+            <div class="policies-scroll-body">
+                <div class="policy-banner-strip">
+                    Rain Protection Guarantee &bull; Membership Billing &bull; Cancellations &bull; Refunds
+                </div>
+
+                <!-- SECTION 1 -->
+                <div class="policy-section-block">
+                    <h4>SECTION 1 — LIMITED 48-HOUR RAIN PROTECTION GUARANTEE</h4>
+                    
+                    <h5>1.1. Policy Statement</h5>
+                    <p>KW Commercial Fleet Washing &amp; Mobile Detailing LLC ("Company") offers a limited Rain Protection Guarantee exclusively to customers purchasing an eligible Full Detail Service.</p>
+                    <p>Should qualifying rainfall occur within forty-eight (48) hours following completion of the service, the customer may receive one (1) complimentary exterior maintenance wash, strictly subject to the eligibility requirements and conditions established herein.</p>
+
+                    <h5>1.2. Mandatory Eligibility Requirements</h5>
+                    <p>To qualify for this benefit, ALL of the following conditions must be satisfied:</p>
+                    <ol>
+                        <li>The customer must have purchased and paid in full for an eligible Full Detail Service.</li>
+                        <li>Rainfall must occur within forty-eight (48) hours of the documented service completion time.</li>
+                        <li>The customer must notify the Company within twenty-four (24) hours after the qualifying rainfall.</li>
+                        <li>The customer must provide the original booking confirmation or receipt upon request.</li>
+                        <li>The Company may require reasonable photographic evidence or verification of rainfall.</li>
+                        <li>The complimentary wash must be requested and scheduled within seven (7) calendar days following the original service date.</li>
+                        <li>The benefit applies exclusively to the vehicle identified on the original service invoice.</li>
+                    </ol>
+
+                    <h5>1.3. Scope of Complimentary Service</h5>
+                    <p>The Rain Protection Guarantee provides ONE complimentary exterior maintenance wash only. The following services are expressly excluded:</p>
+                    <ul>
+                        <li>Interior cleaning or complete interior detailing.</li>
+                        <li>Waxing, polishing, paint correction, or ceramic coating.</li>
+                        <li>Deep cleaning, stain removal, or restoration.</li>
+                        <li>Additional detailing upgrades or specialty treatments.</li>
+                        <li>Cleaning contamination unrelated to the qualifying rainfall.</li>
+                    </ul>
+
+                    <h5>1.4. Restrictions and Limitations</h5>
+                    <p>The following restrictions shall apply:</p>
+                    <ul>
+                        <li>The benefit is nontransferable to another customer or vehicle.</li>
+                        <li>The benefit cannot be exchanged for cash, credit, or a refund.</li>
+                        <li>Only one complimentary wash is permitted per qualifying service.</li>
+                        <li>The benefit cannot be combined with other promotional offers unless authorized by the Company.</li>
+                        <li>Additional cleaning required because of excessive mud, off-road driving, construction debris, or other unrelated contamination is not included.</li>
+                        <li>Scheduling is subject to operational availability and service-area limitations.</li>
+                        <li>If the customer requests the wash within the required period but the Company has no available appointment, the Company will offer an alternative appointment within fourteen (14) days of the original service.</li>
+                    </ul>
+
+                    <h5>1.5. Expiration and Forfeiture</h5>
+                    <p>Failure to satisfy the eligibility requirements or applicable notification and scheduling deadlines shall result in expiration of the complimentary benefit, except where the Company is responsible for a scheduling delay. Any exception must be approved by authorized Company management.</p>
+
+                    <h5>1.6. Weather-Related Liability</h5>
+                    <p>The Company shall not be responsible for maintaining vehicle cleanliness following completed services against subsequent weather exposure, road conditions, or environmental contamination. The Rain Protection Guarantee is a limited promotional benefit and does not constitute a guarantee against future weather-related contamination. Nothing in this provision limits a customer's rights regarding defective or incomplete workmanship.</p>
+                </div>
+
+                <!-- SECTION 2 -->
+                <div class="policy-section-block">
+                    <h4>SECTION 2 — MONTHLY MEMBERSHIP &amp; NON-REFUNDABLE PAYMENTS</h4>
+
+                    <h5>2.1. Membership Agreement</h5>
+                    <p>By enrolling in a recurring monthly membership, the customer expressly authorizes KW Commercial Fleet Washing &amp; Mobile Detailing LLC to charge the designated payment method for the disclosed membership fees and any separately authorized enrollment or additional service charges.</p>
+
+                    <h5>2.2. Automatic Billing Authorization</h5>
+                    <p>Memberships renew automatically every thirty (30) days unless canceled before the next scheduled billing date. Customers acknowledge that:</p>
+                    <ol>
+                        <li>The applicable membership fee will be charged automatically each billing cycle.</li>
+                        <li>Enrollment or setup fees, if applicable, will be disclosed at checkout.</li>
+                        <li>Optional add-on services require separate customer authorization.</li>
+                        <li>Membership pricing and renewal terms will be presented before enrollment.</li>
+                        <li>Recurring charges continue until cancellation becomes effective.</li>
+                    </ol>
+
+                    <h5>2.3. Strict No-Refund Policy</h5>
+                    <div class="policy-highlight-alert">
+                        ALL PROPERLY AUTHORIZED MEMBERSHIP PAYMENTS ARE FINAL AND NON-REFUNDABLE, EXCEPT AS REQUIRED BY APPLICABLE LAW.
+                    </div>
+                    <p>The following circumstances do not ordinarily qualify for a refund:</p>
+                    <ul>
+                        <li>Failure to schedule or utilize available membership services.</li>
+                        <li>Personal scheduling conflicts or changes in customer availability.</li>
+                        <li>Voluntary cancellation after a recurring payment has been processed.</li>
+                        <li>Requests for partial reimbursement of an active billing period.</li>
+                        <li>Failure to use all available services before the billing period expires.</li>
+                    </ul>
+                    <p>The Company will separately review billing errors, unauthorized charges, and services it fails to provide. Any required refund or other remedy will be issued in accordance with applicable law.</p>
+
+                    <h5>2.4. Membership Cancellation Requirements</h5>
+                    <p>Customers may cancel their membership at any time through the cancellation method provided at enrollment or by submitting a cancellation request through the Company's designated customer service channel. Cancellation requests must be received before the next scheduled recurring payment is processed to prevent that charge.</p>
+                    <p>Cancellation shall:</p>
+                    <ul>
+                        <li>Prevent subsequent membership renewals.</li>
+                        <li>Not automatically reverse previously authorized and processed payments.</li>
+                        <li>Not result in a cash payout for unused benefits, except where required by law.</li>
+                        <li>Be confirmed through written or electronic acknowledgment.</li>
+                    </ul>
+
+                    <h5>2.5. Missed Appointments and Unused Services</h5>
+                    <p>Membership services must be utilized within the applicable membership period, unless the purchased plan expressly provides otherwise. Missed appointments and unused services do not automatically qualify for refunds, extensions, or additional service credits. Appointments canceled or postponed by the Company will be rescheduled without forfeiture of the prepaid service.</p>
+                </div>
+
+                <!-- SECTION 3 -->
+                <div class="policy-section-block">
+                    <h4>SECTION 3 — SERVICE COMPLETION &amp; CUSTOMER RESPONSIBILITIES</h4>
+
+                    <h5>3.1. Service Verification</h5>
+                    <p>Customers are encouraged to inspect their vehicles upon completion of detailing services and promptly report any workmanship concerns.</p>
+
+                    <h5>3.2. Environmental Conditions</h5>
+                    <p>Once a vehicle has been serviced, the Company is not responsible for subsequent dirt accumulation, rainfall exposure, road debris, or environmental contamination, except as expressly provided under the Rain Protection Guarantee.</p>
+
+                    <h5>3.3. Customer Conduct</h5>
+                    <p>Customers are responsible for providing accurate booking information, maintaining valid payment authorization, and complying with scheduling and service access requirements. The Company reserves the right to decline future discretionary services in response to documented misuse of promotional benefits or violations of service terms, subject to existing contractual obligations and applicable law.</p>
+                </div>
+
+                <!-- SECTION 4 -->
+                <div class="policy-section-block" style="margin-bottom: 0;">
+                    <h4>SECTION 4 — POLICY ACKNOWLEDGMENT &amp; ACCEPTANCE</h4>
+                    <p>By completing a booking, purchasing a detailing service, or enrolling in a monthly membership, the customer confirms that:</p>
+                    <ol>
+                        <li>The applicable service terms and pricing have been disclosed.</li>
+                        <li>The Rain Protection Guarantee is limited to eligible services and defined conditions.</li>
+                        <li>Membership payments are subject to the stated non-refund policy and applicable legal exceptions.</li>
+                        <li>Recurring billing requires express customer authorization.</li>
+                        <li>Cancellation must occur before the next billing charge to prevent renewal.</li>
+                        <li>The customer agrees to comply with the applicable terms and conditions.</li>
+                    </ol>
+
+                    <div class="policy-acceptance-box">
+                        <div style="font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--kw-red); margin-bottom: 8px;">Customer Acceptance</div>
+                        <label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer; font-size: 0.9rem; color: #ffffff;">
+                            <input type="checkbox" id="policyAckCheckbox" style="margin-top: 4px; accent-color: #E31B23; width: 17px; height: 17px; flex-shrink: 0;">
+                            <span>I have read, understood, and agree to the Service Policies, Rain Protection Guarantee, Membership Billing Terms, Cancellation Requirements, and Refund Policy of KW Commercial Fleet Washing &amp; Mobile Detailing LLC.</span>
+                        </label>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid #262626;">
+                        <div style="font-weight: 700; color: #ffffff; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase;">KW COMMERCIAL FLEET WASHING &amp; MOBILE DETAILING LLC</div>
+                        <div style="color: var(--kw-red); font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Professional Standards. Operational Excellence. Uncompromising Quality.</div>
+                        <div style="color: #777; font-size: 0.75rem; margin-top: 4px;">Company Policy — All Rights Reserved</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;">
+                <button type="button" class="btn btn-outline" style="padding: 12px 24px;" onclick="closePoliciesModal()">Close</button>
+                <a href="tel:2398986008" class="btn btn-red" style="padding: 12px 24px;">Book &amp; Accept Terms</a>
             </div>
         </div>
     </div>
@@ -1637,6 +1887,20 @@
                             <span class="h-addon-name" style="color: var(--kw-white);"><i class="fa-solid fa-shield-halved text-red" style="margin-right: 6px;"></i> Ceramic Coatings (1–5 Yr Protection)</span>
                             <span class="h-addon-price" style="font-size: 0.9rem; text-decoration: underline;">View Details & Pricing &rarr;</span>
                         </div>
+                    </div>
+
+                    <!-- RAIN PROTECTION & POLICIES CALLOUT BAR -->
+                    <div style="margin-top: 35px; background: #141414; border: 1px solid #2a2a2a; border-radius: 6px; padding: 20px 26px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(227, 27, 35, 0.15); border: 1px solid rgba(227, 27, 35, 0.4); display: flex; align-items: center; justify-content: center; color: var(--kw-red); flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-rain"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; color: #ffffff; font-size: 0.98rem;">Limited 48-Hour Rain Protection Guarantee &amp; Official Service Policies</div>
+                                <div style="color: var(--kw-gray); font-size: 0.85rem;">Review our Rain Protection Guarantee, Membership Billing, Cancellations &amp; Refund Policy.</div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="openPoliciesModal()" class="btn btn-outline" style="padding: 12px 22px; font-size: 0.78rem;">View Official Policies &rarr;</button>
                     </div>
                 </div>
 
@@ -1991,6 +2255,10 @@
             <p>&copy; 2024 KW COMMERCIAL FLEET WASHING & MOBILE DETAILING LLC</p>
             <div class="footer-address">7901 4th St N St 300 &bull; St Petersburg, FL 33702</div>
             <div class="footer-email"><a href="mailto:kwfleetcare@gmail.com">kwfleetcare@gmail.com</a></div>
+            <div class="footer-policy-links">
+                <button type="button" class="footer-policy-btn" onclick="openPoliciesModal()">Official Service Policies &amp; Customer Terms</button>
+                <button type="button" class="footer-policy-btn" onclick="openPoliciesModal()">48-Hour Rain Protection Guarantee</button>
+            </div>
             <!-- Payment Methods Image -->
             <img src="https://i.imgur.com/VzYizHJ.png?maxwidth=10000&fidelity=high" alt="Accepted Payment Methods: Credit cards, debit card, Visa, Mastercard, Apple Pay, Cash App, Zelle, Cash" class="footer-payment-img">
         </div>
@@ -2135,6 +2403,23 @@
         ceramicModal.addEventListener('click', function(e) {
             if (e.target === ceramicModal) {
                 closeCeramicModal();
+            }
+        });
+
+        // --- OFFICIAL SERVICE POLICIES MODAL LOGIC ---
+        const policiesModal = document.getElementById('policiesModal');
+
+        function openPoliciesModal() {
+            policiesModal.classList.add('active');
+        }
+
+        function closePoliciesModal() {
+            policiesModal.classList.remove('active');
+        }
+
+        policiesModal.addEventListener('click', function(e) {
+            if (e.target === policiesModal) {
+                closePoliciesModal();
             }
         });
 
