@@ -95,6 +95,7 @@
         /* --- UTILITIES --- */
         .container { width: 92%; max-width: 1380px; margin: 0 auto; }
         .text-red { color: var(--kw-red); }
+        .text-white-price { color: var(--kw-white); font-weight: 700; }
 
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 30px; font-weight: 700; letter-spacing: 0.5px; transition: all 0.3s ease; cursor: pointer; border: none; font-size: 0.95rem; border-radius: 10px; }
         .btn-red { background: linear-gradient(180deg, #E31B23 0%, #B51017 100%); color: var(--kw-white); border: 1px solid #ff3b43; box-shadow: 0 6px 20px rgba(227, 27, 35, 0.35); }
@@ -555,7 +556,7 @@
         .modal-body { padding: 22px 24px; }
         .vehicle-tier { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #222; font-weight: 400; font-size: 1rem; }
         .vehicle-tier:last-child { border-bottom: none; }
-        .tier-price { color: var(--kw-red); font-weight: 700; font-size: 1.15rem; }
+        .tier-price { color: var(--kw-white); font-weight: 700; font-size: 1.15rem; }
         .modal-footer { padding: 20px 24px; background: #0a0a0a; text-align: center; border-top: 1px solid #1a1a1a; }
 
         /* --- CERAMIC & CORRECTION EXCLUSIVE MODAL STYLING --- */
@@ -621,13 +622,13 @@
             text-align: center;
             background-color: #0d0d0d;
         }
-        .v-price-side .price { font-size: 3.2rem; font-weight: 300; line-height: 1; letter-spacing: -2px; margin-bottom: 10px; color: #ffffff; }
-        .v-price-side .price span { font-size: 1.3rem; color: var(--kw-red); font-weight: 600; vertical-align: super; }
+        .v-price-side .price { font-size: 3.2rem; font-weight: 400; line-height: 1; letter-spacing: -2px; margin-bottom: 10px; color: #ffffff; }
+        .v-price-side .price span { font-size: 1.3rem; color: #ffffff; font-weight: 600; vertical-align: super; }
         .v-price-side .term { font-size: 0.9rem; color: var(--kw-gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
         .v-price-side .duration { font-size: 0.85rem; color: var(--kw-red); font-weight: 600; letter-spacing: 1px; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 6px; background: rgba(227, 27, 35, 0.1); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(227, 27, 35, 0.25); }
         
         .setup-tag { background: #1e1e1e; padding: 12px 18px; font-size: 0.85rem; color: #e0e0e0; margin-bottom: 25px; border-left: 3px solid var(--kw-red); width: 100%; text-align: left; line-height: 1.6; border-radius: 0 6px 6px 0; }
-        .setup-tag span { color: var(--kw-red); font-weight: 600; }
+        .setup-tag span { color: #ffffff; font-weight: 700; }
         .v-price-side .btn { width: 100%; padding: 15px; font-size: 0.9rem; }
         .cancel-note { font-size: 0.75rem; color: #888; margin-top: 12px; text-transform: uppercase; letter-spacing: 1.5px; }
 
@@ -659,7 +660,7 @@
         .mini-table th, .mini-table td { padding: 11px 16px; text-align: left; border-bottom: 1px solid #2a2a2a; font-size: 0.95rem; }
         .mini-table th { color: var(--kw-red); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; font-size: 0.82rem; }
         .mini-table td { color: #ffffff; }
-        .mini-table td.val { font-weight: 700; color: var(--kw-red); text-align: right; }
+        .mini-table td.val { font-weight: 700; color: #ffffff; text-align: right; }
         .mini-table th.hdr { text-align: right; }
 
         .vip-status-badge {
@@ -719,7 +720,7 @@
         .h-addon-card { background: var(--kw-card); border: 1px solid #222; border-radius: 8px; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; cursor: pointer; }
         .h-addon-card:hover { border-color: var(--kw-red); transform: translateY(-3px); }
         .h-addon-name { font-size: 0.96rem; font-weight: 600; color: var(--kw-white); }
-        .h-addon-price { font-size: 1.05rem; font-weight: 700; color: var(--kw-red); transition: color 0.2s ease; }
+        .h-addon-price { font-size: 1.05rem; font-weight: 700; color: #ffffff; transition: color 0.2s ease; }
 
         /* --- COMBINED WORK GALLERY CAROUSEL SECTION --- */
         .gallery-section { padding: 100px 0; background: var(--kw-dark); border-top: 1px solid #1a1a1a; position: relative; }
@@ -1258,7 +1259,7 @@
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
                     <div class="ceramic-card-box" style="margin-bottom: 0;">
                         <div class="ceramic-badge">1-Step Correction</div>
-                        <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--kw-white); margin-bottom: 6px;">Starting at <span class="text-red">$399</span></h4>
+                        <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--kw-white); margin-bottom: 6px;">Starting at <span class="text-white-price">$399</span></h4>
                         <p style="color: var(--kw-light-gray); font-size: 0.9rem; line-height: 1.6;">
                             Removes or reduces minor swirl marks, light scratches and surface haze. Restores deep gloss and improves overall paint clarity.
                         </p>
@@ -1266,7 +1267,7 @@
 
                     <div class="ceramic-card-box" style="margin-bottom: 0; border-color: rgba(227, 27, 35, 0.35);">
                         <div class="ceramic-badge" style="background: rgba(255, 215, 0, 0.15); color: #ffd700; border-color: rgba(255, 215, 0, 0.4);">2-Step Correction</div>
-                        <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--kw-white); margin-bottom: 6px;">Starting at <span class="text-red">$749</span></h4>
+                        <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--kw-white); margin-bottom: 6px;">Starting at <span class="text-white-price">$749</span></h4>
                         <p style="color: var(--kw-light-gray); font-size: 0.9rem; line-height: 1.6;">
                             Advanced compounding and polishing to address more noticeable swirls, scratches and oxidation, delivering enhanced clarity and a premium showroom finish.
                         </p>
