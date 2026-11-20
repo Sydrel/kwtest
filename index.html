@@ -233,20 +233,28 @@
             display: flex;
             align-items: center;
             position: relative;
-            background: url('https://i.imgur.com/bvJ4fhr.jpeg?maxwidth=10000&fidelity=high') center center / cover no-repeat;
+            overflow: hidden;
+            background-color: var(--kw-black);
             padding-top: calc(var(--header-height) + 32px);
             padding-bottom: 84px;
             width: 100%;
-            border-bottom: 1px solid rgba(197, 155, 39, 0.22);
         }
         .hero::before {
             content: '';
             position: absolute;
-            inset: 0;
+            inset: -2px;
+            background: url('https://i.imgur.com/bvJ4fhr.jpeg?maxwidth=10000&fidelity=high') center center / cover no-repeat;
+            z-index: 0;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
             background:
-                radial-gradient(circle at 25% 45%, rgba(5, 5, 5, 0.65) 0%, rgba(5, 5, 5, 0.94) 85%),
-                linear-gradient(180deg, rgba(5, 5, 5, 0.85) 0%, rgba(5, 5, 5, 0.55) 50%, rgba(5, 5, 5, 0.98) 100%);
+                radial-gradient(circle at 25% 45%, rgba(5, 5, 5, 0.62) 0%, rgba(5, 5, 5, 0.94) 85%),
+                linear-gradient(180deg, rgba(5, 5, 5, 0.85) 0%, rgba(5, 5, 5, 0.52) 48%, rgba(10, 10, 10, 0.96) 88%, #0A0A0A 100%);
             z-index: 1;
+            pointer-events: none;
         }
 
         .hero-inner {
@@ -1509,7 +1517,7 @@
                 <p>Recurring Packages & White-Glove Detailing</p>
             </div>
 
-            <!-- Interactive Tier Selector Tabs (Works seamlessly on Desktop & Mobile) -->
+            <!-- Interactive Tier Selector Tabs -->
             <div class="tier-switcher-wrap">
                 <button type="button" class="tier-tab-btn active" onclick="filterPlans('all', this)">All Plans</button>
                 <button type="button" class="tier-tab-btn" onclick="filterPlans('signature', this)">KW Signature Wash 365</button>
@@ -1641,7 +1649,7 @@
                     <!-- Plan 3: Black Label 365 ($449 - $700 / month) -->
                     <div class="vertical-plan-row" data-plan="blacklabel" style="border-color: rgba(197, 155, 39, 0.65);">
                         <div class="v-price-side" style="background: linear-gradient(180deg, #1b1507 0%, #090909 100%);">
-                            <div class="price" style="font-size:2.75rem; margin-top:10px;"><span>$</span>449 - $700</div>
+                            <div class="price" style="font-size:2.75rem; margin-top:10px;"><span>$</span>449 - <span>$</span>700</div>
                             <div class="term">2 VIP Visits / Month</div>
                             <div class="duration"><i class="fa-regular fa-clock"></i> Duration: 3 hr – 4 hr</div>
                             <div class="setup-tag">+ <span>$50</span> Subscription <small style="color:#aaa;">(Non-refundable)</small></div>
