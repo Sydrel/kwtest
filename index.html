@@ -14,7 +14,8 @@
             theme: {
                 extend: {
                     colors: {
-                        brandYellow: '#FACC15',
+                        brandGold: '#C59B27',
+                        brandGoldHover: '#A37E1B',
                         brandRed: '#E31B23',
                         brandDark: '#0A0A0A',
                         brandCard: '#171717',
@@ -32,8 +33,9 @@
     <style>
         /* --- CSS VARIABLES --- */
         :root {
-            --kw-yellow: #FACC15;
-            --kw-yellow-dark: #EAB308;
+            --kw-gold: #C59B27;
+            --kw-gold-dark: #9E7B1C;
+            --kw-gold-light: #DFBD5E;
             --kw-red: #E31B23;
             --kw-black: #050505;
             --kw-dark: #0a0a0a;
@@ -98,12 +100,17 @@
 
         /* --- UTILITIES --- */
         .container { width: 90%; max-width: 1400px; margin: 0 auto; }
-        .text-yellow { color: var(--kw-yellow); }
+        .text-gold { color: var(--kw-gold); }
         .text-red { color: var(--kw-red); }
 
-        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 16px 36px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; transition: all 0.4s ease; cursor: pointer; border: none; font-size: 0.85rem;}
-        .btn-yellow { background-color: var(--kw-yellow); color: var(--kw-black); }
-        .btn-yellow:hover { background-color: var(--kw-yellow-dark); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(250, 204, 21, 0.28); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 16px 36px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: all 0.4s ease; cursor: pointer; border: none; font-size: 0.85rem;}
+        .btn-gold { background-color: var(--kw-gold); color: var(--kw-black); font-weight: 700; }
+        .btn-gold:hover { background-color: var(--kw-gold-light); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(197, 155, 39, 0.28); }
+        
+        /* Sparingly used Red CTA for high-intent actions */
+        .btn-red { background-color: var(--kw-red); color: var(--kw-white); }
+        .btn-red:hover { background-color: #b00d14; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(227, 27, 35, 0.3); }
+        
         .btn-outline { background: transparent; border: 1px solid var(--kw-white); color: var(--kw-white); }
         .btn-outline:hover { background: var(--kw-white); color: var(--kw-black); }
 
@@ -120,16 +127,16 @@
             transition: all 0.4s ease; 
             background: rgba(5, 5, 5, 0.92); 
             backdrop-filter: blur(15px); 
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(197, 155, 39, 0.18);
         }
         .nav-wrap { display: flex; justify-content: space-between; align-items: center; position: relative; width: 100%;}
         .logo-img { height: 48px; width: auto; transition: height 0.4s ease;}
 
         nav ul { display: flex; gap: 28px; align-items: center;}
         nav a { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--kw-light-gray); transition: color 0.3s; cursor: pointer;}
-        nav a:hover { color: var(--kw-yellow); }
-        nav .nav-btn { color: var(--kw-black); background: var(--kw-yellow); padding: 10px 22px; border-radius: 2px; font-weight: 700; }
-        nav .nav-btn:hover { background: var(--kw-yellow-dark); color: var(--kw-black); }
+        nav a:hover { color: var(--kw-gold); }
+        nav .nav-btn { color: var(--kw-white); background: var(--kw-red); padding: 10px 22px; border-radius: 2px; }
+        nav .nav-btn:hover { background: #b00d14; color: var(--kw-white); }
 
         /* Mobile Menu Button Container */
         .menu-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 5px; margin-left: auto;}
@@ -177,15 +184,15 @@
             font-weight: 600;
             letter-spacing: 4px;
             text-transform: uppercase;
-            color: var(--kw-yellow);
+            color: var(--kw-gold);
             display: inline-block;
             margin-bottom: 22px;
-            background: rgba(250, 204, 21, 0.1);
+            background: rgba(197, 155, 39, 0.12);
             padding: 9px 26px;
             border-radius: 30px;
-            border: 1px solid rgba(250, 204, 21, 0.35);
+            border: 1px solid rgba(197, 155, 39, 0.4);
             max-width: 100%;
-            box-shadow: 0 4px 15px rgba(250, 204, 21, 0.12);
+            box-shadow: 0 4px 15px rgba(197, 155, 39, 0.12);
         }
 
         .hero h1 {
@@ -216,7 +223,7 @@
             align-items: center;
             gap: 12px;
             background: rgba(18, 18, 18, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(197, 155, 39, 0.25);
             padding: 10px 24px;
             border-radius: 30px;
             margin-bottom: 35px;
@@ -238,7 +245,6 @@
             animation: pulse-green 2s infinite;
         }
 
-        /* Sparingly used Red for Closed status */
         .status-dot.closed {
             background-color: var(--kw-red);
             color: var(--kw-red);
@@ -306,7 +312,7 @@
             transform: translateX(-50%);
             width: 3px;
             height: 5px;
-            background: var(--kw-yellow);
+            background: var(--kw-gold);
             border-radius: 2px;
             animation: scroll 2s infinite;
         }
@@ -323,8 +329,8 @@
 
         .grid-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
 
-        .service-box { background: var(--kw-card); border: 1px solid #1a1a1a; position: relative; overflow: hidden; cursor: pointer; transition: all 0.5s ease; height: 360px; display: flex; flex-direction: column; justify-content: flex-end; padding: 35px;}
-        .service-box:hover { border-color: var(--kw-yellow); }
+        .service-box { background: var(--kw-card); border: 1px solid #1f1f1f; position: relative; overflow: hidden; cursor: pointer; transition: all 0.5s ease; height: 360px; display: flex; flex-direction: column; justify-content: flex-end; padding: 35px;}
+        .service-box:hover { border-color: var(--kw-gold); box-shadow: 0 12px 30px rgba(197, 155, 39, 0.12); }
 
         .service-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; transition: transform 0.7s ease; opacity: 0.5;}
         .service-box:hover .service-bg { transform: scale(1.08); opacity: 0.8;}
@@ -333,25 +339,25 @@
         .service-info { position: relative; z-index: 2; }
         .service-info h3 { font-size: 1.6rem; font-weight: 600; margin-bottom: 10px; letter-spacing: 1px;}
         .service-info p { color: var(--kw-light-gray); font-size: 1.05rem; margin-bottom: 20px;}
-        .service-link { color: var(--kw-yellow); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; transition: gap 0.3s ease;}
+        .service-link { color: var(--kw-gold); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; transition: gap 0.3s ease;}
         .service-box:hover .service-link { gap: 18px; }
 
         /* --- MODAL (POPUP) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease;}
         .modal-overlay.active { display: flex; opacity: 1;}
-        .modal-content { background: var(--kw-card); width: 100%; max-width: 550px; border: 1px solid #333; position: relative; transform: translateY(20px); transition: transform 0.3s ease; max-height: 92vh; overflow-y: auto; border-radius: 6px; }
+        .modal-content { background: var(--kw-card); width: 100%; max-width: 550px; border: 1px solid rgba(197, 155, 39, 0.35); position: relative; transform: translateY(20px); transition: transform 0.3s ease; max-height: 92vh; overflow-y: auto; border-radius: 6px; }
         .modal-overlay.active .modal-content { transform: translateY(0);}
         .modal-header { padding: 22px 25px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center;}
         .modal-header h3 { font-family: var(--font-serif); font-size: 1.55rem; }
         .close-btn { background: none; border: none; color: var(--kw-white); font-size: 2rem; cursor: pointer; line-height: 1; transition: 0.3s;}
-        .close-btn:hover { color: var(--kw-yellow); }
+        .close-btn:hover { color: var(--kw-gold); }
         .modal-image-banner { width: 100%; height: 210px; position: relative; overflow: hidden; border-bottom: 1px solid #222; background: #080808; }
         .modal-image-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .modal-image-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(17,17,17,0.85) 0%, transparent 55%); }
         .modal-body { padding: 22px 25px; }
         .vehicle-tier { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #222; font-weight: 400; font-size: 1rem;}
         .vehicle-tier:last-child { border-bottom: none; }
-        .tier-price { color: var(--kw-yellow); font-weight: 600; font-size: 1.15rem; }
+        .tier-price { color: var(--kw-gold); font-weight: 600; font-size: 1.15rem; }
         .modal-footer { padding: 22px 25px; background: #0a0a0a; text-align: center; border-top: 1px solid #1a1a1a;}
 
         /* --- CERAMIC & CORRECTION EXCLUSIVE MODAL STYLING --- */
@@ -369,13 +375,13 @@
             transition: border-color 0.3s ease;
         }
         .ceramic-card-box:hover {
-            border-color: var(--kw-yellow);
+            border-color: var(--kw-gold);
         }
         .ceramic-badge {
             display: inline-block;
-            background: rgba(250, 204, 21, 0.12);
-            color: var(--kw-yellow);
-            border: 1px solid rgba(250, 204, 21, 0.4);
+            background: rgba(197, 155, 39, 0.15);
+            color: var(--kw-gold);
+            border: 1px solid rgba(197, 155, 39, 0.45);
             padding: 4px 14px;
             border-radius: 20px;
             font-size: 0.75rem;
@@ -402,9 +408,9 @@
             line-height: 1.7;
         }
         .policy-banner-strip {
-            background: rgba(250, 204, 21, 0.1);
-            border: 1px solid rgba(250, 204, 21, 0.35);
-            color: var(--kw-yellow);
+            background: rgba(197, 155, 39, 0.12);
+            border: 1px solid rgba(197, 155, 39, 0.4);
+            color: var(--kw-gold);
             font-size: 0.74rem;
             font-weight: 700;
             letter-spacing: 1.6px;
@@ -432,7 +438,7 @@
         .policy-section-block h5 {
             font-size: 0.95rem;
             font-weight: 700;
-            color: var(--kw-white);
+            color: var(--kw-gold);
             margin-top: 16px;
             margin-bottom: 6px;
         }
@@ -454,7 +460,7 @@
         .policy-section-block li {
             margin-bottom: 6px;
         }
-        /* Sparingly used Red for strict legal alert */
+        /* Sparingly used red alert highlight for strict no-refund notice */
         .policy-highlight-alert {
             background: rgba(227, 27, 35, 0.12);
             border-left: 3px solid var(--kw-red);
@@ -466,7 +472,7 @@
         }
         .policy-acceptance-box {
             background: #0d0d0d;
-            border: 1px solid rgba(250, 204, 21, 0.45);
+            border: 1px solid rgba(197, 155, 39, 0.45);
             border-radius: 6px;
             padding: 18px 20px;
             margin-top: 18px;
@@ -475,17 +481,17 @@
         /* --- CONTACT MODAL SPECIFIC STYLING --- */
         .contact-info-list { display: flex; flex-direction: column; gap: 20px; }
         .contact-item { display: flex; align-items: flex-start; gap: 16px; background: #161616; padding: 16px; border: 1px solid #222; border-radius: 4px; }
-        .contact-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(250, 204, 21, 0.15); border: 1px solid var(--kw-yellow); display: flex; align-items: center; justify-content: center; color: var(--kw-yellow); font-size: 0.9rem; flex-shrink: 0; }
+        .contact-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(197, 155, 39, 0.15); border: 1px solid var(--kw-gold); display: flex; align-items: center; justify-content: center; color: var(--kw-gold); font-size: 0.9rem; flex-shrink: 0; }
         .contact-details h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--kw-gray); margin-bottom: 4px; }
         .contact-details p, .contact-details a { font-size: 1.05rem; font-weight: 600; color: var(--kw-white); }
-        .contact-details a:hover { color: var(--kw-yellow); text-decoration: underline; }
+        .contact-details a:hover { color: var(--kw-gold); text-decoration: underline; }
 
         /* --- MEMBERSHIP & ADD-ONS SECTION --- */
         .master-membership-section { padding: 110px 0; background: var(--kw-black); position: relative;}
 
         .section-heading { text-align: center; margin-bottom: 50px; position: relative; z-index: 1;}
         .section-heading h2 { font-family: var(--font-serif); font-size: 3.5rem; line-height: 1; margin-bottom: 12px;}
-        .section-heading p { color: var(--kw-yellow); font-size: 1rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 600;}
+        .section-heading p { color: var(--kw-gold); font-size: 1rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 600;}
 
         .membership-open-wrap {
             max-width: 1200px;
@@ -504,16 +510,16 @@
 
         .vertical-plan-row {
             background-color: #141414;
-            border: 1px solid #333333;
+            border: 1px solid #2c2c2c;
             display: grid;
             grid-template-columns: 360px 1fr;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
             position: relative;
             border-radius: 6px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
-        .vertical-plan-row:hover { border-color: var(--kw-yellow); }
+        .vertical-plan-row:hover { border-color: var(--kw-gold); box-shadow: 0 12px 35px rgba(197, 155, 39, 0.14); }
 
         .v-price-side {
             padding: 45px 30px;
@@ -526,12 +532,12 @@
             background-color: #0d0d0d;
         }
         .v-price-side .price { font-size: 3.2rem; font-weight: 300; line-height: 1; letter-spacing: -2px; margin-bottom: 10px; color: #ffffff;}
-        .v-price-side .price span { font-size: 1.3rem; color: var(--kw-yellow); font-weight: 600; vertical-align: super;}
+        .v-price-side .price span { font-size: 1.3rem; color: var(--kw-gold); font-weight: 600; vertical-align: super;}
         .v-price-side .term { font-size: 0.9rem; color: var(--kw-gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;}
-        .v-price-side .duration { font-size: 0.85rem; color: var(--kw-yellow); font-weight: 600; letter-spacing: 1px; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 6px; background: rgba(250, 204, 21, 0.1); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(250, 204, 21, 0.25); }
+        .v-price-side .duration { font-size: 0.85rem; color: var(--kw-gold); font-weight: 600; letter-spacing: 1px; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 6px; background: rgba(197, 155, 39, 0.12); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(197, 155, 39, 0.3); }
         
-        .setup-tag { background: #1e1e1e; padding: 12px 18px; font-size: 0.85rem; color: #e0e0e0; margin-bottom: 25px; border-left: 3px solid var(--kw-yellow); width: 100%; text-align: left; line-height: 1.6;}
-        .setup-tag span { color: var(--kw-yellow); font-weight: 600;}
+        .setup-tag { background: #1e1e1e; padding: 12px 18px; font-size: 0.85rem; color: #e0e0e0; margin-bottom: 25px; border-left: 3px solid var(--kw-gold); width: 100%; text-align: left; line-height: 1.6;}
+        .setup-tag span { color: var(--kw-gold); font-weight: 600;}
         .v-price-side .btn { width: 100%; padding: 16px; font-size: 0.9rem; letter-spacing: 2px; }
         .cancel-note { font-size: 0.75rem; color: #888; margin-top: 12px; text-transform: uppercase; letter-spacing: 1.5px;}
 
@@ -545,15 +551,15 @@
         }
         .v-details-side h3 { font-family: var(--font-serif); font-size: 2.1rem; margin-bottom: 8px; color: #ffffff;}
         .plan-hook-tagline { 
-            color: var(--kw-yellow); 
+            color: var(--kw-gold-light); 
             font-size: 0.98rem; 
             font-weight: 700; 
             letter-spacing: 0.5px; 
             margin-bottom: 16px; 
             text-transform: uppercase; 
-            background: rgba(250, 204, 21, 0.08); 
+            background: rgba(197, 155, 39, 0.1); 
             padding: 6px 14px; 
-            border-left: 3px solid var(--kw-yellow); 
+            border-left: 3px solid var(--kw-gold); 
             display: inline-block;
             width: fit-content;
         }
@@ -561,18 +567,18 @@
 
         .mini-table { width: 100%; margin-bottom: 25px; border-collapse: collapse; }
         .mini-table th, .mini-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #2a2a2a; font-size: 0.95rem; }
-        .mini-table th { color: var(--kw-yellow); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; font-size: 0.85rem; }
+        .mini-table th { color: var(--kw-gold); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; font-size: 0.85rem; }
         .mini-table td { color: #ffffff; }
-        .mini-table td.val { font-weight: 600; color: var(--kw-yellow); text-align: right; }
+        .mini-table td.val { font-weight: 600; color: var(--kw-gold); text-align: right; }
         .mini-table th.hdr { text-align: right; }
 
-        /* VIP STATUS BADGE - Sparingly Red + Gold Accent */
+        /* VIP STATUS BADGE (Gold + Sparing Red Accent) */
         .vip-status-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, rgba(227, 27, 35, 0.25) 0%, rgba(160, 12, 18, 0.4) 100%);
-            border: 1px solid rgba(227, 27, 35, 0.7);
+            background: linear-gradient(135deg, rgba(197, 155, 39, 0.25) 0%, rgba(158, 123, 28, 0.35) 100%);
+            border: 1px solid var(--kw-gold);
             color: #ffffff;
             font-size: 0.75rem;
             font-weight: 700;
@@ -580,30 +586,30 @@
             text-transform: uppercase;
             padding: 6px 16px;
             border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(227, 27, 35, 0.2);
+            box-shadow: 0 4px 12px rgba(197, 155, 39, 0.25);
             width: fit-content;
         }
         .vip-status-badge i {
-            color: var(--kw-yellow);
+            color: var(--kw-gold-light);
             font-size: 0.8rem;
         }
 
         /* BENEFIT HIGHLIGHT BOXES */
         .benefit-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-bottom: 25px;}
         .benefit { display: flex; gap: 16px; align-items: flex-start;}
-        .benefit-icon { width: 30px; height: 30px; border-radius: 50%; background: rgba(250, 204, 21, 0.15); border: 1px solid var(--kw-yellow); display: flex; align-items: center; justify-content: center; color: var(--kw-yellow); font-size: 0.8rem; font-weight: bold; flex-shrink: 0;}
+        .benefit-icon { width: 30px; height: 30px; border-radius: 50%; background: rgba(197, 155, 39, 0.15); border: 1px solid var(--kw-gold); display: flex; align-items: center; justify-content: center; color: var(--kw-gold); font-size: 0.8rem; font-weight: bold; flex-shrink: 0;}
         .benefit-text h4 { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; color: var(--kw-white);}
         .benefit-text p { font-size: 0.92rem; color: var(--kw-gray); line-height: 1.6;}
 
         .v-features { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 15px; }
-        .v-col h5 { color: var(--kw-yellow); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 12px; border-bottom: 1px solid #2a2a2a; padding-bottom: 8px; font-weight: 600;}
+        .v-col h5 { color: var(--kw-gold); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 12px; border-bottom: 1px solid #2a2a2a; padding-bottom: 8px; font-weight: 600;}
         .v-col ul li { font-size: 0.92rem; color: #dddddd; margin-bottom: 8px; font-weight: 300; display: flex; align-items: center; gap: 10px;}
-        .v-col ul li::before { content: "—"; color: var(--kw-yellow); font-weight: bold; }
+        .v-col ul li::before { content: "—"; color: var(--kw-gold); font-weight: bold; }
 
 
         /* ADD-ONS SECTION */
         .addons-division {
-            border-top: 2px solid #222;
+            border-top: 1px solid rgba(197, 155, 39, 0.25);
             padding-top: 60px;
         }
 
@@ -619,8 +625,8 @@
         .addons-title-wrap p { color: var(--kw-gray); font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
 
         .member-banner {
-            background: linear-gradient(135deg, rgba(250, 204, 21, 0.14) 0%, rgba(15, 15, 15, 0.95) 100%);
-            border: 1px solid rgba(250, 204, 21, 0.35);
+            background: linear-gradient(135deg, rgba(197, 155, 39, 0.16) 0%, rgba(15, 15, 15, 0.95) 100%);
+            border: 1px solid rgba(197, 155, 39, 0.45);
             padding: 22px 28px;
             border-radius: 4px;
             margin-bottom: 35px;
@@ -631,7 +637,6 @@
             gap: 20px;
         }
         .member-banner span { font-size: 1rem; color: var(--kw-white); font-weight: 600; letter-spacing: 0.5px; }
-        .member-banner strong { color: var(--kw-yellow); font-size: 1.1rem; }
 
         /* TOGGLE SWITCH STYLING */
         .toggle-container {
@@ -680,8 +685,8 @@
             border-radius: 50%;
         }
         input:checked + .slider {
-            background-color: var(--kw-yellow);
-            border-color: var(--kw-yellow);
+            background-color: var(--kw-gold);
+            border-color: var(--kw-gold);
         }
         input:checked + .slider:before {
             transform: translateX(24px);
@@ -707,11 +712,11 @@
             cursor: pointer;
         }
         .h-addon-card:hover {
-            border-color: var(--kw-yellow);
+            border-color: var(--kw-gold);
             transform: translateY(-3px);
         }
         .h-addon-name { font-size: 0.98rem; font-weight: 600; color: var(--kw-white); }
-        .h-addon-price { font-size: 1.05rem; font-weight: 700; color: var(--kw-yellow); transition: color 0.2s ease; }
+        .h-addon-price { font-size: 1.05rem; font-weight: 700; color: var(--kw-gold); transition: color 0.2s ease; }
 
         /* --- COMBINED WORK GALLERY CAROUSEL SECTION --- */
         .gallery-section {
@@ -752,7 +757,7 @@
             transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
         }
         .gallery-card:hover {
-            border-color: var(--kw-yellow);
+            border-color: var(--kw-gold);
             transform: translateY(-4px);
             box-shadow: 0 14px 30px rgba(0, 0, 0, 0.75);
         }
@@ -780,9 +785,9 @@
         .gallery-tag {
             display: inline-block;
             width: fit-content;
-            background: rgba(250, 204, 21, 0.16);
-            border: 1px solid rgba(250, 204, 21, 0.5);
-            color: var(--kw-yellow);
+            background: rgba(197, 155, 39, 0.2);
+            border: 1px solid rgba(197, 155, 39, 0.55);
+            color: var(--kw-gold);
             font-size: 0.7rem;
             font-weight: 700;
             letter-spacing: 1.5px;
@@ -801,7 +806,7 @@
             gap: 10px;
         }
         .gallery-caption i {
-            color: var(--kw-yellow);
+            color: var(--kw-gold);
             font-size: 0.9rem;
         }
         .gallery-controls {
@@ -820,7 +825,7 @@
             gap: 8px;
         }
         .gallery-swipe-hint i {
-            color: var(--kw-yellow);
+            color: var(--kw-gold);
         }
         .gallery-nav-btns {
             display: flex;
@@ -840,8 +845,8 @@
             transition: all 0.25s ease;
         }
         .gallery-nav-btn:hover {
-            background: var(--kw-yellow);
-            border-color: var(--kw-yellow);
+            background: var(--kw-gold);
+            border-color: var(--kw-gold);
             color: var(--kw-black);
         }
 
@@ -849,7 +854,7 @@
         .lightbox-content {
             max-width: 960px !important;
             background: #0a0a0a;
-            border: 1px solid #333;
+            border: 1px solid rgba(197, 155, 39, 0.4);
             overflow: hidden;
         }
         .lightbox-header {
@@ -871,7 +876,7 @@
             color: var(--kw-white);
         }
         .lightbox-vip-title i {
-            color: var(--kw-yellow);
+            color: var(--kw-gold);
             font-size: 0.9rem;
         }
         .lightbox-img-wrap {
@@ -888,7 +893,7 @@
             object-fit: contain;
         }
 
-        /* --- INTERACTIVE FLORIDA MAP WITH YELLOW DOTS --- */
+        /* --- INTERACTIVE FLORIDA MAP WITH GOLD & SPARING RED ACTIVE DOT --- */
         #florida-map {
             height: 460px;
             width: 100%;
@@ -899,34 +904,35 @@
             background: #171717 !important;
             font-family: var(--font-sans) !important;
         }
-        .kw-yellow-dot {
+        .kw-map-dot {
             width: 15px;
             height: 15px;
-            background-color: #FACC15;
-            border: 2.5px solid #050505;
+            background-color: #C59B27;
+            border: 2.5px solid #ffffff;
             border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7), 0 0 10px rgba(250, 204, 21, 0.9);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), 0 0 10px rgba(197, 155, 39, 0.85);
             transition: transform 0.2s ease, background-color 0.2s ease;
             cursor: pointer;
         }
-        .kw-yellow-dot:hover {
+        .kw-map-dot:hover {
             transform: scale(1.3);
         }
-        .kw-yellow-dot.active {
+        /* Active hub pin uses sparingly placed red for instant focal clarity */
+        .kw-map-dot.active {
             width: 20px;
             height: 20px;
-            background-color: #FDE047;
-            border: 3px solid #050505;
+            background-color: #E31B23;
+            border: 3px solid #ffffff;
             animation: dot-pulse 1.6s infinite;
         }
         @keyframes dot-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.9); }
-            70% { box-shadow: 0 0 0 15px rgba(250, 204, 21, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(227, 27, 35, 0.9); }
+            70% { box-shadow: 0 0 0 15px rgba(227, 27, 35, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(227, 27, 35, 0); }
         }
         .kw-map-tooltip {
             background-color: rgba(12, 12, 12, 0.95) !important;
-            border: 1px solid #FACC15 !important;
+            border: 1px solid #C59B27 !important;
             color: #ffffff !important;
             font-weight: 600 !important;
             font-size: 12px !important;
@@ -935,7 +941,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.65) !important;
         }
         .kw-map-tooltip::before {
-            border-top-color: #FACC15 !important;
+            border-top-color: #C59B27 !important;
         }
         .leaflet-control-attribution {
             background: rgba(10, 10, 10, 0.75) !important;
@@ -947,15 +953,15 @@
         }
 
         /* --- FOOTER --- */
-        footer { background: var(--kw-black); padding: 50px 0 35px 0; text-align: center; border-top: 1px solid #111;}
-        footer .footer-logo { height: 45px; opacity: 0.5; margin-bottom: 15px;}
-        footer p { color: #444; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;}
-        footer .footer-address { color: #666; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;}
+        footer { background: var(--kw-black); padding: 50px 0 35px 0; text-align: center; border-top: 1px solid rgba(197, 155, 39, 0.18);}
+        footer .footer-logo { height: 45px; opacity: 0.75; margin-bottom: 15px;}
+        footer p { color: #555; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;}
+        footer .footer-address { color: #777; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;}
         footer .footer-email { color: var(--kw-gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;}
-        footer .footer-email a:hover { color: var(--kw-yellow); text-decoration: underline; }
+        footer .footer-email a:hover { color: var(--kw-gold); text-decoration: underline; }
         .footer-policy-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
         .footer-policy-btn { background: none; border: 1px solid #262626; color: var(--kw-light-gray); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; padding: 7px 16px; border-radius: 20px; cursor: pointer; transition: all 0.25s ease; }
-        .footer-policy-btn:hover { border-color: var(--kw-yellow); color: var(--kw-white); background: rgba(250, 204, 21, 0.12); }
+        .footer-policy-btn:hover { border-color: var(--kw-gold); color: var(--kw-white); background: rgba(197, 155, 39, 0.12); }
         
         .footer-payment-img {
             max-width: 300px;
@@ -988,7 +994,6 @@
 
             .logo-img { height: 38px; }
 
-            /* Position the dropdown menu aligned to the right */
             nav ul {
                 display: none;
                 flex-direction: column;
@@ -1009,7 +1014,6 @@
             nav a { display: block; padding: 8px 20px; font-size: 0.95rem; }
             nav .nav-btn { display: inline-block; padding: 10px 22px; width: auto; margin-top: 8px; margin-right: 20px; }
 
-            /* Cross-Platform Mobile Hero Fix */
             .hero {
                 min-height: calc(100dvh - var(--header-height));
                 height: auto;
@@ -1032,7 +1036,6 @@
 
             .member-banner { flex-direction: column; align-items: flex-start; gap: 15px; }
 
-            /* Section headers & cards */
             .section-header h2 { font-size: 2.1rem; }
             .section-heading h2 { font-size: 2.2rem; }
             .section-header p, .section-heading p { font-size: 0.8rem; letter-spacing: 1.5px; }
@@ -1112,7 +1115,7 @@
         <div class="container hero-content">
             <div class="fade-in">
                 <span class="tagline">Commercial Fleet Washing & Mobile Detailing</span>
-                <h1>Keeping your fleet clean.<br><span class="text-yellow">Keeping your business moving.</span></h1>
+                <h1>Keeping your fleet clean.<br><span class="text-gold">Keeping your business moving.</span></h1>
                 <p class="hero-subtext">We deliver a premium, concierge-level wash and detailing experience directly to your fleet, yard, or home.</p>
                 
                 <!-- LIVE OPEN / CLOSED BADGE -->
@@ -1123,7 +1126,7 @@
                 </div>
 
                 <div class="hero-buttons">
-                    <a href="#membership" class="btn btn-yellow">VIP & Monthly Plans</a>
+                    <a href="#membership" class="btn btn-gold">VIP & Monthly Plans</a>
                     <a href="#services" class="btn btn-outline">Explore Services</a>
                 </div>
             </div>
@@ -1140,7 +1143,7 @@
     <section id="services" class="services-section">
         <div class="container">
             <div class="section-header fade-in">
-                <h2>Commercial Fleet Washing & <span class="text-yellow">Professional Auto Detailing</span></h2>
+                <h2>Commercial Fleet Washing & <span class="text-gold">Professional Auto Detailing</span></h2>
                 <p>Select a category to view sizes & pricing</p>
             </div>
 
@@ -1276,8 +1279,8 @@
                 <div id="modalPriceList"></div>
             </div>
             <div class="modal-footer">
-                <a href="tel:2398986008" class="btn btn-yellow" style="width:100%;">Book Us</a>
-                <p style="margin-top:15px; font-size:0.9rem; color:var(--kw-gray);">Want recurring cleanings? <a href="#membership" onclick="closeModal()" style="color:var(--kw-yellow); text-decoration:underline;">View VIP Plans</a></p>
+                <a href="tel:2398986008" class="btn btn-red" style="width:100%;">Book Us</a>
+                <p style="margin-top:15px; font-size:0.9rem; color:var(--kw-gray);">Want recurring cleanings? <a href="#membership" onclick="closeModal()" style="color:var(--kw-gold); text-decoration:underline;">View VIP Plans</a></p>
             </div>
         </div>
     </div>
@@ -1286,7 +1289,7 @@
     <div class="modal-overlay" id="correctionModal">
         <div class="modal-content ceramic-modal-content">
             <div class="modal-header">
-                <h3><span class="text-yellow">Paint Correction</span> Services</h3>
+                <h3><span class="text-gold">Paint Correction</span> Services</h3>
                 <button class="close-btn" onclick="closeCorrectionModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -1295,15 +1298,15 @@
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
                     <div class="ceramic-card-box" style="margin-bottom: 0;">
                         <div class="ceramic-badge">1-Step Correction</div>
-                        <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--kw-white); margin-bottom: 6px;">Starting at <span class="text-yellow">$399</span></h4>
+                        <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--kw-white); margin-bottom: 6px;">Starting at <span class="text-gold">$399</span></h4>
                         <p style="color: var(--kw-light-gray); font-size: 0.9rem; line-height: 1.6;">
                             Removes or reduces minor swirl marks, light scratches and surface haze. Restores deep gloss and improves overall paint clarity.
                         </p>
                     </div>
 
-                    <div class="ceramic-card-box" style="margin-bottom: 0; border-color: rgba(250, 204, 21, 0.35);">
-                        <div class="ceramic-badge" style="background: rgba(227, 27, 35, 0.15); color: #ffffff; border-color: rgba(227, 27, 35, 0.5);">2-Step Correction</div>
-                        <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--kw-white); margin-bottom: 6px;">Starting at <span class="text-yellow">$749</span></h4>
+                    <div class="ceramic-card-box" style="margin-bottom: 0; border-color: rgba(197, 155, 39, 0.45);">
+                        <div class="ceramic-badge" style="background: rgba(223, 189, 94, 0.2); color: #DFBD5E; border-color: rgba(223, 189, 94, 0.5);">2-Step Correction</div>
+                        <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--kw-white); margin-bottom: 6px;">Starting at <span class="text-gold">$749</span></h4>
                         <p style="color: var(--kw-light-gray); font-size: 0.9rem; line-height: 1.6;">
                             Advanced compounding and polishing to address more noticeable swirls, scratches and oxidation, delivering enhanced clarity and a premium showroom finish.
                         </p>
@@ -1348,7 +1351,7 @@
 
             </div>
             <div class="modal-footer">
-                <a href="tel:2398986008" class="btn btn-yellow" style="width:100%;">Schedule Paint Correction</a>
+                <a href="tel:2398986008" class="btn btn-red" style="width:100%;">Schedule Paint Correction</a>
             </div>
         </div>
     </div>
@@ -1357,7 +1360,7 @@
     <div class="modal-overlay" id="ceramicModal">
         <div class="modal-content ceramic-modal-content">
             <div class="modal-header">
-                <h3><span class="text-yellow">Ceramic Coatings</span> Protection</h3>
+                <h3><span class="text-gold">Ceramic Coatings</span> Protection</h3>
                 <button class="close-btn" onclick="closeCeramicModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -1388,7 +1391,7 @@
 
                 <!-- 2. Ultimate Ceramic Coating (4-5 Year Protection) -->
                 <div class="ceramic-card-box" style="margin-bottom: 0;">
-                    <div class="ceramic-badge" style="background: rgba(227, 27, 35, 0.15); color: #ffffff; border-color: rgba(227, 27, 35, 0.5);">Ultimate 4–5 Year Protection</div>
+                    <div class="ceramic-badge" style="background: rgba(223, 189, 94, 0.2); color: #DFBD5E; border-color: rgba(223, 189, 94, 0.5);">Ultimate 4–5 Year Protection</div>
                     <h4 style="font-size: 1.4rem; font-weight: 700; color: var(--kw-white); margin-bottom: 6px;">Luxury Protection. Exceptional Gloss. Long-Term Performance.</h4>
                     <p style="color: var(--kw-light-gray); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;">
                         Experience the ultimate in automotive paint protection with our Premium 5-Year Ceramic Coating. This professional-grade ceramic treatment bonds to your vehicle’s clear coat, creating a durable protective layer that delivers exceptional gloss, water repellency, and resistance to everyday environmental exposure.
@@ -1412,7 +1415,7 @@
 
             </div>
             <div class="modal-footer">
-                <a href="tel:2398986008" class="btn btn-yellow" style="width:100%;">Schedule Ceramic Coating</a>
+                <a href="tel:2398986008" class="btn btn-red" style="width:100%;">Schedule Ceramic Coating</a>
             </div>
         </div>
     </div>
@@ -1422,8 +1425,8 @@
         <div class="modal-content policies-modal-content">
             <div class="modal-header">
                 <div>
-                    <span style="font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--kw-yellow); font-weight: 700; display: block;">KW Commercial Fleet Washing &amp; Mobile Detailing LLC</span>
-                    <h3>Official Service <span class="text-yellow">Policies &amp; Terms</span></h3>
+                    <span style="font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--kw-gold); font-weight: 700; display: block;">KW Commercial Fleet Washing &amp; Mobile Detailing LLC</span>
+                    <h3>Official Service <span class="text-gold">Policies &amp; Terms</span></h3>
                 </div>
                 <button class="close-btn" onclick="closePoliciesModal()" aria-label="Close">&times;</button>
             </div>
@@ -1554,23 +1557,23 @@
                     </ol>
 
                     <div class="policy-acceptance-box">
-                        <div style="font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--kw-yellow); margin-bottom: 8px;">Customer Acceptance</div>
+                        <div style="font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--kw-gold); margin-bottom: 8px;">Customer Acceptance</div>
                         <label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer; font-size: 0.9rem; color: #ffffff;">
-                            <input type="checkbox" id="policyAckCheckbox" style="margin-top: 4px; accent-color: #FACC15; width: 17px; height: 17px; flex-shrink: 0;">
+                            <input type="checkbox" id="policyAckCheckbox" style="margin-top: 4px; accent-color: #C59B27; width: 17px; height: 17px; flex-shrink: 0;">
                             <span>I have read, understood, and agree to the Service Policies, Rain Protection Guarantee, Membership Billing Terms, Cancellation Requirements, and Refund Policy of KW Commercial Fleet Washing &amp; Mobile Detailing LLC.</span>
                         </label>
                     </div>
 
                     <div style="text-align: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid #262626;">
                         <div style="font-weight: 700; color: #ffffff; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase;">KW COMMERCIAL FLEET WASHING &amp; MOBILE DETAILING LLC</div>
-                        <div style="color: var(--kw-yellow); font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Professional Standards. Operational Excellence. Uncompromising Quality.</div>
+                        <div style="color: var(--kw-gold); font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Professional Standards. Operational Excellence. Uncompromising Quality.</div>
                         <div style="color: #777; font-size: 0.75rem; margin-top: 4px;">Company Policy — All Rights Reserved</div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer" style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;">
                 <button type="button" class="btn btn-outline" style="padding: 12px 24px;" onclick="closePoliciesModal()">Close</button>
-                <a href="tel:2398986008" class="btn btn-yellow" style="padding: 12px 24px;">Book &amp; Accept Terms</a>
+                <a href="tel:2398986008" class="btn btn-red" style="padding: 12px 24px;">Book &amp; Accept Terms</a>
             </div>
         </div>
     </div>
@@ -1605,13 +1608,13 @@
                         <div class="contact-icon"><i class="fa-solid fa-clock"></i></div>
                         <div class="contact-details">
                             <h4>Operating Schedule</h4>
-                            <p>Monday – Saturday<br><span class="text-yellow font-semibold">5:00 AM – 6:00 PM</span></p>
+                            <p>Monday – Saturday<br><span class="text-gold font-semibold">5:00 AM – 6:00 PM</span></p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="tel:2398986008" class="btn btn-yellow" style="width:100%;">Call Us Now</a>
+                <a href="tel:2398986008" class="btn btn-red" style="width:100%;">Call Us Now</a>
             </div>
         </div>
     </div>
@@ -1628,7 +1631,7 @@
             </div>
             <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
                 <span id="lightboxCaption" style="color: var(--kw-light-gray); font-size: 0.95rem;"></span>
-                <a href="tel:2398986008" class="btn btn-yellow" style="padding: 12px 24px;">Book Similar Service</a>
+                <a href="tel:2398986008" class="btn btn-red" style="padding: 12px 24px;">Book Similar Service</a>
             </div>
         </div>
     </div>
@@ -1637,7 +1640,7 @@
     <section id="membership" class="master-membership-section">
         <div class="container">
             <div class="section-heading">
-                <h2><span class="text-yellow">MEMBERSHIP</span> & VIP PLANS</h2>
+                <h2><span class="text-gold">MEMBERSHIP</span> & VIP PLANS</h2>
                 <p>Recurring Packages & White-Glove Detailing</p>
             </div>
 
@@ -1653,7 +1656,7 @@
                             <div class="term">Twice-Monthly Washes</div>
                             <div class="duration"><i class="fa-regular fa-clock"></i> Duration: 1 hr 30 mins</div>
                             <div class="setup-tag">+ <span>$50</span> Subscription <small style="color:#aaa;">(Non-refundable)</small></div>
-                            <a href="tel:2398986008" class="btn btn-yellow">Book Signature Wash</a>
+                            <a href="tel:2398986008" class="btn btn-gold">Book Signature Wash</a>
                             <div class="cancel-note">Cancel anytime</div>
                         </div>
                         <div class="v-details-side">
@@ -1707,11 +1710,11 @@
                             <div class="term">2 Luxury Services</div>
                             <div class="duration"><i class="fa-regular fa-clock"></i> Duration: 2 hr – 3 hr</div>
                             <div class="setup-tag">+ <span>$50</span> Subscription <small style="color:#aaa;">(Non-refundable)</small></div>
-                            <a href="tel:2398986008" class="btn btn-yellow">Book 365 AutoCare</a>
+                            <a href="tel:2398986008" class="btn btn-gold">Book 365 AutoCare</a>
                             <div class="cancel-note">Cancel anytime</div>
                         </div>
                         <div class="v-details-side">
-                            <h3><span class="text-yellow">365</span> AUTOCARE</h3>
+                            <h3><span class="text-gold">365</span> AUTOCARE</h3>
                             <div class="plan-hook-tagline">Book once enjoy two complete full interior/exterior details for one incredible price.</div>
                             <p class="v-desc">Concierge Detailing delivered to your door. Complete deep cleaning and exterior protection packages.</p>
 
@@ -1763,18 +1766,18 @@
                     </div>
 
                     <!-- Plan 3: Black Label 365 ($449 - $700 / month) -->
-                    <div class="vertical-plan-row" style="border-color: rgba(250, 204, 21, 0.45);">
-                        <div class="v-price-side" style="background: linear-gradient(135deg, #161306 0%, #0d0d0d 100%);">
+                    <div class="vertical-plan-row" style="border-color: rgba(197, 155, 39, 0.55);">
+                        <div class="v-price-side" style="background: linear-gradient(135deg, #161207 0%, #0d0d0d 100%);">
                             <div class="price" style="font-size:2.8rem; margin-top:15px;"><span>$</span>449 - $700</div>
                             <div class="term">2 VIP Visits / Month</div>
                             <div class="duration"><i class="fa-regular fa-clock"></i> Duration: 3 hr – 4 hr</div>
                             <div class="setup-tag">+ <span>$50</span> Subscription <small style="color:#aaa;">(Non-refundable)</small></div>
-                            <a href="tel:2398986008" class="btn btn-yellow">Secure Black Label</a>
+                            <a href="tel:2398986008" class="btn btn-red">Secure Black Label</a>
                             <div class="cancel-note">Month-to-Month • Cancel Anytime</div>
                         </div>
                         <div class="v-details-side">
                             <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
-                                <div style="font-size: 0.8rem; letter-spacing: 3px; color: var(--kw-yellow); text-transform: uppercase; font-weight: 600;">KW Signature Luxury Collection</div>
+                                <div style="font-size: 0.8rem; letter-spacing: 3px; color: var(--kw-gold); text-transform: uppercase; font-weight: 600;">KW Signature Luxury Collection</div>
                                 <div class="vip-status-badge"><i class="fa-solid fa-crown"></i> VIP STATUS</div>
                             </div>
                             <h3>BLACK LABEL 365</h3>
@@ -1829,7 +1832,7 @@
                             </div>
 
                             <div style="margin-top: 25px; border-top: 1px solid #2a2a2a; padding-top: 20px;">
-                                <h5 style="color: var(--kw-yellow); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 12px; font-weight: 600;">Exclusive Black Label Treatments</h5>
+                                <h5 style="color: var(--kw-gold); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 12px; font-weight: 600;">Exclusive Black Label Treatments</h5>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem; color: #cccccc;">
                                     <div>&bull; Initial interior steam detailing</div>
                                     <div>&bull; Carpet & upholstery extraction</div>
@@ -1848,12 +1851,12 @@
                 <!-- ADD-ONS SECTION -->
                 <div class="addons-division">
                     <div class="addons-title-wrap">
-                        <h3>Additional <span class="text-yellow">Add-Ons</span></h3>
+                        <h3>Additional <span class="text-gold">Add-Ons</span></h3>
                         <p>Professional Customization Services</p>
                     </div>
 
                     <div class="member-banner">
-                        <span>Get <strong class="text-yellow">25% OFF</strong> any add-on after your 5th service!</span>
+                        <span>Get <strong class="text-red" style="font-size: 1.1rem;">25% OFF</strong> any add-on after your 5th service!</span>
                         
                         <!-- SINGLE INTERACTIVE 25% OFF TOGGLE SWITCH -->
                         <label class="toggle-container">
@@ -1888,21 +1891,21 @@
                             <span class="h-addon-price" style="font-size: 0.9rem; text-decoration: underline;">Custom Quote &rarr;</span>
                         </div>
                         <!-- REVAMPED PAINT CORRECTION INTERACTIVE CARD -->
-                        <div class="h-addon-card" onclick="openCorrectionModal()" style="border-color: rgba(250, 204, 21, 0.4); background: linear-gradient(135deg, #18160c 0%, #111111 100%);">
-                            <span class="h-addon-name" style="color: var(--kw-white);"><i class="fa-solid fa-wand-magic-sparkles text-yellow" style="margin-right: 6px;"></i> Paint Correction (1 & 2 Step)</span>
+                        <div class="h-addon-card" onclick="openCorrectionModal()" style="border-color: rgba(197, 155, 39, 0.45); background: linear-gradient(135deg, #17140c 0%, #111111 100%);">
+                            <span class="h-addon-name" style="color: var(--kw-white);"><i class="fa-solid fa-wand-magic-sparkles text-gold" style="margin-right: 6px;"></i> Paint Correction (1 & 2 Step)</span>
                             <span class="h-addon-price" style="font-size: 0.9rem; text-decoration: underline;">View Details & Pricing &rarr;</span>
                         </div>
                         <!-- REVAMPED CERAMIC COATING INTERACTIVE CARD -->
-                        <div class="h-addon-card" onclick="openCeramicModal()" style="border-color: rgba(250, 204, 21, 0.4); background: linear-gradient(135deg, #18160c 0%, #111111 100%);">
-                            <span class="h-addon-name" style="color: var(--kw-white);"><i class="fa-solid fa-shield-halved text-yellow" style="margin-right: 6px;"></i> Ceramic Coatings (1–5 Yr Protection)</span>
+                        <div class="h-addon-card" onclick="openCeramicModal()" style="border-color: rgba(197, 155, 39, 0.45); background: linear-gradient(135deg, #17140c 0%, #111111 100%);">
+                            <span class="h-addon-name" style="color: var(--kw-white);"><i class="fa-solid fa-shield-halved text-gold" style="margin-right: 6px;"></i> Ceramic Coatings (1–5 Yr Protection)</span>
                             <span class="h-addon-price" style="font-size: 0.9rem; text-decoration: underline;">View Details & Pricing &rarr;</span>
                         </div>
                     </div>
 
                     <!-- RAIN PROTECTION & POLICIES CALLOUT BAR -->
-                    <div style="margin-top: 35px; background: #141414; border: 1px solid #2a2a2a; border-radius: 6px; padding: 20px 26px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div style="margin-top: 35px; background: #141414; border: 1px solid rgba(197, 155, 39, 0.3); border-radius: 6px; padding: 20px 26px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <div style="display: flex; align-items: center; gap: 14px;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(250, 204, 21, 0.12); border: 1px solid rgba(250, 204, 21, 0.4); display: flex; align-items: center; justify-content: center; color: var(--kw-yellow); flex-shrink: 0;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(197, 155, 39, 0.15); border: 1px solid rgba(197, 155, 39, 0.45); display: flex; align-items: center; justify-content: center; color: var(--kw-gold); flex-shrink: 0;">
                                 <i class="fa-solid fa-cloud-rain"></i>
                             </div>
                             <div>
@@ -1922,7 +1925,7 @@
     <section id="gallery" class="gallery-section">
         <div class="container">
             <div class="section-header fade-in">
-                <h2>Our Work <span class="text-yellow">In Action</span></h2>
+                <h2>Our Work <span class="text-gold">In Action</span></h2>
                 <p>Recent Fleet Washing & Mobile Detailing Showcase</p>
             </div>
 
@@ -2084,11 +2087,11 @@
                         </div>
                     </div>
 
-                    <!-- 14. Before: Ultra Prestige Restoration Care (Sparingly Red Tag) -->
+                    <!-- 14. Before: Ultra Prestige Restoration Care -->
                     <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/SMN7LYM.png?maxwidth=10000&fidelity=high', 'Before — Ultra Prestige Restoration Care', 'BEFORE')">
                         <img src="https://i.imgur.com/SMN7LYM.png?maxwidth=10000&fidelity=high" alt="Before - Ultra Prestige Restoration Care" loading="lazy">
                         <div class="gallery-overlay">
-                            <span class="gallery-tag" style="background: rgba(227, 27, 35, 0.22); border-color: rgba(227, 27, 35, 0.6); color: #ff4d54;">Before</span>
+                            <span class="gallery-tag">Before</span>
                             <div class="gallery-caption">
                                 <span>Ultra Prestige Restoration Care</span>
                                 <i class="fa-solid fa-expand"></i>
@@ -2100,7 +2103,7 @@
                     <div class="gallery-card" onclick="openGalleryModal('https://i.imgur.com/BQvkFBH.png?maxwidth=10000&fidelity=high', 'After — Ultra Prestige Restoration Care', 'AFTER')">
                         <img src="https://i.imgur.com/BQvkFBH.png?maxwidth=10000&fidelity=high" alt="After - Ultra Prestige Restoration Care" loading="lazy">
                         <div class="gallery-overlay">
-                            <span class="gallery-tag" style="background: rgba(250, 204, 21, 0.22); border-color: rgba(250, 204, 21, 0.65); color: #FACC15;">After</span>
+                            <span class="gallery-tag" style="background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.55); color: #4ade80;">After</span>
                             <div class="gallery-caption">
                                 <span>Ultra Prestige Restoration Care</span>
                                 <i class="fa-solid fa-expand"></i>
@@ -2160,20 +2163,20 @@
         </div>
     </section>
 
-    <!-- SERVICE TERRITORIES SECTION (INTERACTIVE CARTO MAP WITH YELLOW DOTS) -->
+    <!-- SERVICE TERRITORIES SECTION (INTERACTIVE CARTO MAP WITH GOLD/RED DOTS) -->
     <section id="location" class="py-20 bg-brandDark border-t border-neutral-900">
         <div class="max-w-6xl mx-auto px-4">
             <!-- Header Section -->
             <div class="text-center mb-8">
-                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">Our Florida Service Territories</h2>
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">Our Florida <span class="text-gold">Service Territories</span></h2>
                 <p class="text-neutral-400 max-w-2xl mx-auto text-sm sm:text-base">
-                    Click any yellow dot on the Florida map below to view coverage details and book your mobile detailing or commercial fleet wash service.
+                    Click any hub marker on the Florida map below to view coverage details and book your mobile detailing or commercial fleet wash service.
                 </p>
             </div>
 
             <!-- Mobile Service Notice Banner -->
-            <div class="bg-brandCard border border-yellow-400/30 rounded-2xl p-5 mb-8 flex flex-col sm:flex-row items-center gap-4 shadow-lg shadow-yellow-400/5">
-                <div class="bg-yellow-400/10 text-brandYellow p-3.5 rounded-xl text-xl flex-shrink-0">
+            <div class="bg-brandCard border border-brandGold/30 rounded-2xl p-5 mb-8 flex flex-col sm:flex-row items-center gap-4 shadow-lg shadow-brandGold/5">
+                <div class="bg-brandGold/10 text-brandGold p-3.5 rounded-xl text-xl flex-shrink-0">
                     <i class="fa-solid fa-truck-fast"></i>
                 </div>
                 <div class="text-center sm:text-left">
@@ -2188,10 +2191,10 @@
                 <div class="lg:col-span-2 bg-brandCard border border-brandBorder rounded-2xl overflow-hidden shadow-xl flex flex-col">
                     <div class="px-5 py-3.5 border-b border-brandBorder flex items-center justify-between bg-neutral-900/80">
                         <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold text-white">
-                            <span class="w-2.5 h-2.5 rounded-full bg-brandYellow inline-block animate-pulse"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-brandGold inline-block animate-pulse"></span>
                             <span>Interactive Florida Coverage Map (13 Service Hubs)</span>
                         </div>
-                        <span class="text-xs text-neutral-400">Click a yellow dot</span>
+                        <span class="text-xs text-neutral-400">Click a marker</span>
                     </div>
                     <div id="florida-map"></div>
                     <!-- Quick City Pills below map -->
@@ -2202,23 +2205,23 @@
                 <div class="bg-brandCard border border-brandBorder rounded-2xl p-6 flex flex-col justify-between shadow-xl">
                     <div>
                         <div class="flex items-center justify-between mb-4">
-                            <span id="primary-badge" class="bg-brandYellow/15 text-brandYellow text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-brandYellow/35 hidden">Primary Hub</span>
-                            <i class="fa-solid fa-shield-halved text-neutral-500 ml-auto"></i>
+                            <span id="primary-badge" class="bg-brandGold/20 text-brandGold text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-brandGold/35 hidden">Primary Hub</span>
+                            <i class="fa-solid fa-shield-halved text-brandGold/70 ml-auto"></i>
                         </div>
                         <h3 id="selected-city-name" class="text-2xl font-bold mb-1 text-white">Saint Petersburg</h3>
-                        <p id="selected-city-county" class="text-xs font-semibold uppercase tracking-wider text-brandYellow mb-3">Pinellas County (Primary Hub)</p>
+                        <p id="selected-city-county" class="text-xs font-semibold uppercase tracking-wider text-brandGold mb-3">Pinellas County (Primary Hub)</p>
                         <p id="selected-city-region" class="text-sm text-neutral-400 mb-6">Our main headquarters and primary service hub for Pinellas County residential and commercial fleets.</p>
                         
                         <div class="space-y-4 border-t border-brandBorder pt-4 text-sm">
                             <div class="flex items-start gap-3">
-                                <div class="bg-neutral-800 p-2.5 rounded-lg text-brandYellow mt-0.5"><i class="fa-solid fa-truck-fast"></i></div>
+                                <div class="bg-neutral-800 p-2.5 rounded-lg text-brandGold mt-0.5"><i class="fa-solid fa-truck-fast"></i></div>
                                 <div>
                                     <h4 class="font-semibold text-white">Mobile On-Site Service</h4>
                                     <p class="text-neutral-400 text-xs mt-0.5">Fully equipped mobile units come directly to your home, office, or fleet yard.</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-3">
-                                <div class="bg-neutral-800 p-2.5 rounded-lg text-brandYellow mt-0.5"><i class="fa-solid fa-phone"></i></div>
+                                <div class="bg-neutral-800 p-2.5 rounded-lg text-brandGold mt-0.5"><i class="fa-solid fa-phone"></i></div>
                                 <div>
                                     <h4 class="font-semibold text-white">Direct Booking Line</h4>
                                     <p class="text-neutral-400 text-xs mt-0.5">Call or text us at <span class="text-white font-medium">239-898-6008</span></p>
@@ -2228,7 +2231,7 @@
                     </div>
 
                     <div class="mt-8">
-                        <a href="tel:2398986008" class="w-full bg-brandYellow hover:bg-yellow-500 text-black font-bold py-3 px-4 rounded-xl transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-yellow-400/20 text-sm">
+                        <a href="tel:2398986008" class="w-full bg-brandRed hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-brandRed/20 text-sm">
                             <i class="fa-solid fa-calendar-check"></i> Book Service in <span id="btn-city-name">Saint Petersburg</span>
                         </a>
                     </div>
@@ -2241,12 +2244,12 @@
     <section id="mission" class="py-20 bg-neutral-950 border-t border-neutral-900">
         <div class="max-w-4xl mx-auto px-4 fade-in">
             <div class="bg-brandCard border border-brandBorder rounded-2xl p-8 sm:p-12 text-center shadow-2xl relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brandYellow to-transparent"></div>
-                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brandYellow/10 border border-brandYellow/30 text-brandYellow mb-5">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brandGold to-transparent"></div>
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brandGold/10 border border-brandGold/35 text-brandGold mb-5">
                     <i class="fa-solid fa-bullseye text-lg"></i>
                 </div>
                 <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-6" style="font-family: var(--font-serif);">
-                    Our <span class="text-yellow">Mission</span>
+                    Our <span class="text-gold">Mission</span>
                 </h2>
                 <p class="text-neutral-200 text-base sm:text-lg leading-relaxed mb-5 font-normal">
                     At <strong class="text-white font-semibold">KW Commercial Fleet Washing &amp; Mobile Detailing LLC</strong>, our mission is to deliver exceptional commercial fleet washing and premium automotive detailing services through operational excellence, reliability, and uncompromising quality.
@@ -2488,7 +2491,7 @@
             }
         });
 
-        // --- INTERACTIVE FLORIDA MAP WITH CARTO VOYAGER & YELLOW DOTS ---
+        // --- INTERACTIVE FLORIDA MAP WITH CARTO VOYAGER & GOLD/RED DOTS ---
         const cities = [
             { name: "Saint Petersburg", lat: 27.7676, lng: -82.6403, region: "Pinellas County (Primary Hub)", desc: "Our main headquarters and primary service hub for Pinellas County residential and commercial fleets.", isPrimary: true },
             { name: "Tampa", lat: 27.9506, lng: -82.4572, region: "Hillsborough County", desc: "Full commercial fleet washing and mobile detailing across Tampa Bay and surrounding business parks.", isPrimary: false },
@@ -2508,7 +2511,6 @@
         let activeCityIndex = 0;
         let mapMarkers = [];
 
-        // Initialize Florida Leaflet Map with CARTO Voyager Endpoint
         const floridaMap = L.map('florida-map', {
             center: [27.35, -81.45],
             zoom: 7,
@@ -2520,20 +2522,19 @@
             maxZoom: 18
         }).addTo(floridaMap);
 
-        function createYellowDotIcon(isActive) {
+        function createMapDotIcon(isActive) {
             const size = isActive ? 20 : 15;
             return L.divIcon({
                 className: '',
-                html: `<div class="kw-yellow-dot ${isActive ? 'active' : ''}"></div>`,
+                html: `<div class="kw-map-dot ${isActive ? 'active' : ''}"></div>`,
                 iconSize: [size, size],
                 iconAnchor: [size / 2, size / 2]
             });
         }
 
-        // Plot Yellow Dots on Map
         cities.forEach((city, index) => {
             const marker = L.marker([city.lat, city.lng], {
-                icon: createYellowDotIcon(index === activeCityIndex)
+                icon: createMapDotIcon(index === activeCityIndex)
             }).addTo(floridaMap);
 
             marker.bindTooltip(city.name, {
@@ -2549,7 +2550,6 @@
             mapMarkers.push(marker);
         });
 
-        // Open initial tooltip
         mapMarkers[0].openTooltip();
 
         function renderCityPills() {
@@ -2560,12 +2560,12 @@
                 const isSelected = index === activeCityIndex;
                 const pill = document.createElement('button');
                 pill.type = 'button';
-                pill.className = `px-2.5 py-1 rounded-full text-xs font-semibold transition flex items-center gap-1.5 border ${
+                pill.className = `px-2.5 py-1 rounded-full text-xs font-medium transition flex items-center gap-1.5 border ${
                     isSelected
-                        ? 'bg-brandYellow text-black border-brandYellow shadow-md shadow-yellow-400/30'
-                        : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:border-brandYellow/60 hover:text-white'
+                        ? 'bg-brandGold text-black font-semibold border-brandGold shadow-md shadow-brandGold/30'
+                        : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:border-brandGold/60 hover:text-white'
                 }`;
-                pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-black' : 'bg-brandYellow'}"></span>${city.name}`;
+                pill.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-brandRed' : 'bg-brandGold'}"></span>${city.name}`;
                 pill.onclick = () => selectCity(index);
                 pillsContainer.appendChild(pill);
             });
@@ -2575,7 +2575,6 @@
             activeCityIndex = index;
             const city = cities[index];
 
-            // Update card details
             document.getElementById('selected-city-name').innerText = city.name;
             document.getElementById('selected-city-county').innerText = city.region;
             document.getElementById('selected-city-region').innerText = city.desc;
@@ -2588,9 +2587,8 @@
                 primaryBadge.classList.add('hidden');
             }
 
-            // Update dot styles & tooltip
             mapMarkers.forEach((marker, i) => {
-                marker.setIcon(createYellowDotIcon(i === index));
+                marker.setIcon(createMapDotIcon(i === index));
                 if (i === index) {
                     marker.openTooltip();
                 } else {
