@@ -44,6 +44,100 @@
   <!-- POPUP TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed top-5 right-5 left-5 sm:left-auto z-50 flex flex-col gap-2.5 sm:max-w-sm pointer-events-none"></div>
 
+  <!-- SLIDE-OUT LEFT-TO-RIGHT NAVIGATION DRAWER -->
+  <div id="navDrawerOverlay" onclick="closeNavDrawer()" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"></div>
+
+  <aside id="navDrawer" aria-label="Main Dispatch Navigation" class="fixed top-0 left-0 bottom-0 w-72 max-w-[82vw] bg-zinc-950 border-r border-amber-500/30 z-50 transform -translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between shadow-2xl">
+    
+    <!-- Drawer Header -->
+    <div class="p-5 border-b border-zinc-800/80 flex items-center justify-between" style="padding-top: max(1.25rem, env(safe-area-inset-top));">
+      <div class="flex items-center gap-3">
+        <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Care Logo" class="h-9 object-contain filter drop-shadow-[0_0_8px_rgba(217,119,6,0.35)]">
+        <div>
+          <span class="text-xs font-black uppercase tracking-widest text-white block">KW <span class="text-amber-400">Dispatch</span></span>
+          <span class="text-[10px] text-zinc-400">Navigation Menu</span>
+        </div>
+      </div>
+      <button onclick="closeNavDrawer()" aria-label="Close navigation menu" class="text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 w-9 h-9 rounded-xl flex items-center justify-center transition">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Drawer Navigation Links -->
+    <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto ios-scroll text-xs">
+      <button id="filterUpcoming" onclick="selectNavTab('Upcoming')" class="filter-btn w-full bg-amber-500 text-black font-extrabold py-3 px-4 rounded-xl transition flex items-center justify-between shadow-md shadow-amber-900/20">
+        <span class="inline-flex items-center gap-3">
+          <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+          <span>Upcoming</span>
+        </span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 opacity-75"></i>
+      </button>
+
+      <button id="filterCalendar" onclick="selectNavTab('Calendar')" class="filter-btn w-full bg-zinc-900/60 hover:bg-zinc-900 text-zinc-200 font-semibold py-3 px-4 rounded-xl border border-zinc-800/80 transition flex items-center justify-between">
+        <span class="inline-flex items-center gap-3">
+          <i data-lucide="calendar" class="w-4 h-4 text-amber-400"></i>
+          <span>Calendar</span>
+        </span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-600"></i>
+      </button>
+
+      <button id="filterPending" onclick="selectNavTab('Pending')" class="filter-btn w-full bg-zinc-900/60 hover:bg-zinc-900 text-zinc-200 font-semibold py-3 px-4 rounded-xl border border-zinc-800/80 transition flex items-center justify-between">
+        <span class="inline-flex items-center gap-3">
+          <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+          <span>Pending</span>
+        </span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-600"></i>
+      </button>
+
+      <button id="filterSub" onclick="selectNavTab('Subscription')" class="filter-btn w-full bg-zinc-900/60 hover:bg-zinc-900 text-zinc-200 font-semibold py-3 px-4 rounded-xl border border-zinc-800/80 transition flex items-center justify-between">
+        <span class="inline-flex items-center gap-3">
+          <i data-lucide="repeat" class="w-4 h-4 text-amber-400"></i>
+          <span>Subscriptions</span>
+        </span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-600"></i>
+      </button>
+
+      <button id="filterCompleted" onclick="selectNavTab('Completed')" class="filter-btn w-full bg-zinc-900/60 hover:bg-zinc-900 text-zinc-200 font-semibold py-3 px-4 rounded-xl border border-zinc-800/80 transition flex items-center justify-between">
+        <span class="inline-flex items-center gap-3">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400"></i>
+          <span>Completed</span>
+        </span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-600"></i>
+      </button>
+
+      <button id="filterContacts" onclick="selectNavTab('Contacts')" class="filter-btn w-full bg-zinc-900/60 hover:bg-zinc-900 text-zinc-200 font-semibold py-3 px-4 rounded-xl border border-zinc-800/80 transition flex items-center justify-between">
+        <span class="inline-flex items-center gap-3">
+          <i data-lucide="users" class="w-4 h-4 text-amber-400"></i>
+          <span>Contacts</span>
+        </span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-600"></i>
+      </button>
+
+      <button id="filterReports" onclick="selectNavTab('Reports')" class="filter-btn w-full bg-zinc-900/60 hover:bg-zinc-900 text-zinc-200 font-semibold py-3 px-4 rounded-xl border border-zinc-800/80 transition flex items-center justify-between">
+        <span class="inline-flex items-center gap-3">
+          <i data-lucide="bar-chart-3" class="w-4 h-4 text-amber-400"></i>
+          <span>Reports</span>
+        </span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-600"></i>
+      </button>
+    </nav>
+
+    <!-- Drawer Footer -->
+    <div class="p-4 border-t border-zinc-800/80 bg-zinc-900/40 space-y-3" style="padding-bottom: max(1rem, env(safe-area-inset-bottom));">
+      <div class="flex items-center justify-between text-[11px] px-1">
+        <span class="text-zinc-400">Live Sync</span>
+        <span class="text-amber-400 font-bold inline-flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          Connected
+        </span>
+      </div>
+      <button onclick="handleLogout()" class="w-full bg-zinc-900 hover:bg-zinc-800 border border-amber-500/30 text-xs text-amber-400 font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2">
+        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
   <!-- ORDER DETAILS & DISPATCH ACTION MODAL -->
   <div id="orderDetailsModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-5">
     <div class="bg-zinc-950 border-t sm:border border-amber-500/30 rounded-t-2xl sm:rounded-2xl w-full max-w-xl shadow-2xl flex flex-col max-h-[92dvh] overflow-hidden">
@@ -347,25 +441,33 @@
   <!-- MAIN PORTAL DASHBOARD -->
   <div id="portalDashboard" class="w-full max-w-7xl mx-auto hidden space-y-5 sm:space-y-6">
 
-    <!-- Header Section -->
+    <!-- Clean Header Bar with Slide-Out Menu Trigger -->
     <header class="flex flex-row justify-between items-center gap-3 pb-4 border-b border-zinc-800">
-      <div class="flex items-center gap-3.5">
-        <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Care Logo" class="h-10 sm:h-12 object-contain filter drop-shadow-[0_0_10px_rgba(217,119,6,0.3)]">
-        <div class="hidden sm:block border-l border-zinc-800 pl-3.5">
-          <span class="text-xs font-black uppercase tracking-widest text-white block">Dispatch <span class="text-amber-400">Command</span></span>
-          <span class="text-[11px] text-zinc-400">KW Commercial Fleet Washing &amp; Mobile Detailing</span>
+      <div class="flex items-center gap-3">
+        <!-- Left-to-Right Drawer Open Button -->
+        <button onclick="openNavDrawer()" aria-label="Open Navigation Menu" class="bg-zinc-900 hover:bg-zinc-800 active:scale-95 border border-amber-500/40 text-white font-extrabold py-2.5 px-3.5 rounded-xl transition inline-flex items-center gap-2 shadow-sm">
+          <i data-lucide="menu" class="w-4 h-4 text-amber-400"></i>
+          <span class="text-xs uppercase tracking-wider">Menu</span>
+        </button>
+
+        <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Care Logo" class="h-9 sm:h-11 object-contain filter drop-shadow-[0_0_10px_rgba(217,119,6,0.3)]">
+        
+        <div class="border-l border-zinc-800 pl-3">
+          <span id="activeSectionHeading" class="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-400 block leading-tight">Upcoming</span>
+          <span id="orderCount" class="text-[11px] text-zinc-400 block">Loading...</span>
         </div>
       </div>
-      <div class="flex items-center gap-2 sm:gap-2.5">
-        <button onclick="fetchBookings()" aria-label="Refresh Data" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-200 font-bold py-2.5 sm:py-2 px-3 rounded-xl transition inline-flex items-center gap-1.5">
+
+      <div class="flex items-center gap-2">
+        <button onclick="fetchBookings()" aria-label="Refresh Data" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-200 font-bold py-2.5 px-3 rounded-xl transition inline-flex items-center gap-1.5">
           <i data-lucide="refresh-cw" class="w-4 h-4 sm:w-3.5 sm:h-3.5 text-amber-400"></i>
-          <span class="hidden sm:inline">Refresh Data</span>
+          <span class="hidden sm:inline">Refresh</span>
         </button>
-        <div id="statusBadge" class="bg-zinc-900 border border-zinc-800 px-3 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-zinc-300 inline-flex items-center gap-2">
+        <div id="statusBadge" class="hidden md:inline-flex bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl text-xs font-semibold text-zinc-300 items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          <span class="hidden sm:inline">Live Sync</span>
+          <span>Live Sync</span>
         </div>
-        <button onclick="handleLogout()" aria-label="Sign Out" class="bg-zinc-900 hover:bg-zinc-800 border border-amber-500/30 text-xs text-amber-400 font-bold py-2.5 sm:py-2 px-3 rounded-xl transition inline-flex items-center gap-1.5">
+        <button onclick="handleLogout()" aria-label="Sign Out" class="bg-zinc-900 hover:bg-zinc-800 border border-amber-500/30 text-xs text-amber-400 font-bold py-2.5 px-3 rounded-xl transition inline-flex items-center gap-1.5">
           <i data-lucide="log-out" class="w-4 h-4 sm:w-3.5 sm:h-3.5"></i>
           <span class="hidden sm:inline">Sign Out</span>
         </button>
@@ -373,41 +475,6 @@
     </header>
 
     <main class="space-y-5 sm:space-y-6">
-
-      <!-- FULL-LABEL NAVIGATION BAR (UPCOMING | CALENDAR | PENDING | SUBSCRIPTIONS | COMPLETED | CONTACTS | REPORTS) -->
-      <nav aria-label="Dispatch Portal Navigation" class="flex flex-col lg:flex-row gap-2.5 lg:items-center justify-between bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 text-xs">
-        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-          <button id="filterUpcoming" onclick="filterStatus('Upcoming')" class="filter-btn bg-amber-500 text-black font-extrabold py-2.5 px-3.5 rounded-lg transition inline-flex items-center gap-1.5 shadow-md shadow-amber-900/20">
-            <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
-            <span>Upcoming</span>
-          </button>
-          <button id="filterCalendar" onclick="filterStatus('Calendar')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-semibold py-2.5 px-3.5 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
-            <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>Calendar</span>
-          </button>
-          <button id="filterPending" onclick="filterStatus('Pending')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-semibold py-2.5 px-3.5 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
-            <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>Pending</span>
-          </button>
-          <button id="filterSub" onclick="filterStatus('Subscription')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-semibold py-2.5 px-3.5 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
-            <i data-lucide="repeat" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>Subscriptions</span>
-          </button>
-          <button id="filterCompleted" onclick="filterStatus('Completed')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-semibold py-2.5 px-3.5 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
-            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>Completed</span>
-          </button>
-          <button id="filterContacts" onclick="filterStatus('Contacts')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-semibold py-2.5 px-3.5 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
-            <i data-lucide="users" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>Contacts</span>
-          </button>
-          <button id="filterReports" onclick="filterStatus('Reports')" class="filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-semibold py-2.5 px-3.5 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5">
-            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>Reports</span>
-          </button>
-        </div>
-        <span id="orderCount" class="text-amber-400 font-bold px-1.5 text-[11px] sm:text-xs shrink-0">Loading...</span>
-      </nav>
 
       <!-- RESPONSIVE WORK CALENDAR TAB VIEW (7-DAY WEEK VIEW + FULL MONTH VIEW) -->
       <div id="calendarSection" class="hidden space-y-4">
@@ -758,6 +825,38 @@
       }
     }
 
+    /* ----------------------------------------------------
+       SLIDE-OUT LEFT-TO-RIGHT NAVIGATION DRAWER CONTROLS
+    ---------------------------------------------------- */
+    function openNavDrawer() {
+      const overlay = document.getElementById('navDrawerOverlay');
+      const drawer = document.getElementById('navDrawer');
+      if (!overlay || !drawer) return;
+
+      overlay.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        overlay.classList.remove('opacity-0');
+        drawer.classList.remove('-translate-x-full');
+      });
+    }
+
+    function closeNavDrawer() {
+      const overlay = document.getElementById('navDrawerOverlay');
+      const drawer = document.getElementById('navDrawer');
+      if (!overlay || !drawer) return;
+
+      overlay.classList.add('opacity-0');
+      drawer.classList.add('-translate-x-full');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+      }, 300);
+    }
+
+    function selectNavTab(status) {
+      filterStatus(status);
+      closeNavDrawer();
+    }
+
     /**
      * Dynamically parses the exact add-ons & prices selected by the client on the booking site.
      */
@@ -903,6 +1002,7 @@
     }
 
     async function handleLogout() {
+      closeNavDrawer();
       try {
         await supabaseClient.auth.signOut();
       } catch (e) {
@@ -2451,7 +2551,7 @@
         contactsSection.classList.add('hidden');
         calendarSection.classList.add('hidden');
         reportsSection.classList.remove('hidden');
-        document.getElementById('orderCount').textContent = `Report View Active`;
+        document.getElementById('orderCount').textContent = `Financial Analytics`;
         renderCharts();
         return;
       } else if (currentFilter === 'Contacts') {
@@ -2595,10 +2695,30 @@
     function filterStatus(status) {
       currentFilter = status;
 
+      // Update active section heading in top bar
+      const headingMap = {
+        'Upcoming': 'Upcoming',
+        'Calendar': 'Calendar',
+        'Pending': 'Pending',
+        'Subscription': 'Subscriptions',
+        'Completed': 'Completed',
+        'Contacts': 'Contacts',
+        'Reports': 'Reports'
+      };
+      const headingEl = document.getElementById('activeSectionHeading');
+      if (headingEl) {
+        headingEl.textContent = headingMap[status] || status;
+      }
+
       document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.className = 'filter-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-semibold py-2.5 px-3.5 rounded-lg border border-zinc-800 transition inline-flex items-center gap-1.5';
-        const icon = btn.querySelector('svg, i');
-        if (icon) icon.classList.add('text-amber-400');
+        btn.className = 'filter-btn w-full bg-zinc-900/60 hover:bg-zinc-900 text-zinc-200 font-semibold py-3 px-4 rounded-xl border border-zinc-800/80 transition flex items-center justify-between';
+        const leftIcon = btn.querySelector('span svg, span i');
+        if (leftIcon) leftIcon.classList.add('text-amber-400');
+        const chevron = btn.querySelector(':scope > svg, :scope > i');
+        if (chevron) {
+          chevron.classList.remove('opacity-75');
+          chevron.classList.add('text-zinc-600');
+        }
       });
 
       const activeMap = {
@@ -2614,9 +2734,14 @@
       const activeBtnId = activeMap[status];
       if (activeBtnId) {
         const activeBtn = document.getElementById(activeBtnId);
-        activeBtn.className = 'filter-btn bg-amber-500 text-black font-extrabold py-2.5 px-3.5 rounded-lg transition inline-flex items-center gap-1.5 shadow-md shadow-amber-900/20';
-        const icon = activeBtn.querySelector('svg, i');
-        if (icon) icon.classList.remove('text-amber-400');
+        activeBtn.className = 'filter-btn w-full bg-amber-500 text-black font-extrabold py-3 px-4 rounded-xl transition flex items-center justify-between shadow-md shadow-amber-900/20';
+        const leftIcon = activeBtn.querySelector('span svg, span i');
+        if (leftIcon) leftIcon.classList.remove('text-amber-400');
+        const chevron = activeBtn.querySelector(':scope > svg, :scope > i');
+        if (chevron) {
+          chevron.classList.remove('text-zinc-600');
+          chevron.classList.add('opacity-75');
+        }
       }
 
       renderTable();
