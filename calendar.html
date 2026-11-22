@@ -723,6 +723,20 @@
       submitBtn.innerHTML = `Confirm Subscription (Pay $${totalAmount} in Person/Zelle)`;
     });
 
+    // Builds formatted comma-separated add-ons string: e.g. "Pet Hair Removal (Standard) ($50), Engine Bay (Standard) ($100)"
+    function getFormattedAddOns() {
+      const checkedBoxes = Array.from(document.querySelectorAll('.addon-checkbox:checked'));
+      if (checkedBoxes.length === 0) return null;
+
+      return checkedBoxes
+        .map(cb => {
+          const name = cb.value.trim();
+          const price = parseInt(cb.getAttribute('data-price') || '0', 10);
+          return `${name} ($${price.toLocaleString()})`;
+        })
+        .join(', ');
+    }
+
     // Dynamic Price Calculator based on Combined Dropdown Selection
     function calculateTotalPrice() {
       const packageSelect = document.getElementById('servicePackageCombined');
@@ -846,6 +860,7 @@
       const packageSelect = document.getElementById('servicePackageCombined');
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
       const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
+      const formattedAddOns = getFormattedAddOns();
 
       let addonsAmount = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
@@ -875,6 +890,7 @@
             amount: basePrice * 100,
             setupFee: SETUP_FEE * 100,
             addonsAmount: addonsAmount * 100,
+            addOns: formattedAddOns || '',
             isSubscription: true,
             packageName: selectedOpt.value,
             clientName: clientName,
@@ -1017,6 +1033,7 @@
       const packageSelect = document.getElementById('servicePackageCombined');
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
       const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
+      const formattedAddOns = getFormattedAddOns();
 
       let addonsAmount = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
@@ -1056,6 +1073,7 @@
             amount: basePrice * 100,
             setupFee: SETUP_FEE * 100,
             addonsAmount: addonsAmount * 100,
+            addOns: formattedAddOns || '',
             isSubscription: true,
             packageName: selectedOpt.value,
             clientName: document.getElementById('clientName').value,
@@ -1112,8 +1130,8 @@
       const vehicleCategory = selectedOpt ? selectedOpt.getAttribute('data-vehicle') : 'Unknown';
       const packageSelected = selectedOpt ? selectedOpt.value : 'KW Signature Wash 365';
 
-      const selectedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(cb => cb.value).join(', ');
-      const fullServiceDescription = `${packageSelected} + $50 Setup Fee` + (selectedAddons ? ` + Addons: [${selectedAddons}]` : '');
+      const formattedAddOns = getFormattedAddOns();
+      const fullServiceDescription = `${packageSelected} + $50 Setup Fee` + (formattedAddOns ? ` + Addons: [${formattedAddOns}]` : '');
 
       const { data, error: dbError } = await supabaseClient
         .from('bookings')
@@ -1123,6 +1141,7 @@
           email: email,
           vehicle_category: vehicleCategory,
           service_type: fullServiceDescription,
+          add_ons: formattedAddOns,
           service_date: selectedDateStr,
           time_slot: selectedTimeSlotStr,
           service_address: serviceAddress,
