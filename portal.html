@@ -42,10 +42,10 @@
 <body class="bg-black text-white min-h-dvh sm:p-6 font-sans antialiased flex flex-col justify-center items-center selection:bg-amber-500 selection:text-black">
 
   <!-- POPUP TOAST NOTIFICATION CONTAINER -->
-  <div id="toastContainer" class="fixed top-5 right-5 left-5 sm:left-auto z-50 flex flex-col gap-2.5 sm:max-w-sm pointer-events-none"></div>
+  <div id="toastContainer" class="fixed top-5 right-5 left-5 sm:left-auto z-[60] flex flex-col gap-2.5 sm:max-w-sm pointer-events-none"></div>
 
   <!-- SLIDE-OUT LEFT-TO-RIGHT NAVIGATION DRAWER -->
-  <div id="navDrawerOverlay" onclick="closeNavDrawer()" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"></div>
+  <div id="navDrawerOverlay" onclick="closeNavDrawer()" class="fixed inset-0 bg-black/80 z-50 hidden opacity-0 transition-opacity duration-300"></div>
 
   <aside id="navDrawer" aria-label="Main Dispatch Navigation" class="fixed top-0 left-0 bottom-0 w-72 max-w-[82vw] bg-zinc-950 border-r border-amber-500/30 z-50 transform -translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between shadow-2xl">
     
@@ -138,149 +138,158 @@
     </div>
   </aside>
 
-  <!-- ORDER DETAILS & DISPATCH ACTION MODAL -->
-  <div id="orderDetailsModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-5">
-    <div class="bg-zinc-950 border-t sm:border border-amber-500/30 rounded-t-2xl sm:rounded-2xl w-full max-w-xl shadow-2xl flex flex-col max-h-[92dvh] overflow-hidden">
-      
-      <!-- Modal Header -->
-      <div class="px-5 sm:px-6 py-4 border-b border-zinc-800/80 bg-zinc-900/60 flex justify-between items-center shrink-0">
-        <div class="flex items-center gap-3">
-          <span id="detailOrderIdBadge" class="bg-amber-500 text-black font-black text-xs px-2.5 py-1 rounded-md tracking-wider">#--</span>
-          <div>
+  <!-- FULL-WINDOW ORDER DETAILS & DISPATCH ACTION VIEW -->
+  <div id="orderDetailsModal" class="fixed inset-0 w-full h-dvh bg-black z-50 hidden flex flex-col overflow-hidden">
+    
+    <!-- Full-Window Top Navigation Bar -->
+    <div class="w-full border-b border-zinc-800 bg-zinc-950 shrink-0" style="padding-top: max(0.75rem, env(safe-area-inset-top));">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <button onclick="closeOrderDetailsModal()" aria-label="Back to orders" class="bg-zinc-900 hover:bg-zinc-800 active:scale-95 border border-zinc-800 text-zinc-200 font-bold px-3 py-2 rounded-xl text-xs inline-flex items-center gap-1.5 shrink-0 transition">
+            <i data-lucide="arrow-left" class="w-4 h-4 text-amber-400"></i>
+            <span>Back</span>
+          </button>
+
+          <span id="detailOrderIdBadge" class="bg-amber-500 text-black font-black text-xs px-2.5 py-1 rounded-md tracking-wider shrink-0">#--</span>
+
+          <div class="min-w-0">
             <div class="flex items-center gap-2">
-              <h3 id="detailClientName" class="text-base sm:text-lg font-bold text-white leading-tight">--</h3>
-              <span id="detailCurrentStatusPill" class="bg-zinc-900 border border-amber-500/40 text-amber-400 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">Pending</span>
+              <h3 id="detailClientName" class="text-sm sm:text-lg font-bold text-white leading-tight truncate">--</h3>
+              <span id="detailCurrentStatusPill" class="bg-zinc-900 border border-amber-500/40 text-amber-400 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider shrink-0">Pending</span>
             </div>
-            <p id="detailCreatedDate" class="text-[11px] text-zinc-400 mt-0.5">Order Placed: --</p>
+            <p id="detailCreatedDate" class="text-[11px] text-zinc-400 mt-0.5 truncate">Order Placed: --</p>
           </div>
         </div>
-        <button onclick="closeOrderDetailsModal()" aria-label="Close modal" class="text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 w-9 h-9 rounded-full flex items-center justify-center transition">
+
+        <button onclick="closeOrderDetailsModal()" aria-label="Close full window" class="text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
+    </div>
 
-      <!-- Modal Content Body -->
-      <div class="p-5 sm:p-6 overflow-y-auto ios-scroll space-y-4 text-xs">
+    <!-- Full-Window Scrollable Content Area -->
+    <div class="flex-1 overflow-y-auto ios-scroll">
+      <div class="max-w-3xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-5 text-xs">
 
         <!-- LIVE / COMPLETED SERVICE DURATION BANNER -->
-        <div id="detailDurationBanner" class="hidden bg-amber-950/35 border border-amber-500/50 rounded-xl p-3.5 flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
-              <i data-lucide="timer" class="w-4 h-4"></i>
+        <div id="detailDurationBanner" class="hidden bg-amber-950/35 border border-amber-500/50 rounded-xl p-4 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+              <i data-lucide="timer" class="w-5 h-5"></i>
             </div>
             <div>
-              <span id="detailDurationTitle" class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 block">Service In Progress</span>
-              <span id="detailDurationSubtitle" class="text-[11px] text-zinc-300">Started at --</span>
+              <span id="detailDurationTitle" class="text-xs font-extrabold uppercase tracking-wider text-amber-400 block">Service In Progress</span>
+              <span id="detailDurationSubtitle" class="text-xs text-zinc-300">Started at --</span>
             </div>
           </div>
           <div class="text-right shrink-0">
-            <span id="detailDurationTimer" class="font-mono font-black text-base sm:text-lg text-white tracking-wider block">00:00:00</span>
+            <span id="detailDurationTimer" class="font-mono font-black text-lg sm:text-xl text-white tracking-wider block">00:00:00</span>
             <span id="detailDurationStatusTag" class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Live Timer</span>
           </div>
         </div>
 
-        <!-- 1. CLIENT INFORMATION, ADDRESS & BOOKED TIME -->
-        <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 space-y-3">
-          <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-            <span class="font-bold text-amber-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-              <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
-              Client Information &amp; Dispatch Details
-            </span>
-            <a id="detailCallBtn" href="#" class="bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-bold px-2.5 py-1 rounded-lg text-[11px] transition inline-flex items-center gap-1">
-              <i data-lucide="phone" class="w-3 h-3 text-amber-400"></i>
-              <span>Call Client</span>
-            </a>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <span class="text-zinc-500 text-[10px] uppercase font-bold block">Phone Number</span>
-              <a id="detailPhone" href="#" class="font-bold text-white hover:text-amber-400 text-xs transition">--</a>
-            </div>
-            <div>
-              <span class="text-zinc-500 text-[10px] uppercase font-bold block">Email Address</span>
-              <span id="detailEmail" class="font-mono text-zinc-300 text-[11px] break-all">--</span>
-            </div>
-          </div>
-
-          <!-- Service Address -->
-          <div class="pt-2.5 border-t border-zinc-800/80">
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-zinc-500 text-[10px] uppercase font-bold flex items-center gap-1">
-                <i data-lucide="map-pin" class="w-3 h-3 text-amber-400"></i>
-                Service Address
-              </span>
-              <a id="detailMapsUrl" href="#" target="_blank" class="text-[11px] text-amber-400 hover:text-amber-300 font-bold inline-flex items-center gap-1 transition">
-                <span>Open in Maps</span>
-                <i data-lucide="external-link" class="w-3 h-3"></i>
-              </a>
-            </div>
-            <p id="detailServiceAddress" class="font-bold text-white text-xs">--</p>
-          </div>
-
-          <!-- Booked Time & Order Timestamp -->
-          <div class="pt-2.5 border-t border-zinc-800/80 grid grid-cols-2 gap-3">
-            <div class="bg-black/50 border border-zinc-800/90 rounded-lg p-2.5">
-              <span class="text-zinc-500 text-[10px] uppercase font-bold block">Booked Service Date</span>
-              <span id="detailServiceDate" class="font-extrabold text-amber-400 text-xs mt-0.5 block">--</span>
-            </div>
-            <div class="bg-black/50 border border-zinc-800/90 rounded-lg p-2.5">
-              <span class="text-zinc-500 text-[10px] uppercase font-bold block">Booked Time Window</span>
-              <span id="detailTimeSlot" class="font-extrabold text-white text-xs mt-0.5 block">--</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. THREE STATUS ACTION BUTTONS (ON MY WAY | IN PROGRESS | COMPLETED -> SIGNATURE) -->
-        <div id="dispatchStatusActionBox" class="bg-zinc-900/70 border border-amber-500/30 rounded-xl p-4 space-y-2.5">
+        <!-- 1. THREE STATUS ACTION BUTTONS (ON MY WAY | IN PROGRESS | COMPLETED -> SIGNATURE) -->
+        <div id="dispatchStatusActionBox" class="bg-zinc-950 border border-amber-500/30 rounded-xl p-4 sm:p-5 space-y-3">
           <div class="flex justify-between items-center">
-            <span class="font-bold text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-              <i data-lucide="navigation" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span class="font-bold text-white uppercase tracking-wider text-xs flex items-center gap-1.5">
+              <i data-lucide="navigation" class="w-4 h-4 text-amber-400"></i>
               Dispatch Status Action
             </span>
-            <span class="text-[10px] text-zinc-400">Starts duration timer on In Progress</span>
+            <span class="text-[11px] text-zinc-400">Starts duration timer on In Progress</span>
           </div>
 
-          <div class="grid grid-cols-3 gap-2">
-            <button id="btnStatusOnMyWay" onclick="handleModalStatusAction('On My Way')" class="py-3 px-2 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 text-zinc-200 font-extrabold text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-sm cursor-pointer">
-              <i data-lucide="truck" class="w-4 h-4 text-amber-400"></i>
+          <div class="grid grid-cols-3 gap-2.5 sm:gap-3">
+            <button id="btnStatusOnMyWay" onclick="handleModalStatusAction('On My Way')" class="py-3.5 px-2 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-extrabold text-xs transition flex flex-col items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+              <i data-lucide="truck" class="w-5 h-5 text-amber-400"></i>
               <span id="labelOnMyWay">On My Way</span>
             </button>
 
-            <button id="btnStatusInProgress" onclick="handleModalStatusAction('In Progress')" class="py-3 px-2 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 text-zinc-200 font-extrabold text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-sm cursor-pointer">
-              <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+            <button id="btnStatusInProgress" onclick="handleModalStatusAction('In Progress')" class="py-3.5 px-2 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-extrabold text-xs transition flex flex-col items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+              <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
               <span id="labelInProgress">In Progress</span>
             </button>
 
-            <button id="btnStatusCompleted" onclick="handleModalStatusAction('Completed')" class="py-3 px-2 rounded-xl border border-amber-500/50 bg-amber-500 hover:bg-amber-400 text-black font-black text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-lg shadow-amber-900/25 cursor-pointer">
-              <i data-lucide="pen-tool" class="w-4 h-4 text-black"></i>
+            <button id="btnStatusCompleted" onclick="handleModalStatusAction('Completed')" class="py-3.5 px-2 rounded-xl border border-amber-500/50 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs transition flex flex-col items-center justify-center gap-1.5 shadow-lg shadow-amber-900/25 cursor-pointer">
+              <i data-lucide="pen-tool" class="w-5 h-5 text-black"></i>
               <span>Completed</span>
             </button>
           </div>
-          <p class="text-[10px] text-zinc-400 text-center pt-0.5">
+          <p class="text-[11px] text-zinc-400 text-center pt-0.5">
             Selecting <strong class="text-amber-400">Completed</strong> stops the service timer and opens the Client Signature pad.
           </p>
         </div>
 
-        <!-- LOYALTY DISCOUNT STATUS BANNER -->
-        <div id="detailLoyaltyBanner" class="hidden p-3.5 rounded-xl border bg-amber-950/30 border-amber-500/50 text-amber-300 flex justify-between items-center gap-2">
-          <div>
-            <span id="detailServiceNumBadge" class="font-bold block text-amber-400">Service #--</span>
-            <span id="detailLoyaltySubtext" class="text-[11px] text-zinc-300">Loyalty Tracker Status</span>
+        <!-- 2. CLIENT INFORMATION, ADDRESS & BOOKED TIME -->
+        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 sm:p-5 space-y-3.5">
+          <div class="flex items-center justify-between border-b border-zinc-800 pb-2.5">
+            <span class="font-bold text-amber-400 uppercase tracking-wider text-xs flex items-center gap-1.5">
+              <i data-lucide="user-check" class="w-4 h-4"></i>
+              Client Information &amp; Dispatch Details
+            </span>
+            <a id="detailCallBtn" href="#" class="bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-bold px-3 py-1.5 rounded-lg text-xs transition inline-flex items-center gap-1.5">
+              <i data-lucide="phone" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Call Client</span>
+            </a>
           </div>
-          <span id="detailLoyaltyTag" class="bg-amber-500/20 border border-amber-500 text-amber-300 px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-extrabold tracking-wide uppercase shrink-0">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <span class="text-zinc-500 text-[10px] uppercase font-bold block">Phone Number</span>
+              <a id="detailPhone" href="#" class="font-bold text-white hover:text-amber-400 text-sm transition">--</a>
+            </div>
+            <div>
+              <span class="text-zinc-500 text-[10px] uppercase font-bold block">Email Address</span>
+              <span id="detailEmail" class="font-mono text-zinc-300 text-xs break-all">--</span>
+            </div>
+          </div>
+
+          <!-- Service Address -->
+          <div class="pt-3 border-t border-zinc-800/80">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-zinc-500 text-[10px] uppercase font-bold flex items-center gap-1">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-amber-400"></i>
+                Service Address
+              </span>
+              <a id="detailMapsUrl" href="#" target="_blank" class="text-xs text-amber-400 hover:text-amber-300 font-bold inline-flex items-center gap-1 transition">
+                <span>Open in Maps</span>
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+            <p id="detailServiceAddress" class="font-bold text-white text-sm">--</p>
+          </div>
+
+          <!-- Booked Time & Order Timestamp -->
+          <div class="pt-3 border-t border-zinc-800/80 grid grid-cols-2 gap-3">
+            <div class="bg-zinc-900/70 border border-zinc-800 rounded-lg p-3">
+              <span class="text-zinc-500 text-[10px] uppercase font-bold block">Booked Service Date</span>
+              <span id="detailServiceDate" class="font-extrabold text-amber-400 text-sm mt-0.5 block">--</span>
+            </div>
+            <div class="bg-zinc-900/70 border border-zinc-800 rounded-lg p-3">
+              <span class="text-zinc-500 text-[10px] uppercase font-bold block">Booked Time Window</span>
+              <span id="detailTimeSlot" class="font-extrabold text-white text-sm mt-0.5 block">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOYALTY DISCOUNT STATUS BANNER -->
+        <div id="detailLoyaltyBanner" class="hidden p-4 rounded-xl border bg-amber-950/30 border-amber-500/50 text-amber-300 flex justify-between items-center gap-2">
+          <div>
+            <span id="detailServiceNumBadge" class="font-bold block text-amber-400 text-xs">Service #--</span>
+            <span id="detailLoyaltySubtext" class="text-xs text-zinc-300">Loyalty Tracker Status</span>
+          </div>
+          <span id="detailLoyaltyTag" class="bg-amber-500/20 border border-amber-500 text-amber-300 px-3 py-1 rounded-lg text-[11px] font-extrabold tracking-wide uppercase shrink-0">
             25% Off Add-Ons
           </span>
         </div>
 
         <!-- 3. WORK ORDER, PACKAGE & CLIENT SELECTED ADD-ONS -->
-        <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-4 space-y-3">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 sm:p-5 space-y-3.5">
           <div class="flex items-center justify-between pb-2.5 border-b border-zinc-800">
-            <span class="font-bold text-zinc-200 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-              <i data-lucide="wrench" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span class="font-bold text-zinc-200 uppercase tracking-wider text-xs flex items-center gap-1.5">
+              <i data-lucide="wrench" class="w-4 h-4 text-amber-400"></i>
               Vehicle, Package &amp; Add-Ons
             </span>
-            <span id="detailVehicleCategory" class="bg-zinc-950 border border-amber-500/40 text-amber-300 px-2.5 py-0.5 rounded-full font-bold text-[10px] tracking-wide">
+            <span id="detailVehicleCategory" class="bg-zinc-900 border border-amber-500/40 text-amber-300 px-3 py-0.5 rounded-full font-bold text-[11px] tracking-wide">
               --
             </span>
           </div>
@@ -288,17 +297,17 @@
           <div class="flex justify-between items-start gap-2">
             <div>
               <span class="text-zinc-400 text-[10px] uppercase tracking-wider font-semibold block mb-0.5">Base Service Package</span>
-              <p id="detailServiceType" class="text-sm font-extrabold text-white">--</p>
+              <p id="detailServiceType" class="text-base font-extrabold text-white">--</p>
             </div>
-            <span id="detailOrderTypeBadge" class="bg-zinc-900 text-zinc-300 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0">
+            <span id="detailOrderTypeBadge" class="bg-zinc-900 text-zinc-300 border border-zinc-800 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider shrink-0">
               One-Time
             </span>
           </div>
 
-          <div class="pt-2.5 border-t border-zinc-800/80">
-            <div class="flex justify-between items-center mb-2">
+          <div class="pt-3 border-t border-zinc-800/80">
+            <div class="flex justify-between items-center mb-2.5">
               <span class="text-zinc-400 text-[10px] uppercase tracking-wider font-semibold">Client Selected Add-Ons</span>
-              <span id="detailAddOnsSubtotalBadge" class="hidden text-[10px] font-extrabold text-amber-400 bg-amber-950/60 border border-amber-500/40 px-2 py-0.5 rounded">
+              <span id="detailAddOnsSubtotalBadge" class="hidden text-[11px] font-extrabold text-amber-400 bg-amber-950/60 border border-amber-500/40 px-2.5 py-0.5 rounded">
                 Add-Ons Total: $0.00
               </span>
             </div>
@@ -308,43 +317,47 @@
           </div>
 
           <!-- Financial Summary Bar -->
-          <div class="pt-2.5 border-t border-zinc-800/80 flex justify-between items-center">
+          <div class="pt-3 border-t border-zinc-800/80 flex justify-between items-center">
             <div>
               <span class="text-zinc-500 text-[10px] uppercase font-bold block">Payment Method</span>
-              <span id="detailPaymentMethod" class="font-bold text-amber-400 text-xs">--</span>
+              <span id="detailPaymentMethod" class="font-bold text-amber-400 text-sm">--</span>
             </div>
             <div class="text-right">
               <span class="text-zinc-500 text-[10px] uppercase font-bold block">Total Order Amount</span>
-              <span id="detailAmountPaid" class="font-black text-white text-base">$0.00</span>
+              <span id="detailAmountPaid" class="font-black text-white text-lg">$0.00</span>
             </div>
           </div>
         </div>
 
         <!-- CAPTURED SIGNATURE SECTION (SHOWN ONCE SIGNED) -->
-        <div id="detailSignatureContainer" class="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-3.5 space-y-2 hidden">
-          <span class="font-bold text-zinc-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5 border-b border-zinc-800 pb-1.5">
-            <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-amber-400"></i>
+        <div id="detailSignatureContainer" class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 space-y-2.5 hidden">
+          <span class="font-bold text-zinc-400 uppercase tracking-wider text-xs flex items-center gap-1.5 border-b border-zinc-800 pb-2">
+            <i data-lucide="pen-tool" class="w-4 h-4 text-amber-400"></i>
             Client Signature Confirmation
           </span>
-          <div class="bg-white p-2 rounded-lg flex justify-center">
-            <img id="detailSignatureImg" src="" alt="Client Signature" class="h-20 object-contain">
+          <div class="bg-white p-3 rounded-lg flex justify-center">
+            <img id="detailSignatureImg" src="" alt="Client Signature" class="h-24 object-contain">
           </div>
         </div>
 
       </div>
+    </div>
 
-      <!-- Modal Footer -->
-      <div class="px-5 sm:px-6 py-3 border-t border-zinc-800 bg-zinc-900/60 flex justify-end items-center shrink-0" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
-        <button onclick="closeOrderDetailsModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold px-5 py-2.5 rounded-lg text-xs transition">
-          Close Window
+    <!-- Full-Window Sticky Footer -->
+    <div class="w-full border-t border-zinc-800 bg-zinc-950 shrink-0" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+        <span class="text-[11px] text-zinc-500">KW Commercial Fleet Care Dispatch</span>
+        <button onclick="closeOrderDetailsModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition inline-flex items-center gap-1.5">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          <span>Return to Orders</span>
         </button>
       </div>
-
     </div>
+
   </div>
 
   <!-- DIGITAL SIGNATURE MODAL (TRIGGERED WHEN COMPLETED IS CLICKED) -->
-  <div id="signatureModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div id="signatureModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-zinc-950 border border-amber-500/40 rounded-2xl p-5 sm:p-6 max-w-lg w-full shadow-2xl space-y-4">
       <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
         <div>
@@ -385,7 +398,7 @@
   </div>
 
   <!-- COMPLETION CONFIRMATION MODAL -->
-  <div id="confirmationModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div id="confirmationModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-zinc-950 border border-amber-500/30 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4">
       <div class="pb-3 border-b border-zinc-800 text-center">
         <h3 class="text-lg font-bold text-white">Confirm Job Completion</h3>
@@ -959,7 +972,6 @@
       durationTickerTimer = setInterval(() => {
         const now = Date.now();
 
-        // 1. Tick all visible table timers for "In Progress" orders
         document.querySelectorAll('[data-live-start-ms]').forEach(el => {
           const startMs = parseInt(el.getAttribute('data-live-start-ms'), 10);
           if (!isNaN(startMs)) {
@@ -967,7 +979,6 @@
           }
         });
 
-        // 2. Tick the active Order Details Modal timer if open
         if (activeOrderModalId && !document.getElementById('orderDetailsModal').classList.contains('hidden')) {
           const activeBooking = allBookings.find(item => item.id === activeOrderModalId);
           if (activeBooking && activeBooking.payment_status === 'In Progress') {
@@ -1084,9 +1095,6 @@
       closeNavDrawer();
     }
 
-    /**
-     * Dynamically parses the exact add-ons & prices selected by the client on the booking site.
-     */
     function parseBookingAddOns(b) {
       const raw = b.add_ons ?? b.addons ?? b.selected_addons ?? b.selected_add_ons ?? null;
       if (!raw) return [];
@@ -1158,7 +1166,7 @@
           const parsedJson = JSON.parse(strVal);
           return parseBookingAddOns({ add_ons: parsedJson });
         } catch (e) {
-          // Fall through to text delimiter parsing
+          // Fall through
         }
       }
 
@@ -1242,6 +1250,7 @@
 
     async function handleLogout(logoutNotice = '') {
       closeNavDrawer();
+      closeOrderDetailsModal();
       stopEasternMidnightAutoLogout();
       stopLiveDurationTicker();
 
@@ -1319,7 +1328,7 @@
     }
 
     /* ----------------------------------------------------
-       ORDER DETAILS MODAL & 3-BUTTON STATUS WORKFLOW
+       FULL-WINDOW ORDER DETAILS & 3-BUTTON STATUS WORKFLOW
     ---------------------------------------------------- */
     function updateModalStatusButtonsUI(status) {
       const currentStatusPill = document.getElementById('detailCurrentStatusPill');
@@ -1343,8 +1352,8 @@
         }
       }
 
-      const readyStyle = 'py-3 px-2 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 text-zinc-200 font-extrabold text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-sm cursor-pointer';
-      const sentGrayedStyle = 'py-3 px-2 rounded-xl border border-zinc-800 bg-zinc-900/40 text-zinc-500 font-bold text-[11px] sm:text-xs flex flex-col items-center justify-center gap-1 opacity-50 cursor-not-allowed pointer-events-none';
+      const readyStyle = 'py-3.5 px-2 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-extrabold text-xs transition flex flex-col items-center justify-center gap-1.5 shadow-sm cursor-pointer';
+      const sentGrayedStyle = 'py-3.5 px-2 rounded-xl border border-zinc-800 bg-zinc-900/40 text-zinc-500 font-bold text-xs flex flex-col items-center justify-center gap-1.5 opacity-50 cursor-not-allowed pointer-events-none';
 
       const onMyWaySent = (status === 'On My Way' || status === 'Dispatched' || status === 'In Progress');
       if (btnOnMyWay) {
@@ -1366,7 +1375,7 @@
 
       if (btnCompleted) {
         btnCompleted.disabled = false;
-        btnCompleted.className = 'py-3 px-2 rounded-xl border border-amber-500/50 bg-amber-500 hover:bg-amber-400 text-black font-black text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-lg shadow-amber-900/25 cursor-pointer';
+        btnCompleted.className = 'py-3.5 px-2 rounded-xl border border-amber-500/50 bg-amber-500 hover:bg-amber-400 text-black font-black text-xs transition flex flex-col items-center justify-center gap-1.5 shadow-lg shadow-amber-900/25 cursor-pointer';
       }
     }
 
@@ -1501,8 +1510,8 @@
       const subBadge = document.getElementById('detailOrderTypeBadge');
       subBadge.textContent = isSub ? 'Subscription Plan' : 'One-Time Service';
       subBadge.className = isSub 
-        ? 'bg-amber-950/60 text-amber-300 border border-amber-500/50 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0'
-        : 'bg-zinc-900 text-zinc-300 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0';
+        ? 'bg-amber-950/60 text-amber-300 border border-amber-500/50 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider shrink-0'
+        : 'bg-zinc-900 text-zinc-300 border border-zinc-800 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider shrink-0';
 
       const addOnsContainer = document.getElementById('detailAddOnsList');
       const addOnsSubtotalBadge = document.getElementById('detailAddOnsSubtotalBadge');
@@ -1542,7 +1551,7 @@
       const pmLabel = getPaymentMethodLabel(b);
       const pmEl = document.getElementById('detailPaymentMethod');
       pmEl.textContent = pmLabel;
-      pmEl.className = pmLabel === 'Cash / Zelle' ? 'font-bold text-amber-400 text-xs' : 'font-semibold text-white text-xs';
+      pmEl.className = pmLabel === 'Cash / Zelle' ? 'font-bold text-amber-400 text-sm' : 'font-semibold text-white text-sm';
 
       const signatureContainer = document.getElementById('detailSignatureContainer');
       if (b.client_signature) {
@@ -1552,12 +1561,18 @@
         signatureContainer.classList.add('hidden');
       }
 
-      document.getElementById('orderDetailsModal').classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      const modalEl = document.getElementById('orderDetailsModal');
+      modalEl.classList.remove('hidden');
+      const scrollArea = modalEl.querySelector('.overflow-y-auto');
+      if (scrollArea) scrollArea.scrollTop = 0;
+
       refreshIcons();
     }
 
     function closeOrderDetailsModal() {
       document.getElementById('orderDetailsModal').classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
       activeOrderModalId = null;
     }
 
