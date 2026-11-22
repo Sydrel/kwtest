@@ -26,7 +26,7 @@
     }
   </style>
 </head>
-<body class="bg-black text-white min-h-screen px-3 py-6 sm:px-6 md:py-10 flex flex-col items-center justify-center font-sans antialiased">
+<body class="bg-black text-white min-h-screen px-3 py-6 sm:px-6 md:py-10 flex flex-col items-center justify-start font-sans antialiased">
 
   <!-- Services Alert Notification Popup Modal -->
   <div id="servicesAlertModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300">
@@ -75,98 +75,131 @@
     </p>
   </div>
 
-  <!-- Main Container -->
-  <div class="max-w-5xl w-full bg-zinc-950 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-2xl border border-[#8A6814]/40 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+  <!-- Main Single-Column Sequential Container -->
+  <div class="max-w-2xl w-full bg-zinc-950 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-2xl border border-[#8A6814]/40 flex flex-col space-y-6">
     
-    <!-- Left Column: Calendar & Time Slot Box -->
-    <div class="bg-black p-4 sm:p-6 rounded-lg sm:rounded-xl border border-zinc-800/90 flex flex-col justify-start space-y-4 w-full">
-      <div>
-        <div class="flex justify-between items-center mb-4">
-          <button type="button" id="prevMonth" class="bg-zinc-950 hover:bg-zinc-900 text-[#C59B27] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded text-xs sm:text-sm font-bold border border-[#8A6814]/40 transition">&larr; Prev</button>
-          <h3 id="monthYearDisplay" class="text-base sm:text-lg font-bold text-[#C59B27] tracking-wide"></h3>
-          <button type="button" id="nextMonth" class="bg-zinc-950 hover:bg-zinc-900 text-[#C59B27] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded text-xs sm:text-sm font-bold border border-[#8A6814]/40 transition">Next &rarr;</button>
-        </div>
-
-        <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center text-xs font-bold text-[#C59B27]/80 mb-2 sm:mb-3">
-          <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
-        </div>
-
-        <!-- Responsive Calendar Grid -->
-        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center"></div>
-
-        <div class="mt-3 pt-3 border-t border-zinc-900 text-xs text-zinc-400 text-center">
-          Selected Date : <span id="selectedDateDisplay" class="text-[#C59B27] font-bold text-xs sm:text-sm">None selected</span>
+    <!-- Beta Testing Banner + Re-Open Services Alert Button -->
+    <div class="p-3 bg-black border border-zinc-800 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-md">
+      <div class="flex items-start gap-2.5 flex-1 min-w-[200px]">
+        <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+        </span>
+        <div>
+          <p class="text-xs font-bold text-red-500 tracking-wide uppercase">System Notification &mdash; Beta Testing</p>
+          <p class="text-[11px] text-zinc-400 leading-snug mt-0.5">
+            Our booking system is currently operating in <strong class="text-white">Beta Testing</strong> mode.
+          </p>
         </div>
       </div>
-
-      <!-- Time Slots Grid -->
-      <div class="pt-3 border-t border-zinc-900">
-        <label class="block text-xs font-medium mb-2 text-zinc-300">Select Available Time Slot</label>
-        <div id="timeSlotGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 opacity-50 pointer-events-none">
-          <button type="button" data-time="05:00 AM - 08:00 AM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-2.5 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
-            05:00 AM - 08:00 AM
-          </button>
-          <button type="button" data-time="08:30 AM - 11:30 AM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-2.5 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
-            08:30 AM - 11:30 AM
-          </button>
-          <button type="button" data-time="12:00 PM - 03:00 PM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-2.5 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
-            12:00 PM - 03:00 PM
-          </button>
-          <button type="button" data-time="03:00 PM - 06:00 PM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-2.5 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
-            03:00 PM - 06:00 PM
-          </button>
-        </div>
-        <p id="timeSlotPrompt" class="text-[11px] text-zinc-500 text-center mt-2">Select a date on the grid above to unlock time slots.</p>
-      </div>
+      <button type="button" onclick="openServicesAlert()" class="flex-shrink-0 bg-[#C59B27]/10 hover:bg-[#C59B27]/20 text-[#C59B27] px-2.5 py-1 rounded text-[11px] font-bold border border-[#C59B27]/40 transition">
+        Services Alert
+      </button>
     </div>
 
-    <!-- Right Column: Booking & Payment Form -->
-    <div class="w-full">
-      <!-- Beta Testing Banner + Re-Open Services Alert Button -->
-      <div class="mb-4 p-3 bg-black border border-zinc-800 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-md">
-        <div class="flex items-start gap-2.5 flex-1 min-w-[200px]">
-          <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
-          </span>
+    <!-- STEP 1: BOOKING CALENDAR -->
+    <section id="step1CalendarSection" class="bg-black p-4 sm:p-6 rounded-xl border border-zinc-800/90">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-900">
+        <div class="flex items-center gap-2.5">
+          <span class="w-6 h-6 rounded-full bg-[#C59B27] text-black font-black text-xs flex items-center justify-center">1</span>
           <div>
-            <p class="text-xs font-bold text-red-500 tracking-wide uppercase">System Notification &mdash; Beta Testing</p>
-            <p class="text-[11px] text-zinc-400 leading-snug mt-0.5">
-              Our booking system is currently operating in <strong class="text-white">Beta Testing</strong> mode.
-            </p>
+            <h2 class="text-sm sm:text-base font-bold text-white uppercase tracking-wide">Select Service Date</h2>
+            <p class="text-[11px] text-zinc-400">Choose an available day on the calendar</p>
           </div>
         </div>
-        <button type="button" onclick="openServicesAlert()" class="flex-shrink-0 bg-[#C59B27]/10 hover:bg-[#C59B27]/20 text-[#C59B27] px-2.5 py-1 rounded text-[11px] font-bold border border-[#C59B27]/40 transition">
-          Services Alert
-        </button>
+        <span id="step1StatusBadge" class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">Required</span>
       </div>
 
-      <h2 class="text-lg sm:text-xl font-bold mb-1 text-white flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Book & Secure Appointment
-      </h2>
-      <p class="text-xs text-zinc-400 mb-4">Complete your details to confirm your detail service.</p>
+      <div class="flex justify-between items-center mb-4">
+        <button type="button" id="prevMonth" class="bg-zinc-950 hover:bg-zinc-900 text-[#C59B27] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded text-xs sm:text-sm font-bold border border-[#8A6814]/40 transition">&larr; Prev</button>
+        <h3 id="monthYearDisplay" class="text-base sm:text-lg font-bold text-[#C59B27] tracking-wide"></h3>
+        <button type="button" id="nextMonth" class="bg-zinc-950 hover:bg-zinc-900 text-[#C59B27] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded text-xs sm:text-sm font-bold border border-[#8A6814]/40 transition">Next &rarr;</button>
+      </div>
 
-      <form id="bookingForm" class="space-y-3 sm:space-y-3.5">
+      <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center text-xs font-bold text-[#C59B27]/80 mb-2 sm:mb-3">
+        <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+      </div>
+
+      <!-- Responsive Calendar Grid -->
+      <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center"></div>
+
+      <div class="mt-4 pt-3 border-t border-zinc-900 text-xs text-zinc-400 text-center">
+        Selected Date : <span id="selectedDateDisplay" class="text-[#C59B27] font-bold text-xs sm:text-sm">None selected</span>
+      </div>
+    </section>
+
+    <!-- STEP 2: TIME SLOT SELECTION -->
+    <section id="step2TimeSection" class="bg-black p-4 sm:p-6 rounded-xl border border-zinc-800/90 transition-opacity duration-300">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-900">
+        <div class="flex items-center gap-2.5">
+          <span id="step2NumberBadge" class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 font-black text-xs flex items-center justify-center transition-colors">2</span>
+          <div>
+            <h2 class="text-sm sm:text-base font-bold text-white uppercase tracking-wide">Select Arrival Window</h2>
+            <p id="timeSlotPrompt" class="text-[11px] text-zinc-500">Select a date in Step 1 to unlock time slots</p>
+          </div>
+        </div>
+        <span id="step2StatusBadge" class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-zinc-900 text-zinc-500 border border-zinc-800">Locked</span>
+      </div>
+
+      <div id="timeSlotGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 opacity-40 pointer-events-none transition-opacity">
+        <button type="button" data-time="05:00 AM - 08:00 AM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
+          05:00 AM - 08:00 AM
+        </button>
+        <button type="button" data-time="08:30 AM - 11:30 AM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
+          08:30 AM - 11:30 AM
+        </button>
+        <button type="button" data-time="12:00 PM - 03:00 PM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
+          12:00 PM - 03:00 PM
+        </button>
+        <button type="button" data-time="03:00 PM - 06:00 PM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3 rounded-lg border border-zinc-800 text-xs font-semibold text-center transition">
+          03:00 PM - 06:00 PM
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 3: BOOKING & PAYMENT INFORMATION -->
+    <section id="step3InfoSection" class="bg-black p-4 sm:p-6 rounded-xl border border-zinc-800/90 transition-opacity duration-300">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-900">
+        <div class="flex items-center gap-2.5">
+          <span id="step3NumberBadge" class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 font-black text-xs flex items-center justify-center transition-colors">3</span>
+          <div>
+            <h2 class="text-sm sm:text-base font-bold text-white uppercase tracking-wide">Booking & Payment Details</h2>
+            <p id="step3SubPrompt" class="text-[11px] text-zinc-500">Complete your contact, plan, and payment details</p>
+          </div>
+        </div>
+        <span id="step3StatusBadge" class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-zinc-900 text-zinc-500 border border-zinc-800">Step 3</span>
+      </div>
+
+      <form id="bookingForm" class="space-y-4">
         <div>
           <label class="block text-xs font-medium mb-1 text-zinc-300">Full Name</label>
-          <input type="text" id="clientName" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
+          <input type="text" id="clientName" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium mb-1 text-zinc-300">Phone Number</label>
-            <input type="tel" id="phone" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
+            <input type="tel" id="phone" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1 text-zinc-300">Email Address</label>
-            <input type="email" id="email" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
+            <input type="email" id="email" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
           </div>
+        </div>
+
+        <!-- LocationIQ Address Autocomplete Section -->
+        <div class="relative">
+          <label class="block text-xs font-medium mb-1 text-zinc-300">Mobile Service Address</label>
+          <input type="text" id="serviceAddress" required placeholder="Start typing street address..." autocomplete="off" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
+          
+          <!-- Dropdown Suggestions Container -->
+          <ul id="addressSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-zinc-950 border border-[#8A6814]/50 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-50 hidden divide-y divide-zinc-800/60"></ul>
         </div>
 
         <!-- Single Unified Dropdown: Subscription Plan - Vehicle Category -->
         <div>
           <label class="block text-xs font-medium mb-1 text-zinc-300">Select Subscription Plan & Vehicle Category</label>
-          <select id="servicePackageCombined" onchange="calculateTotalPrice()" class="w-full bg-black border border-[#8A6814]/50 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] font-semibold transition">
+          <select id="servicePackageCombined" onchange="calculateTotalPrice()" class="w-full bg-zinc-950 border border-[#8A6814]/50 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] font-semibold transition">
             
             <!-- KW Signature Wash 365 Plans ($220 - $300) -->
             <optgroup label="KW Signature Wash 365">
@@ -200,13 +233,13 @@
         </div>
 
         <!-- Setup Fee Mandatory Row ($50) -->
-        <div class="p-3 bg-black border border-zinc-800 rounded-lg flex items-center justify-between">
+        <div class="p-3 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center justify-between">
           <span class="text-xs font-semibold text-zinc-200">Setup Fee <span class="text-red-500 font-bold">(Non-refundable)</span></span>
           <span class="text-xs font-bold text-[#C59B27]">$50</span>
         </div>
 
         <!-- Subscription Agreement Disclaimer -->
-        <div id="subscriptionDisclaimer" class="p-3 bg-black border border-[#8A6814]/40 rounded-lg text-xs text-zinc-300 space-y-1">
+        <div id="subscriptionDisclaimer" class="p-3 bg-zinc-950 border border-[#8A6814]/40 rounded-lg text-xs text-zinc-300 space-y-1">
           <p class="font-bold text-[#C59B27] flex items-center gap-1.5">
             <svg class="w-4 h-4 text-[#C59B27]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             Recurring Monthly Membership Agreement:
@@ -217,7 +250,7 @@
         </div>
 
         <!-- Standard Add-ons Selection Section -->
-        <div class="p-3 bg-black border border-zinc-800 rounded-lg space-y-2">
+        <div class="p-3 bg-zinc-950 border border-zinc-800 rounded-lg space-y-2">
           <label class="block text-xs font-medium text-zinc-300">Select Add-On Services</label>
           <div class="space-y-3 text-xs text-zinc-300 max-h-48 overflow-y-auto pr-1">
             
@@ -225,11 +258,11 @@
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Pet Hair Removal</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal (Standard)" data-price="50" onchange="calculateTotalPrice()">
                   <span>Standard ($50)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal (Heavy)" data-price="90" onchange="calculateTotalPrice()">
                   <span>Heavy ($90)</span>
                 </label>
@@ -240,11 +273,11 @@
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Seat Shampoo / Extraction</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Seat Shampoo (Standard)" data-price="100" onchange="calculateTotalPrice()">
                   <span>Standard ($100)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Seat Shampoo (Deep Extraction)" data-price="140" onchange="calculateTotalPrice()">
                   <span>Deep ($140)</span>
                 </label>
@@ -255,11 +288,11 @@
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Engine Bay Cleaning</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay (Standard)" data-price="100" onchange="calculateTotalPrice()">
                   <span>Standard ($100)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay (Showroom Detail)" data-price="150" onchange="calculateTotalPrice()">
                   <span>Showroom ($150)</span>
                 </label>
@@ -270,11 +303,11 @@
             <div>
               <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Excessive Soil Removal</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Excessive Soil (Moderate)" data-price="70" onchange="calculateTotalPrice()">
                   <span>Moderate ($70)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
                   <input type="checkbox" class="addon-checkbox accent-red-600" value="Excessive Soil (Heavy)" data-price="100" onchange="calculateTotalPrice()">
                   <span>Heavy ($100)</span>
                 </label>
@@ -285,7 +318,7 @@
         </div>
 
         <!-- Dedicated Box: KW Elite Paint Restoration & Ceramic Protection -->
-        <div class="p-3.5 bg-black border border-[#C59B27]/50 rounded-lg space-y-3 shadow-lg">
+        <div class="p-3.5 bg-zinc-950 border border-[#C59B27]/50 rounded-lg space-y-3 shadow-lg">
           <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
             <div>
               <h4 class="text-xs font-bold text-[#C59B27] uppercase tracking-wider flex items-center gap-1.5">
@@ -301,27 +334,27 @@
             <div>
               <p class="text-[11px] font-bold text-[#C59B27] uppercase tracking-wider mb-1">Paint Correction <span class="text-zinc-400 normal-case font-normal">(Luxury/Exotic: Custom Quote)</span></p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (1-Step - Sedan/Coupe)" data-price="399" onchange="calculateTotalPrice()">
                   <span>1-Step Sedan/Coupe ($399)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (1-Step - Midsize SUV)" data-price="499" onchange="calculateTotalPrice()">
                   <span>1-Step Midsize SUV ($499)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (1-Step - Large SUV/Pickup)" data-price="599" onchange="calculateTotalPrice()">
                   <span>1-Step Large SUV/Pickup ($599)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (2-Step - Sedan/Coupe)" data-price="749" onchange="calculateTotalPrice()">
                   <span>2-Step Sedan/Coupe ($749)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (2-Step - Midsize SUV)" data-price="899" onchange="calculateTotalPrice()">
                   <span>2-Step Midsize SUV ($899)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (2-Step - Large SUV/Pickup)" data-price="1099" onchange="calculateTotalPrice()">
                   <span>2-Step Large SUV/Pickup ($1,099)</span>
                 </label>
@@ -332,27 +365,27 @@
             <div>
               <p class="text-[11px] font-bold text-[#C59B27] uppercase tracking-wider mb-1">Ceramic Coating Protection <span class="text-zinc-400 normal-case font-normal">(Luxury/Exotic: $1,899+ / Custom)</span></p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Premium Ceramic Coating (1-2 Year Protection - Sedan/Coupe)" data-price="499" onchange="calculateTotalPrice()">
                   <span>1-2Yr Sedan/Coupe ($499)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Premium Ceramic Coating (1-2 Year Protection - Midsize SUV)" data-price="599" onchange="calculateTotalPrice()">
                   <span>1-2Yr Midsize SUV ($599)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Premium Ceramic Coating (1-2 Year Protection - Large SUV/Pickup)" data-price="699" onchange="calculateTotalPrice()">
                   <span>1-2Yr Large SUV/Pickup ($699)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Ultimate Ceramic Coating (4-5 Year Protection - Sedan/Coupe)" data-price="1299" onchange="calculateTotalPrice()">
                   <span>4-5Yr Sedan/Coupe ($1,299)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Ultimate Ceramic Coating (4-5 Year Protection - Midsize SUV)" data-price="1499" onchange="calculateTotalPrice()">
                   <span>4-5Yr Midsize SUV ($1,499)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-black p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
                   <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Ultimate Ceramic Coating (4-5 Year Protection - Large SUV/Pickup)" data-price="1699" onchange="calculateTotalPrice()">
                   <span>4-5Yr Large SUV/Pickup ($1,699)</span>
                 </label>
@@ -361,26 +394,17 @@
           </div>
         </div>
 
-        <!-- LocationIQ Address Autocomplete Section -->
-        <div class="relative">
-          <label class="block text-xs font-medium mb-1 text-zinc-300">Mobile Service Address</label>
-          <input type="text" id="serviceAddress" placeholder="Start typing street address..." autocomplete="off" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
-          
-          <!-- Dropdown Suggestions Container -->
-          <ul id="addressSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-zinc-950 border border-[#8A6814]/50 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-50 hidden divide-y divide-zinc-800/60"></ul>
-        </div>
-
         <input type="hidden" id="serviceDate">
         <input type="hidden" id="selectedTimeSlotValue">
 
         <!-- Payment Method Choice Selector -->
-        <div class="mt-4">
+        <div class="pt-2">
           <label class="block text-xs font-medium mb-1.5 text-zinc-300">Payment Option</label>
           <div class="grid grid-cols-2 gap-2 mb-3">
-            <button type="button" id="payOnlineTab" class="py-2 px-3 text-xs font-bold rounded-lg border border-red-600 bg-red-600 text-white transition">
+            <button type="button" id="payOnlineTab" class="py-2.5 px-3 text-xs font-bold rounded-lg border border-red-600 bg-red-600 text-white transition">
               Card / Mobile Wallet
             </button>
-            <button type="button" id="payInPersonTab" class="py-2 px-3 text-xs font-bold rounded-lg border border-zinc-800 bg-black text-zinc-400 hover:text-white hover:border-zinc-700 transition">
+            <button type="button" id="payInPersonTab" class="py-2.5 px-3 text-xs font-bold rounded-lg border border-zinc-800 bg-zinc-950 text-zinc-400 hover:text-white hover:border-zinc-700 transition">
               Pay in Person / Zelle
             </button>
           </div>
@@ -398,36 +422,37 @@
               <div class="flex-grow border-t border-zinc-800"></div>
             </div>
 
-            <div class="p-3 bg-black border border-zinc-800 rounded-lg">
+            <div class="p-3 bg-zinc-950 border border-zinc-800 rounded-lg">
               <label class="block text-xs font-medium mb-2 text-zinc-300">Debit / Credit Card</label>
-              <div id="card-element" class="p-3 bg-zinc-950 border border-zinc-800 rounded-lg text-white"></div>
+              <div id="card-element" class="p-3 bg-black border border-zinc-800 rounded-lg text-white"></div>
               <div id="card-errors" class="text-xs text-red-500 mt-2 font-medium" role="alert"></div>
             </div>
           </div>
 
           <!-- Section 2: Pay in Person / Zelle Box (Hidden by Default) -->
-          <div id="inPersonSection" class="hidden p-4 bg-black border border-zinc-800 rounded-lg space-y-2">
+          <div id="inPersonSection" class="hidden p-4 bg-zinc-950 border border-zinc-800 rounded-lg space-y-2">
             <div class="flex items-center gap-2 text-[#C59B27] font-bold text-xs">
               <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Pay Upon Completion or via Zelle
             </div>
             <p class="text-xs text-zinc-300 leading-relaxed">
               No payment is required right now. You can pay with <strong class="text-white">Cash</strong>, <strong class="text-white">Card</strong>, or <strong class="text-white">Zelle</strong> when our detailing unit finishes servicing your vehicle at your location.
             </p>
-            <div class="p-2.5 bg-zinc-950 border border-[#8A6814]/40 rounded text-xs text-zinc-400">
+            <div class="p-2.5 bg-black border border-[#8A6814]/40 rounded text-xs text-zinc-400">
               <span class="font-bold text-[#C59B27]">Zelle Info:</span> Send payment to <span class="text-white font-medium">KW Commercial Fleet Washing & Mobile Detailing LLC</span> upon arrival.
             </div>
           </div>
         </div>
 
-        <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg text-xs sm:text-sm transition duration-200 mt-2 shadow-lg shadow-red-950/50">
+        <button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-lg text-xs sm:text-sm transition duration-200 mt-2 shadow-lg shadow-red-950/50">
           Confirm Subscription Booking (<span id="payBtnAmount">$270</span>)
         </button>
       </form>
       
-      <div id="successMessage" class="hidden mt-4 p-4 bg-black border border-[#C59B27] text-white rounded-lg text-center text-sm shadow-lg">
+      <div id="successMessage" class="hidden mt-4 p-4 bg-zinc-950 border border-[#C59B27] text-white rounded-lg text-center text-sm shadow-lg">
         Appointment successfully confirmed! We look forward to servicing your vehicle.
       </div>
-    </div>
+    </section>
+
   </div>
 
   <script>
@@ -561,11 +586,11 @@
 
     payOnlineTab.addEventListener('click', () => {
       currentPaymentMethod = 'online';
-      payOnlineTab.classList.replace('bg-black', 'bg-red-600');
+      payOnlineTab.classList.replace('bg-zinc-950', 'bg-red-600');
       payOnlineTab.classList.replace('text-zinc-400', 'text-white');
       payOnlineTab.classList.replace('border-zinc-800', 'border-red-600');
 
-      payInPersonTab.classList.replace('bg-red-600', 'bg-black');
+      payInPersonTab.classList.replace('bg-red-600', 'bg-zinc-950');
       payInPersonTab.classList.replace('text-white', 'text-zinc-400');
       payInPersonTab.classList.replace('border-red-600', 'border-zinc-800');
 
@@ -578,11 +603,11 @@
 
     payInPersonTab.addEventListener('click', () => {
       currentPaymentMethod = 'in_person';
-      payInPersonTab.classList.replace('bg-black', 'bg-red-600');
+      payInPersonTab.classList.replace('bg-zinc-950', 'bg-red-600');
       payInPersonTab.classList.replace('text-zinc-400', 'text-white');
       payInPersonTab.classList.replace('border-zinc-800', 'border-red-600');
 
-      payOnlineTab.classList.replace('bg-red-600', 'bg-black');
+      payOnlineTab.classList.replace('bg-red-600', 'bg-zinc-950');
       payOnlineTab.classList.replace('text-white', 'text-zinc-400');
       payOnlineTab.classList.replace('border-red-600', 'border-zinc-800');
 
@@ -617,7 +642,7 @@
 
     calculateTotalPrice();
 
-    // Time Slot Grid Selection Setup
+    // Time Slot Grid Selection Setup (Step 2 -> Step 3 Progression)
     let selectedTimeSlotStr = '';
     const timeSlotBtns = document.querySelectorAll('.time-slot-btn');
 
@@ -637,6 +662,20 @@
 
         selectedTimeSlotStr = btn.getAttribute('data-time');
         document.getElementById('selectedTimeSlotValue').value = selectedTimeSlotStr;
+
+        // Update Step 2 Badge to Completed
+        const step2Status = document.getElementById('step2StatusBadge');
+        step2Status.textContent = 'Selected';
+        step2Status.className = 'text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#C59B27]/15 text-[#C59B27] border border-[#C59B27]/40';
+
+        // Highlight Step 3 & Scroll Smoothly
+        const step3Badge = document.getElementById('step3NumberBadge');
+        step3Badge.classList.replace('bg-zinc-800', 'bg-[#C59B27]');
+        step3Badge.classList.replace('text-zinc-400', 'text-black');
+
+        const step3Section = document.getElementById('step3InfoSection');
+        step3Section.classList.add('border-[#C59B27]/50');
+        step3Section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
 
@@ -660,10 +699,20 @@
     function updateTimeSlotAvailability(selectedDateStr, monthBookings) {
       const timeGrid = document.getElementById('timeSlotGrid');
       const timePrompt = document.getElementById('timeSlotPrompt');
-      timeGrid.classList.remove('opacity-50', 'pointer-events-none');
-      timePrompt.textContent = 'Tap to select an available time window:';
+      const step2Badge = document.getElementById('step2NumberBadge');
+      const step2Status = document.getElementById('step2StatusBadge');
+
+      timeGrid.classList.remove('opacity-40', 'pointer-events-none');
+      timePrompt.textContent = 'Tap an available arrival window below:';
       timePrompt.classList.remove('text-zinc-500');
       timePrompt.classList.add('text-[#C59B27]');
+
+      step2Badge.classList.replace('bg-zinc-800', 'bg-[#C59B27]');
+      step2Badge.classList.replace('text-zinc-400', 'text-black');
+      if (!selectedTimeSlotStr) {
+        step2Status.textContent = 'Select Time';
+        step2Status.className = 'text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-zinc-900 text-[#C59B27] border border-[#C59B27]/40';
+      }
 
       const bookedSlots = monthBookings
         .filter(b => b.service_date === selectedDateStr)
@@ -709,12 +758,14 @@
 
     expressCheckoutElement.on('confirm', async (event) => {
       if (!selectedDateStr) {
-        alert('Please select a date from the calendar grid before paying.');
+        alert('Please select a date in Step 1 before paying.');
+        document.getElementById('step1CalendarSection').scrollIntoView({ behavior: 'smooth' });
         event.decline();
         return;
       }
       if (!selectedTimeSlotStr) {
-        alert('Please select a time slot from the grid under the calendar.');
+        alert('Please select a time slot in Step 2 before paying.');
+        document.getElementById('step2TimeSection').scrollIntoView({ behavior: 'smooth' });
         event.decline();
         return;
       }
@@ -841,7 +892,7 @@
         const totalOrdersOnDate = currentMonthBookings.filter(b => b.service_date === dateStr).length;
 
         dayDiv.textContent = day;
-        dayDiv.className = "h-9 sm:h-11 text-xs sm:text-sm rounded-lg cursor-pointer transition flex items-center justify-center font-bold border border-zinc-900/80 ";
+        dayDiv.className = "h-10 sm:h-11 text-xs sm:text-sm rounded-lg cursor-pointer transition flex items-center justify-center font-bold border border-zinc-900/80 ";
 
         if (dateStr < todayStr) {
           dayDiv.classList.add('text-zinc-700', 'cursor-not-allowed', 'bg-zinc-950/40');
@@ -865,8 +916,16 @@
             const formattedDisplayDate = `${formattedDay}:${formattedMonth}:${year}`;
             document.getElementById('selectedDateDisplay').textContent = formattedDisplayDate;
 
+            // Update Step 1 Badge
+            const step1Status = document.getElementById('step1StatusBadge');
+            step1Status.textContent = 'Selected';
+            step1Status.className = 'text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#C59B27]/15 text-[#C59B27] border border-[#C59B27]/40';
+
             updateTimeSlotAvailability(selectedDateStr, currentMonthBookings);
             renderCalendar();
+
+            // Smooth scroll to Step 2 Time Selection
+            document.getElementById('step2TimeSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
           });
         }
         grid.appendChild(dayDiv);
@@ -881,11 +940,13 @@
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!selectedDateStr) {
-        alert('Please select a date from the calendar grid.');
+        alert('Please select a date in Step 1.');
+        document.getElementById('step1CalendarSection').scrollIntoView({ behavior: 'smooth' });
         return;
       }
       if (!selectedTimeSlotStr) {
-        alert('Please select a time slot from the grid under the calendar.');
+        alert('Please select an arrival window in Step 2.');
+        document.getElementById('step2TimeSection').scrollIntoView({ behavior: 'smooth' });
         return;
       }
 
