@@ -162,6 +162,23 @@
       <!-- Modal Content Body -->
       <div class="p-5 sm:p-6 overflow-y-auto ios-scroll space-y-4 text-xs">
 
+        <!-- LIVE / COMPLETED SERVICE DURATION BANNER -->
+        <div id="detailDurationBanner" class="hidden bg-amber-950/35 border border-amber-500/50 rounded-xl p-3.5 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+              <i data-lucide="timer" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <span id="detailDurationTitle" class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 block">Service In Progress</span>
+              <span id="detailDurationSubtitle" class="text-[11px] text-zinc-300">Started at --</span>
+            </div>
+          </div>
+          <div class="text-right shrink-0">
+            <span id="detailDurationTimer" class="font-mono font-black text-base sm:text-lg text-white tracking-wider block">00:00:00</span>
+            <span id="detailDurationStatusTag" class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Live Timer</span>
+          </div>
+        </div>
+
         <!-- 1. CLIENT INFORMATION, ADDRESS & BOOKED TIME -->
         <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
@@ -221,7 +238,7 @@
               <i data-lucide="navigation" class="w-3.5 h-3.5 text-amber-400"></i>
               Dispatch Status Action
             </span>
-            <span class="text-[10px] text-zinc-400">Opens SMS on your phone &amp; emails client</span>
+            <span class="text-[10px] text-zinc-400">Starts duration timer on In Progress</span>
           </div>
 
           <div class="grid grid-cols-3 gap-2">
@@ -241,7 +258,7 @@
             </button>
           </div>
           <p class="text-[10px] text-zinc-400 text-center pt-0.5">
-            Selecting <strong class="text-amber-400">Completed</strong> opens the Client Signature pad to finalize the order.
+            Selecting <strong class="text-amber-400">Completed</strong> stops the service timer and opens the Client Signature pad.
           </p>
         </div>
 
@@ -380,6 +397,7 @@
         <div class="flex justify-between"><span class="text-zinc-400">Client:</span><span id="confirmClientName" class="font-bold text-white">--</span></div>
         <div class="flex justify-between"><span class="text-zinc-400">Send Receipt To:</span><span id="confirmClientEmail" class="font-bold text-amber-300 truncate max-w-[180px]">--</span></div>
         <div class="flex justify-between"><span class="text-zinc-400">Service:</span><span id="confirmService" class="font-bold text-zinc-200 truncate max-w-[180px]">--</span></div>
+        <div id="confirmDurationRow" class="flex justify-between hidden"><span class="text-zinc-400">Service Duration:</span><span id="confirmDuration" class="font-bold text-amber-400">--</span></div>
         <div class="flex justify-between"><span class="text-zinc-400">Total Paid:</span><span id="confirmAmount" class="font-bold text-white">$0.00</span></div>
         
         <div class="pt-2 border-t border-zinc-800">
@@ -797,6 +815,7 @@
     let clientUsageMap = {};
     let currentFilter = 'Upcoming';
     let autoRefreshTimer = null;
+    let durationTickerTimer = null;
     let midnightWatcherTimer = null;
     let audioContext = null;
     let initialLoadComplete = false;
@@ -817,6 +836,155 @@
     function refreshIcons() {
       if (window.lucide) {
         lucide.createIcons();
+      }
+    }
+
+    /* ----------------------------------------------------
+       SERVICE DURATION TRACKER HELPERS
+    ---------------------------------------------------- */
+    function getLocalStartTimesMap() {
+      try {
+        return JSON.parse(localStorage.getItem('kw_service_start_times') || '{}');
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function setLocalStartTime(bookingId, isoString) {
+      try {
+        const map = getLocalStartTimesMap();
+        map[String(bookingId)] = isoString;
+        localStorage.setItem('kw_service_start_times', JSON.stringify(map));
+      } catch (e) {
+        console.warn('Local duration cache warning:', e);
+      }
+    }
+
+    function clearLocalStartTime(bookingId) {
+      try {
+        const map = getLocalStartTimesMap();
+        delete map[String(bookingId)];
+        localStorage.setItem('kw_service_start_times', JSON.stringify(map));
+      } catch (e) {
+        console.warn('Local duration clear warning:', e);
+      }
+    }
+
+    function getServiceStartTimestamp(b) {
+      if (!b) return null;
+      const localMap = getLocalStartTimesMap();
+      const rawStart = b.in_progress_at || localMap[String(b.id)] || (b.payment_status === 'In Progress' ? b.updated_at : null);
+      if (!rawStart) return null;
+      const ms = new Date(rawStart).getTime();
+      return isNaN(ms) ? null : ms;
+    }
+
+    function formatLiveTimerHHMMSS(ms) {
+      const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+      const hrs = Math.floor(totalSeconds / 3600);
+      const mins = Math.floor((totalSeconds % 3600) / 60);
+      const secs = totalSeconds % 60;
+      return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function formatHumanDuration(ms) {
+      const totalMinutes = Math.max(1, Math.round(ms / 60000));
+      const hrs = Math.floor(totalMinutes / 60);
+      const mins = totalMinutes % 60;
+      if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m`;
+      if (hrs > 0) return `${hrs}h 0m`;
+      return `${mins} min`;
+    }
+
+    function getBookingDurationDisplay(b) {
+      const startMs = getServiceStartTimestamp(b);
+      if (!startMs) return null;
+
+      if (b.payment_status === 'In Progress') {
+        const elapsed = Date.now() - startMs;
+        return {
+          isLive: true,
+          formatted: formatLiveTimerHHMMSS(elapsed),
+          human: formatHumanDuration(elapsed),
+          startMs
+        };
+      }
+
+      if (b.payment_status === 'Completed' && b.completed_at) {
+        const endMs = new Date(b.completed_at).getTime();
+        if (!isNaN(endMs) && endMs >= startMs) {
+          const totalMs = endMs - startMs;
+          return {
+            isLive: false,
+            formatted: formatLiveTimerHHMMSS(totalMs),
+            human: formatHumanDuration(totalMs),
+            startMs,
+            endMs
+          };
+        }
+      }
+
+      return null;
+    }
+
+    function updateModalDurationBanner(b) {
+      const banner = document.getElementById('detailDurationBanner');
+      if (!banner || !b) return;
+
+      const durationInfo = getBookingDurationDisplay(b);
+      if (!durationInfo) {
+        banner.classList.add('hidden');
+        return;
+      }
+
+      banner.classList.remove('hidden');
+      const startStr = new Date(durationInfo.startMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      if (durationInfo.isLive) {
+        document.getElementById('detailDurationTitle').textContent = 'Service In Progress';
+        document.getElementById('detailDurationSubtitle').textContent = `Started at ${startStr}`;
+        document.getElementById('detailDurationTimer').textContent = durationInfo.formatted;
+        document.getElementById('detailDurationStatusTag').textContent = 'Live Timer';
+      } else {
+        const endStr = new Date(durationInfo.endMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('detailDurationTitle').textContent = 'Total Service Time';
+        document.getElementById('detailDurationSubtitle').textContent = `${startStr} – ${endStr}`;
+        document.getElementById('detailDurationTimer').textContent = durationInfo.human;
+        document.getElementById('detailDurationStatusTag').textContent = 'Completed';
+      }
+    }
+
+    function startLiveDurationTicker() {
+      if (durationTickerTimer) clearInterval(durationTickerTimer);
+      durationTickerTimer = setInterval(() => {
+        const now = Date.now();
+
+        // 1. Tick all visible table timers for "In Progress" orders
+        document.querySelectorAll('[data-live-start-ms]').forEach(el => {
+          const startMs = parseInt(el.getAttribute('data-live-start-ms'), 10);
+          if (!isNaN(startMs)) {
+            el.textContent = formatLiveTimerHHMMSS(now - startMs);
+          }
+        });
+
+        // 2. Tick the active Order Details Modal timer if open
+        if (activeOrderModalId && !document.getElementById('orderDetailsModal').classList.contains('hidden')) {
+          const activeBooking = allBookings.find(item => item.id === activeOrderModalId);
+          if (activeBooking && activeBooking.payment_status === 'In Progress') {
+            const startMs = getServiceStartTimestamp(activeBooking);
+            if (startMs) {
+              const timerEl = document.getElementById('detailDurationTimer');
+              if (timerEl) timerEl.textContent = formatLiveTimerHHMMSS(now - startMs);
+            }
+          }
+        }
+      }, 1000);
+    }
+
+    function stopLiveDurationTicker() {
+      if (durationTickerTimer) {
+        clearInterval(durationTickerTimer);
+        durationTickerTimer = null;
       }
     }
 
@@ -1075,6 +1243,7 @@
     async function handleLogout(logoutNotice = '') {
       closeNavDrawer();
       stopEasternMidnightAutoLogout();
+      stopLiveDurationTicker();
 
       try {
         await supabaseClient.auth.signOut();
@@ -1191,7 +1360,7 @@
         btnInProgress.disabled = inProgressSent;
         btnInProgress.className = inProgressSent ? sentGrayedStyle : readyStyle;
         if (labelInProgress) {
-          labelInProgress.textContent = inProgressSent ? 'In Progress (Sent)' : 'In Progress';
+          labelInProgress.textContent = inProgressSent ? 'In Progress (Active)' : 'In Progress';
         }
       }
 
@@ -1264,10 +1433,18 @@
 
       updateModalStatusButtonsUI(targetStatus);
       await updateStatus(activeOrderModalId, targetStatus);
+      updateModalDurationBanner(booking);
+      refreshIcons();
+
       sendStatusUpdateEmail(booking, targetStatus);
       launchNativePhoneSMS(booking, targetStatus);
 
-      showToast('Status Sent', `"${targetStatus}" recorded & ready to send from your phone.`);
+      showToast(
+        targetStatus === 'In Progress' ? 'Service Timer Started' : 'Status Sent',
+        targetStatus === 'In Progress'
+          ? `Tracking service duration for Order #${booking.id}.`
+          : `"${targetStatus}" recorded & ready to send from your phone.`
+      );
     }
 
     function openOrderDetailsModal(bookingId) {
@@ -1275,6 +1452,8 @@
       if (!b) return;
 
       activeOrderModalId = bookingId;
+
+      updateModalDurationBanner(b);
 
       const clientKey = (b.email || b.phone || b.client_name || '').toLowerCase().trim();
       const clientStats = clientUsageMap[clientKey];
@@ -1445,6 +1624,15 @@
       document.getElementById('confirmAmount').textContent = `$${parseFloat(booking.amount_paid || 0).toFixed(2)}`;
       document.getElementById('confirmSignatureImg').src = pendingSignatureDataUrl;
 
+      const startMs = getServiceStartTimestamp(booking);
+      const confirmDurationRow = document.getElementById('confirmDurationRow');
+      if (startMs && confirmDurationRow) {
+        document.getElementById('confirmDuration').textContent = formatHumanDuration(Date.now() - startMs);
+        confirmDurationRow.classList.remove('hidden');
+      } else if (confirmDurationRow) {
+        confirmDurationRow.classList.add('hidden');
+      }
+
       document.getElementById('signatureModal').classList.add('hidden');
       document.getElementById('confirmationModal').classList.remove('hidden');
       refreshIcons();
@@ -1459,13 +1647,15 @@
       const booking = allBookings.find(b => b.id === pendingCompletionBookingId);
       if (!booking) return;
 
+      const completedIso = new Date().toISOString();
+
       try {
         let { error } = await supabaseClient
           .from('bookings')
           .update({ 
             payment_status: 'Completed',
             client_signature: pendingSignatureDataUrl,
-            completed_at: new Date().toISOString()
+            completed_at: completedIso
           })
           .eq('id', pendingCompletionBookingId);
 
@@ -1481,6 +1671,7 @@
 
         booking.payment_status = 'Completed';
         booking.client_signature = pendingSignatureDataUrl;
+        booking.completed_at = completedIso;
 
         await sendJobCompletedEmail(booking, pendingSignatureDataUrl);
 
@@ -1535,14 +1726,40 @@
 
     async function updateStatus(id, newStatus) {
       try {
-        const { error } = await supabaseClient
-          .from('bookings')
-          .update({ payment_status: newStatus })
-          .eq('id', id);
-
-        if (error) throw error;
         const item = allBookings.find(b => b.id === id);
-        if (item) item.payment_status = newStatus;
+        let startIso = null;
+
+        if (newStatus === 'In Progress') {
+          const existingStartMs = getServiceStartTimestamp(item);
+          startIso = existingStartMs ? new Date(existingStartMs).toISOString() : new Date().toISOString();
+          setLocalStartTime(id, startIso);
+
+          const { error } = await supabaseClient
+            .from('bookings')
+            .update({ payment_status: newStatus, in_progress_at: startIso })
+            .eq('id', id);
+
+          if (error) {
+            const fallback = await supabaseClient
+              .from('bookings')
+              .update({ payment_status: newStatus })
+              .eq('id', id);
+            if (fallback.error) throw fallback.error;
+          }
+
+          if (item) {
+            item.payment_status = newStatus;
+            item.in_progress_at = startIso;
+          }
+        } else {
+          const { error } = await supabaseClient
+            .from('bookings')
+            .update({ payment_status: newStatus })
+            .eq('id', id);
+
+          if (error) throw error;
+          if (item) item.payment_status = newStatus;
+        }
         
         buildClientUsageMap();
         calculateAnalytics();
@@ -1629,6 +1846,7 @@
       refreshIcons();
 
       startEasternMidnightAutoLogout();
+      startLiveDurationTicker();
 
       fetchBookings();
       fetchContacts();
@@ -1670,10 +1888,19 @@
         if (error) throw error;
         
         const previousCount = allBookings.length;
-        const freshData = (data || []).map(b => ({
-          ...b,
-          payment_status: b.payment_status || 'Pending'
-        }));
+        const localStarts = getLocalStartTimesMap();
+        const freshData = (data || []).map(b => {
+          const status = b.payment_status || 'Pending';
+          const resolvedStart = b.in_progress_at || localStarts[String(b.id)] || null;
+          if (b.in_progress_at) {
+            setLocalStartTime(b.id, b.in_progress_at);
+          }
+          return {
+            ...b,
+            payment_status: status,
+            in_progress_at: resolvedStart
+          };
+        });
 
         if (initialLoadComplete && freshData.length > previousCount) {
           const newCount = freshData.length - previousCount;
@@ -2603,7 +2830,7 @@
 
     /* ----------------------------------------------------
        STREAMLINED 3-COLUMN DISPATCH TABLE RENDERER
-       (ORDER | SCHEDULE | STATUS)
+       (ORDER | SCHEDULE | STATUS + DURATION TRACKER)
     ---------------------------------------------------- */
     function renderTable() {
       const tbody = document.getElementById('dispatchTableBody');
@@ -2670,6 +2897,7 @@
         const hasSignature = !!b.client_signature;
         const status = b.payment_status || 'Pending';
         const isCashZelleDue = getPaymentMethodLabel(b) === 'Cash / Zelle' && status !== 'Completed' && status !== 'Cancelled';
+        const durationInfo = getBookingDurationDisplay(b);
 
         return `
           <tr onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer hover:bg-zinc-900/80 active:bg-zinc-900 transition group">
@@ -2702,10 +2930,10 @@
               ` : ''}
             </td>
 
-            <!-- COLUMN 3: STATUS (Dropdown, Collect Cash/Zelle Cue & Modal Chevron) -->
+            <!-- COLUMN 3: STATUS (Dropdown, Live Duration Timer, Cash/Zelle Cue & Modal Chevron) -->
             <td class="p-3.5 align-top">
               <div class="flex items-center justify-between gap-2">
-                <div class="space-y-1" onclick="event.stopPropagation()">
+                <div class="space-y-1.5" onclick="event.stopPropagation()">
                   <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded-lg px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-amber-500 ${getStatusColorClass(status)}">
                     <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
                     <option value="Paid & Confirmed" ${status === 'Paid & Confirmed' ? 'selected' : ''}>Paid &amp; Confirmed</option>
@@ -2714,7 +2942,20 @@
                     <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
                     <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                   </select>
+
                   <div class="flex flex-wrap items-center gap-1.5">
+                    ${durationInfo && durationInfo.isLive ? `
+                      <span class="bg-amber-950/70 border border-amber-500/50 text-amber-300 text-[10px] font-mono font-extrabold px-2 py-0.5 rounded inline-flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span data-live-start-ms="${durationInfo.startMs}">${durationInfo.formatted}</span>
+                      </span>
+                    ` : ''}
+                    ${durationInfo && !durationInfo.isLive ? `
+                      <span class="bg-zinc-900 border border-zinc-700 text-zinc-300 text-[10px] font-bold px-2 py-0.5 rounded inline-flex items-center gap-1">
+                        <i data-lucide="timer" class="w-3 h-3 text-amber-400"></i>
+                        <span>${durationInfo.human}</span>
+                      </span>
+                    ` : ''}
                     ${isCashZelleDue ? `
                       <span class="bg-amber-500/15 border border-amber-500/40 text-amber-300 text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider">
                         Cash/Zelle
