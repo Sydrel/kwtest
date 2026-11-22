@@ -99,7 +99,12 @@
           </div>
 
           <div class="pt-2.5 border-t border-zinc-800/80">
-            <span class="text-zinc-400 text-[10px] uppercase tracking-wider font-semibold block mb-2">Requested Add-On Services</span>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-zinc-400 text-[10px] uppercase tracking-wider font-semibold">Client Selected Add-Ons</span>
+              <span id="detailAddOnsSubtotalBadge" class="hidden text-[10px] font-extrabold text-amber-400 bg-amber-950/60 border border-amber-500/40 px-2 py-0.5 rounded">
+                Add-Ons Total: $0.00
+              </span>
+            </div>
             <div id="detailAddOnsList" class="flex flex-wrap gap-2">
               <span class="text-zinc-500 italic">No add-ons selected for this job.</span>
             </div>
@@ -418,7 +423,7 @@
           </div>
         </div>
 
-        <!-- 7-DAY WEEK VIEW CONTAINER (DEFAULT OR TOGGLED) -->
+        <!-- 7-DAY WEEK VIEW CONTAINER -->
         <div id="weekCalendarContainer" class="space-y-3">
           <!-- Mobile / Tablet Portrait 7-Day Quick Strip (< 768px) -->
           <div id="mobileWeekStrip" class="md:hidden grid grid-cols-7 gap-1.5 bg-zinc-950 p-2.5 rounded-xl border border-zinc-800">
@@ -515,7 +520,7 @@
               <i data-lucide="trending-up" class="w-4 h-4 text-amber-400"></i>
               <span>Financial &amp; Revenue Analytics</span>
             </h2>
-            <p class="text-xs text-zinc-400">Track revenue trajectories, service stream mix, and add-on breakdown.</p>
+            <p class="text-xs text-zinc-400">Track revenue trajectories, service stream mix, and exact booked add-on revenue.</p>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-xs text-zinc-400">Chart Range:</span>
@@ -584,8 +589,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-1 bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
             <div class="mb-4">
-              <h3 class="text-xs font-bold text-white uppercase tracking-wider">Top Add-On Revenue</h3>
-              <p class="text-[11px] text-zinc-500">Gross earnings per add-on category</p>
+              <h3 class="text-xs font-bold text-white uppercase tracking-wider">Booked Add-On Revenue</h3>
+              <p class="text-[11px] text-zinc-500">Actual earnings per selected add-on</p>
             </div>
             <div class="h-64 relative w-full flex items-center justify-center">
               <canvas id="addOnsChart"></canvas>
@@ -594,7 +599,7 @@
 
           <div class="lg:col-span-2 bg-zinc-950 rounded-xl border border-zinc-800 p-4">
             <div class="flex justify-between items-center mb-3">
-              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Individual Add-On Revenue Breakdown</h3>
+              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Client Selected Add-Ons Breakdown</h3>
               <span id="totalAddOnRevBadge" class="bg-amber-950/60 border border-amber-600/50 text-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider">
                 Add-On Total: $0.00
               </span>
@@ -603,10 +608,10 @@
               <table class="w-full text-left text-xs">
                 <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase font-semibold">
                   <tr>
-                    <th class="p-3">Add-On Service</th>
-                    <th class="p-3">Unit Price Range</th>
-                    <th class="p-3">Times Purchased</th>
-                    <th class="p-3">Estimated Gross Revenue</th>
+                    <th class="p-3">Add-On Service Clicked</th>
+                    <th class="p-3">Avg / Booked Price</th>
+                    <th class="p-3">Times Selected</th>
+                    <th class="p-3">Recorded Add-On Revenue</th>
                   </tr>
                 </thead>
                 <tbody id="addOnsReportTableBody" class="divide-y divide-zinc-900 text-zinc-300">
@@ -656,7 +661,7 @@
       <div id="ordersTableSection" class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
         <div class="px-4 py-2.5 bg-zinc-900/50 border-b border-zinc-800 text-zinc-400 text-[11px] flex items-center gap-2">
           <i data-lucide="info" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
-          <span>Tap any order row to inspect complete specifications, add-ons, and client contact details.</span>
+          <span>Tap any order row to inspect exact add-ons clicked, pricing, and client contact details.</span>
         </div>
         <div class="overflow-x-auto ios-scroll">
           <table class="w-full text-left text-xs">
@@ -664,7 +669,7 @@
               <tr>
                 <th class="p-3.5">Order ID &amp; Client</th>
                 <th class="p-3.5">Schedule &amp; Location</th>
-                <th class="p-3.5">Vehicle &amp; Service</th>
+                <th class="p-3.5">Vehicle, Package &amp; Add-Ons</th>
                 <th class="p-3.5">Amount / Method</th>
                 <th class="p-3.5">Status &amp; Action</th>
               </tr>
@@ -705,20 +710,106 @@
     let revenueMixChartInstance = null;
     let addOnsChartInstance = null;
 
-    const ADD_ON_PRICING = [
-      { key: 'pet hair', name: 'Pet Hair Removal', price: 70, range: '$50 - $90' },
-      { key: 'seat', name: 'Seat Shampoo / Extraction', price: 120, range: '$100 - $140' },
-      { key: 'engine', name: 'Engine Bay Cleaning', price: 125, range: '$100 - $150' },
-      { key: 'soil', name: 'Excessive Soil Removal', price: 85, range: '$70 - $100' },
-      { key: 'polishing', name: 'Paint Polishing', price: 260, range: '$175 - $350' },
-      { key: 'correction', name: 'Paint Correction', price: 350, range: '$250 - $450' },
-      { key: 'ceramic', name: 'Ceramic Coating', price: 500, range: '$400 - $600' }
-    ];
-
     function refreshIcons() {
       if (window.lucide) {
         lucide.createIcons();
       }
+    }
+
+    /**
+     * Dynamically parses the exact add-ons & prices selected by the client on the booking site.
+     * Supports:
+     * 1) JSON arrays: [{"name": "Pet Hair Removal", "price": 75}] or ["Pet Hair Removal ($75)"]
+     * 2) JSON objects: {"Pet Hair Removal": 75, "Engine Bay": 125}
+     * 3) Formatted strings: "Pet Hair Removal ($75), Engine Bay Cleaning - $125" or "Pet Hair Removal +$75"
+     * 4) Plain comma/semicolon/newline-separated strings: "Pet Hair Removal, Engine Bay Cleaning"
+     */
+    function parseBookingAddOns(b) {
+      const raw = b.add_ons ?? b.addons ?? b.selected_addons ?? b.selected_add_ons ?? null;
+      if (!raw) return [];
+
+      const results = [];
+
+      const extractNameAndPrice = (str) => {
+        const cleaned = String(str).trim();
+        if (!cleaned || cleaned.toLowerCase() === 'none' || cleaned.toLowerCase() === 'no add-ons') return null;
+
+        // Match patterns like "Name ($75.00)", "Name - $75", "Name: $75", "Name +$75"
+        const priceMatch = cleaned.match(/^(.*?)(?:\s*[\(\-\:\+]\s*\$?\s*(\d+(?:\.\d{1,2})?)\s*\)?|\s+\$(\d+(?:\.\d{1,2})?))$/);
+        if (priceMatch) {
+          const name = priceMatch[1].replace(/[\(\-\:\+]+$/, '').trim();
+          const priceVal = parseFloat(priceMatch[2] || priceMatch[3]);
+          return {
+            name: name || cleaned,
+            price: !isNaN(priceVal) ? priceVal : null
+          };
+        }
+        return { name: cleaned, price: null };
+      };
+
+      const normalizeItem = (item, fallbackKey = '') => {
+        if (item === null || item === undefined) return;
+        if (typeof item === 'string') {
+          const parsed = extractNameAndPrice(item);
+          if (parsed) results.push(parsed);
+        } else if (typeof item === 'number') {
+          if (fallbackKey) {
+            results.push({ name: fallbackKey, price: item });
+          }
+        } else if (typeof item === 'object') {
+          const name = item.name || item.title || item.label || item.service || item.addon || fallbackKey;
+          const rawPrice = item.price ?? item.amount ?? item.cost ?? item.value ?? null;
+          const price = rawPrice !== null && rawPrice !== '' && !isNaN(parseFloat(rawPrice))
+            ? parseFloat(rawPrice)
+            : null;
+          if (name && String(name).toLowerCase() !== 'none') {
+            results.push({ name: String(name).trim(), price });
+          }
+        }
+      };
+
+      // Handle already-parsed JS Array or Object (e.g., Supabase JSONB column)
+      if (Array.isArray(raw)) {
+        raw.forEach(item => normalizeItem(item));
+        return results;
+      }
+
+      if (typeof raw === 'object') {
+        Object.entries(raw).forEach(([k, v]) => {
+          if (v === false || v === 0 || v === null) return;
+          if (typeof v === 'boolean' && v === true) {
+            const parsed = extractNameAndPrice(k);
+            if (parsed) results.push(parsed);
+          } else {
+            normalizeItem(v, k);
+          }
+        });
+        return results;
+      }
+
+      // Handle String (JSON string or delimited text)
+      const strVal = String(raw).trim();
+      if (!strVal || strVal.toLowerCase() === 'none' || strVal === '[]' || strVal === '{}') {
+        return [];
+      }
+
+      if ((strVal.startsWith('[') && strVal.endsWith(']')) || (strVal.startsWith('{') && strVal.endsWith('}'))) {
+        try {
+          const parsedJson = JSON.parse(strVal);
+          return parseBookingAddOns({ add_ons: parsedJson });
+        } catch (e) {
+          // Fall through to text delimiter parsing
+        }
+      }
+
+      // Split by comma, semicolon, pipe, or newline (avoiding splitting inside parentheses)
+      const parts = strVal.split(/,(?![^\(\)]*\))|;|\||\n/);
+      parts.forEach(part => {
+        const parsed = extractNameAndPrice(part);
+        if (parsed) results.push(parsed);
+      });
+
+      return results;
     }
 
     window.addEventListener('click', initAudioContext, { once: true });
@@ -884,20 +975,38 @@
         ? 'bg-amber-950/60 text-amber-300 border border-amber-500/50 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0'
         : 'bg-zinc-900 text-zinc-300 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0';
 
+      // Render exact Add-Ons clicked by the client on the booking site
       const addOnsContainer = document.getElementById('detailAddOnsList');
-      const addOnText = (b.add_ons || b.service_type || '').toLowerCase();
-      const matchedAddOns = ADD_ON_PRICING.filter(item => addOnText.includes(item.key));
+      const addOnsSubtotalBadge = document.getElementById('detailAddOnsSubtotalBadge');
+      const selectedAddOns = parseBookingAddOns(b);
 
-      if (matchedAddOns.length > 0) {
-        addOnsContainer.innerHTML = matchedAddOns.map(item => `
-          <span class="bg-amber-500/10 text-amber-300 border border-amber-500/40 px-3 py-1.5 rounded-lg font-bold text-xs inline-flex items-center gap-1.5 shadow-sm">
-            <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>${escapeHtml(item.name)}</span>
-            <span class="text-[10px] text-amber-400/70 font-normal">(${item.range})</span>
-          </span>
-        `).join('');
+      if (selectedAddOns.length > 0) {
+        let knownAddOnSum = 0;
+        let hasAnyPrice = false;
+
+        addOnsContainer.innerHTML = selectedAddOns.map(item => {
+          if (item.price !== null && !isNaN(item.price)) {
+            knownAddOnSum += item.price;
+            hasAnyPrice = true;
+          }
+          return `
+            <span class="bg-amber-500/10 text-amber-300 border border-amber-500/40 px-3 py-1.5 rounded-lg font-bold text-xs inline-flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>${escapeHtml(item.name)}</span>
+              ${item.price !== null ? `<span class="bg-amber-500 text-black text-[10px] font-black px-1.5 py-0.5 rounded ml-0.5">$${item.price.toFixed(2)}</span>` : ''}
+            </span>
+          `;
+        }).join('');
+
+        if (hasAnyPrice) {
+          addOnsSubtotalBadge.textContent = `Add-Ons Total: $${knownAddOnSum.toFixed(2)}`;
+          addOnsSubtotalBadge.classList.remove('hidden');
+        } else {
+          addOnsSubtotalBadge.classList.add('hidden');
+        }
       } else {
-        addOnsContainer.innerHTML = `<span class="text-xs text-zinc-500 italic">No additional add-on services selected.</span>`;
+        addOnsSubtotalBadge.classList.add('hidden');
+        addOnsContainer.innerHTML = `<span class="text-xs text-zinc-500 italic">No add-ons selected by client during booking.</span>`;
       }
 
       document.getElementById('detailPhone').textContent = b.phone || 'N/A';
@@ -1369,26 +1478,33 @@
       renderCharts();
     }
 
+    /**
+     * Dynamically aggregates all Add-Ons actually selected by clients in Supabase `bookings`
+     */
     function calculateAddOnsData() {
       const stats = {};
-      ADD_ON_PRICING.forEach(item => {
-        stats[item.key] = {
-          name: item.name,
-          range: item.range,
-          price: item.price,
-          count: 0,
-          revenue: 0
-        };
-      });
 
       allBookings.forEach(b => {
         if (b.payment_status === 'Cancelled') return;
-        const addOnText = (b.add_ons || b.service_type || '').toLowerCase();
+        const selectedItems = parseBookingAddOns(b);
 
-        ADD_ON_PRICING.forEach(item => {
-          if (addOnText.includes(item.key)) {
-            stats[item.key].count += 1;
-            stats[item.key].revenue += item.price;
+        selectedItems.forEach(item => {
+          const normalizedKey = item.name.toLowerCase().trim();
+          if (!normalizedKey) return;
+
+          if (!stats[normalizedKey]) {
+            stats[normalizedKey] = {
+              name: item.name,
+              count: 0,
+              pricedCount: 0,
+              revenue: 0
+            };
+          }
+
+          stats[normalizedKey].count += 1;
+          if (item.price !== null && !isNaN(item.price)) {
+            stats[normalizedKey].revenue += item.price;
+            stats[normalizedKey].pricedCount += 1;
           }
         });
       });
@@ -1518,37 +1634,62 @@
 
     function renderAddOnsReport(stats) {
       const tbody = document.getElementById('addOnsReportTableBody');
-      const addOnList = Object.values(stats);
+      const addOnList = Object.values(stats).sort((a, b) => b.count - a.count);
       let totalAddOnRevenue = 0;
 
       addOnList.forEach(item => totalAddOnRevenue += item.revenue);
 
       document.getElementById('totalAddOnRevBadge').textContent = `Add-On Total: $${totalAddOnRevenue.toFixed(2)}`;
 
-      tbody.innerHTML = addOnList.map(item => `
-        <tr class="hover:bg-zinc-900/50 transition">
-          <td class="p-3 font-bold text-white">${escapeHtml(item.name)}</td>
-          <td class="p-3 text-zinc-400 font-mono text-[11px]">${item.range}</td>
-          <td class="p-3">
-            <span class="bg-zinc-900 border border-zinc-800 text-amber-300 font-bold px-2 py-0.5 rounded text-[11px]">
-              ${item.count} order(s)
-            </span>
-          </td>
-          <td class="p-3 font-bold text-white">$${item.revenue.toFixed(2)}</td>
-        </tr>
-      `).join('');
+      if (addOnList.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="p-4 text-center text-zinc-500">No client add-ons recorded in bookings yet.</td>
+          </tr>
+        `;
+      } else {
+        tbody.innerHTML = addOnList.map(item => {
+          const avgPriceText = item.pricedCount > 0
+            ? `$${(item.revenue / item.pricedCount).toFixed(2)}`
+            : 'Included in Total';
+          const revText = item.pricedCount > 0
+            ? `$${item.revenue.toFixed(2)}`
+            : '—';
+
+          return `
+            <tr class="hover:bg-zinc-900/50 transition">
+              <td class="p-3 font-bold text-white">${escapeHtml(item.name)}</td>
+              <td class="p-3 text-zinc-400 font-mono text-[11px]">${avgPriceText}</td>
+              <td class="p-3">
+                <span class="bg-zinc-900 border border-zinc-800 text-amber-300 font-bold px-2 py-0.5 rounded text-[11px]">
+                  ${item.count} order(s)
+                </span>
+              </td>
+              <td class="p-3 font-bold text-white">${revText}</td>
+            </tr>
+          `;
+        }).join('');
+      }
 
       const ctx3 = document.getElementById('addOnsChart')?.getContext('2d');
       if (ctx3) {
         if (addOnsChartInstance) addOnsChartInstance.destroy();
 
+        const hasPricedAddOns = addOnList.some(i => i.revenue > 0);
+        const chartLabels = addOnList.length > 0
+          ? addOnList.slice(0, 8).map(i => i.name.length > 16 ? i.name.slice(0, 16) + '…' : i.name)
+          : ['No Add-Ons'];
+        const chartValues = addOnList.length > 0
+          ? addOnList.slice(0, 8).map(i => hasPricedAddOns ? i.revenue : i.count)
+          : [0];
+
         addOnsChartInstance = new Chart(ctx3, {
           type: 'bar',
           data: {
-            labels: addOnList.map(i => i.name.split(' ')[0]),
+            labels: chartLabels,
             datasets: [{
-              label: 'Add-On Revenue ($)',
-              data: addOnList.map(i => i.revenue),
+              label: hasPricedAddOns ? 'Add-On Revenue ($)' : 'Times Selected',
+              data: chartValues,
               backgroundColor: 'rgba(217, 119, 6, 0.75)',
               borderColor: 'rgba(245, 158, 11, 1)',
               borderWidth: 1.5,
@@ -1563,14 +1704,20 @@
               legend: { display: false },
               tooltip: {
                 callbacks: {
-                  label: (ctx) => ` Revenue: $${ctx.raw.toFixed(2)}`
+                  label: (ctx) => hasPricedAddOns
+                    ? ` Revenue: $${ctx.raw.toFixed(2)}`
+                    : ` Selected: ${ctx.raw} time(s)`
                 }
               }
             },
             scales: {
               x: {
                 grid: { color: 'rgba(39, 39, 42, 0.6)' },
-                ticks: { color: '#a1a1aa', font: { size: 9 }, callback: (v) => `$${v}` }
+                ticks: {
+                  color: '#a1a1aa',
+                  font: { size: 9 },
+                  callback: (v) => hasPricedAddOns ? `$${v}` : v
+                }
               },
               y: {
                 grid: { display: false },
@@ -1676,7 +1823,6 @@
         weekContainer.classList.remove('hidden');
         monthContainer.classList.add('hidden');
 
-        // Calculate Sunday to Saturday for the selected week
         const startOfWeek = new Date(calendarCurrentDate);
         startOfWeek.setHours(0, 0, 0, 0);
         startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
@@ -1713,7 +1859,6 @@
         desktopWeekGrid.innerHTML = weekDays.map(wd => `
           <div class="bg-zinc-900/40 border ${wd.isToday ? 'border-amber-500 bg-amber-950/15' : 'border-zinc-800'} rounded-xl p-2.5 min-h-[340px] flex flex-col justify-between transition">
             <div>
-              <!-- Day Column Header -->
               <div class="text-center pb-2.5 mb-2.5 border-b ${wd.isToday ? 'border-amber-500/40' : 'border-zinc-800'}">
                 <span class="block text-[10px] font-extrabold uppercase tracking-widest ${wd.isToday || wd.isWeekend ? 'text-amber-400' : 'text-zinc-400'}">
                   ${wd.weekdayShort}
@@ -1728,12 +1873,12 @@
                 </div>
               </div>
 
-              <!-- Day Jobs List -->
               <div class="space-y-2 max-h-[360px] overflow-y-auto pr-0.5">
                 ${wd.bookings.length === 0 ? `
                   <div class="py-8 text-center text-[11px] text-zinc-600 italic">Open</div>
                 ` : wd.bookings.map(b => {
                   const badgeColor = getJobBadgeStyle(b);
+                  const addOnsCount = parseBookingAddOns(b).length;
                   return `
                     <div onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer bg-zinc-950 hover:bg-zinc-900 border ${badgeColor} p-2.5 rounded-lg text-[11px] space-y-1 transition shadow-sm">
                       <div class="flex justify-between items-center font-bold">
@@ -1745,9 +1890,9 @@
                         <i data-lucide="clock" class="w-3 h-3 shrink-0"></i>
                         <span class="truncate">${escapeHtml(b.time_slot || 'Standard')}</span>
                       </div>
-                      <div class="text-[10px] text-zinc-400 truncate flex items-center gap-1">
-                        <i data-lucide="truck" class="w-3 h-3 shrink-0 text-zinc-500"></i>
-                        <span class="truncate">${escapeHtml(b.vehicle_category || 'Vehicle')}</span>
+                      <div class="text-[10px] text-zinc-400 truncate flex items-center justify-between gap-1">
+                        <span class="truncate inline-flex items-center gap-1"><i data-lucide="truck" class="w-3 h-3 shrink-0 text-zinc-500"></i>${escapeHtml(b.vehicle_category || 'Vehicle')}</span>
+                        ${addOnsCount > 0 ? `<span class="text-[9px] text-amber-400 font-bold shrink-0">+${addOnsCount}</span>` : ''}
                       </div>
                     </div>
                   `;
@@ -1787,6 +1932,7 @@
               ` : wd.bookings.map(b => {
                 const badgeColor = getJobBadgeStyle(b);
                 const pmLabel = getPaymentMethodLabel(b);
+                const addOnsCount = parseBookingAddOns(b).length;
                 return `
                   <div onclick="openOrderDetailsModal(${b.id})" class="active:scale-[0.99] cursor-pointer bg-zinc-900/70 hover:bg-zinc-900 border ${badgeColor} p-3.5 rounded-xl space-y-2 transition">
                     <div class="flex justify-between items-start gap-2">
@@ -1811,6 +1957,7 @@
                       <span class="inline-flex items-center gap-1">
                         <i data-lucide="truck" class="w-3.5 h-3.5 text-zinc-500"></i>
                         ${escapeHtml(b.vehicle_category || 'Vehicle')}
+                        ${addOnsCount > 0 ? `<span class="text-amber-400 font-bold ml-1">(+${addOnsCount} Add-Ons)</span>` : ''}
                       </span>
                     </div>
 
@@ -1861,7 +2008,6 @@
           }
         });
 
-        // 1. Desktop & Landscape Tablet 7-Column Full Month Grid
         let desktopHtml = '';
         for (let i = 0; i < startingDayIndex; i++) {
           desktopHtml += `<div class="bg-zinc-950/40 border border-zinc-900 rounded-xl p-2 min-h-[115px]"></div>`;
@@ -1907,7 +2053,6 @@
         }
         gridEl.innerHTML = desktopHtml;
 
-        // 2. Mobile & Portrait Tablet Month Agenda
         let mobileHtml = '';
         let renderedDaysCount = 0;
 
@@ -2178,6 +2323,7 @@
         const status = b.payment_status || 'Pending';
         const paymentLabel = getPaymentMethodLabel(b);
         const isCashZelle = paymentLabel === 'Cash / Zelle';
+        const selectedAddOns = parseBookingAddOns(b);
 
         return `
           <tr onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer hover:bg-zinc-900/80 transition group">
@@ -2207,17 +2353,25 @@
               </a>
             </td>
 
-            <!-- COLUMN 3: Vehicle & Service Package -->
+            <!-- COLUMN 3: Vehicle, Service Package & Selected Add-Ons -->
             <td class="p-3.5">
-              <div class="flex items-center gap-1.5 mb-1">
+              <div class="flex flex-wrap items-center gap-1.5 mb-1">
                 <span class="bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-[10px] font-bold text-zinc-200">
                   ${escapeHtml(b.vehicle_category || 'Vehicle')}
                 </span>
                 ${isSub 
                   ? `<span class="bg-amber-950/60 text-amber-300 border border-amber-500/50 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Sub</span>` 
                   : `<span class="bg-zinc-900 text-zinc-400 border border-zinc-800 px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider">One-Time</span>`}
+                ${selectedAddOns.length > 0 
+                  ? `<span class="bg-amber-500/15 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded text-[9px] font-extrabold">+${selectedAddOns.length} Add-On${selectedAddOns.length > 1 ? 's' : ''}</span>` 
+                  : ''}
               </div>
               <div class="text-[11px] text-zinc-300 font-semibold max-w-xs truncate">${escapeHtml(b.service_type || 'Detailing Package')}</div>
+              ${selectedAddOns.length > 0 ? `
+                <div class="text-[10px] text-amber-400/90 truncate max-w-xs mt-0.5">
+                  ${selectedAddOns.map(a => escapeHtml(a.price !== null ? `${a.name} ($${a.price})` : a.name)).join(' • ')}
+                </div>
+              ` : ''}
             </td>
 
             <!-- COLUMN 4: Amount & Payment Type -->
