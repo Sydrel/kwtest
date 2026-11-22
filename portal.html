@@ -125,8 +125,11 @@
     <!-- Drawer Footer -->
     <div class="p-4 border-t border-zinc-800/80 bg-zinc-900/40 space-y-3" style="padding-bottom: max(1rem, env(safe-area-inset-bottom));">
       <div class="flex items-center justify-between text-[11px] px-1">
-        <span class="text-zinc-400">Auto-Logout</span>
-        <span class="text-amber-400 font-bold">12:00 AM ET</span>
+        <span class="text-zinc-400">Live Sync</span>
+        <span class="text-amber-400 font-bold inline-flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          Connected
+        </span>
       </div>
       <button onclick="handleLogout()" class="w-full bg-zinc-900 hover:bg-zinc-800 border border-amber-500/30 text-xs text-amber-400 font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2">
         <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
@@ -432,10 +435,6 @@
         <i data-lucide="shield-check" class="w-4 h-4"></i>
         <span>Sign In to Portal</span>
       </button>
-
-      <p class="text-[11px] text-zinc-500 text-center pt-1">
-        Sessions automatically sign out daily at <span class="text-zinc-400 font-semibold">12:00 AM Eastern Time</span>.
-      </p>
     </form>
   </div>
 
@@ -831,7 +830,6 @@
        AUTOMATIC 12:00 AM EASTERN TIME (AMERICA/NEW_YORK) LOGOUT
     ---------------------------------------------------- */
     function getEasternDateKey(dateObj = new Date()) {
-      // Returns YYYY-MM-DD in America/New_York (handles EST/EDT automatically)
       return new Intl.DateTimeFormat('en-CA', {
         timeZone: 'America/New_York',
         year: 'numeric',
@@ -843,7 +841,6 @@
     function startEasternMidnightAutoLogout() {
       stopEasternMidnightAutoLogout();
 
-      // Record the Eastern Time date when the session started/resumed
       let loginEtDate = sessionStorage.getItem('kw_login_et_date');
       const currentEtDate = getEasternDateKey();
 
@@ -851,12 +848,10 @@
         loginEtDate = currentEtDate;
         sessionStorage.setItem('kw_login_et_date', loginEtDate);
       } else if (loginEtDate !== currentEtDate) {
-        // Midnight ET already passed while browser/device was asleep
         triggerMidnightAutoLogout();
         return;
       }
 
-      // Check every 15 seconds if Eastern Time date rolled past 12:00 AM
       midnightWatcherTimer = setInterval(() => {
         if (sessionStorage.getItem('kw_auth') !== 'true') return;
         const activeLoginDate = sessionStorage.getItem('kw_login_et_date');
@@ -877,16 +872,14 @@
     async function triggerMidnightAutoLogout() {
       stopEasternMidnightAutoLogout();
 
-      // Close any open overlays/modals cleanly before signing out
       closeNavDrawer();
       closeOrderDetailsModal();
       document.getElementById('signatureModal')?.classList.add('hidden');
       document.getElementById('confirmationModal')?.classList.add('hidden');
 
-      await handleLogout('Session automatically signed out at 12:00 AM Eastern Time. Please sign in again.');
+      await handleLogout('Session expired. Please sign in again.');
     }
 
-    // Re-verify immediately when user unlocks phone or switches back to browser tab
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && sessionStorage.getItem('kw_auth') === 'true') {
         const activeLoginDate = sessionStorage.getItem('kw_login_et_date');
@@ -1039,9 +1032,8 @@
         const savedEtDate = sessionStorage.getItem('kw_login_et_date');
         const todayEtDate = getEasternDateKey();
 
-        // If user logged in on a prior Eastern Time day, enforce 12:00 AM ET logout immediately
         if (savedEtDate && savedEtDate !== todayEtDate) {
-          await handleLogout('Session expired at 12:00 AM Eastern Time. Please sign in again.');
+          await handleLogout('Session expired. Please sign in again.');
         } else {
           if (!savedEtDate) {
             sessionStorage.setItem('kw_login_et_date', todayEtDate);
@@ -1643,7 +1635,6 @@
       document.getElementById('portalDashboard').classList.remove('hidden');
       refreshIcons();
 
-      // Start the 12:00 AM Eastern Time automatic logout watcher
       startEasternMidnightAutoLogout();
 
       fetchBookings();
