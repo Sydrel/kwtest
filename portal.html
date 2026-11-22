@@ -363,7 +363,7 @@
         <span id="orderCount" class="text-amber-400 font-bold px-1 sm:px-2 text-[11px] sm:text-xs">Loading...</span>
       </div>
 
-      <!-- RESPONSIVE WORK CALENDAR TAB VIEW (MOBILE/TABLET AGENDA + DESKTOP GRID) -->
+      <!-- RESPONSIVE WORK CALENDAR TAB VIEW (7-DAY WEEK VIEW + FULL MONTH VIEW) -->
       <div id="calendarSection" class="hidden space-y-4">
         <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
@@ -371,12 +371,25 @@
               <i data-lucide="calendar-days" class="w-4 h-4 text-amber-400"></i>
               <span>Fleet Detailing Schedule</span>
             </h2>
-            <p class="text-xs text-zinc-400 mt-0.5">Tap any scheduled job card to inspect specifications, address, and contact details.</p>
+            <p class="text-xs text-zinc-400 mt-0.5">Switch between 7-Day Week Dispatch and Full Month Calendar. Tap any job card to inspect details.</p>
           </div>
           
           <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-between lg:justify-end">
-            <!-- Mobile Filter Toggle (Scheduled Days vs All Days) -->
-            <div class="flex md:hidden bg-zinc-900 p-1 rounded-xl border border-zinc-800 text-[11px]">
+            
+            <!-- WEEK / MONTH VIEW SWITCHER -->
+            <div class="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800 text-xs">
+              <button id="calViewWeekBtn" onclick="setCalendarViewMode('week')" class="px-3 py-1.5 rounded-lg font-extrabold bg-amber-500 text-black transition inline-flex items-center gap-1.5">
+                <i data-lucide="calendar-range" class="w-3.5 h-3.5"></i>
+                <span>7-Day Week</span>
+              </button>
+              <button id="calViewMonthBtn" onclick="setCalendarViewMode('month')" class="px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white transition inline-flex items-center gap-1.5">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                <span>Full Month</span>
+              </button>
+            </div>
+
+            <!-- Mobile Filter Toggle (Only shown in Full Month mode on small screens) -->
+            <div id="mobileMonthFilterWrapper" class="hidden md:hidden bg-zinc-900 p-1 rounded-xl border border-zinc-800 text-[11px]">
               <button id="calFilterScheduledBtn" onclick="setMobileCalendarMode('scheduled')" class="px-2.5 py-1.5 rounded-lg font-bold bg-amber-500 text-black transition">
                 Jobs Only
               </button>
@@ -385,16 +398,16 @@
               </button>
             </div>
 
-            <!-- Month Control Bar -->
+            <!-- Period Navigation Control Bar -->
             <div class="flex items-center gap-1.5 sm:gap-2 bg-zinc-900 p-1.5 rounded-xl border border-zinc-800">
-              <button onclick="changeCalendarMonth(-1)" aria-label="Previous Month" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-xs transition border border-zinc-800 inline-flex items-center gap-1">
+              <button onclick="navigateCalendar(-1)" aria-label="Previous Period" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-xs transition border border-zinc-800 inline-flex items-center gap-1">
                 <i data-lucide="chevron-left" class="w-3.5 h-3.5 text-amber-400"></i>
                 <span class="hidden sm:inline">Prev</span>
               </button>
-              <span id="calendarMonthTitle" class="text-xs font-extrabold text-white px-2 sm:px-3 tracking-wider min-w-[115px] sm:min-w-[130px] text-center">
-                -- 2026
+              <span id="calendarPeriodTitle" class="text-xs font-extrabold text-white px-2 sm:px-3 tracking-wider min-w-[130px] sm:min-w-[165px] text-center">
+                --
               </span>
-              <button onclick="changeCalendarMonth(1)" aria-label="Next Month" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-xs transition border border-zinc-800 inline-flex items-center gap-1">
+              <button onclick="navigateCalendar(1)" aria-label="Next Period" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-300 font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-xs transition border border-zinc-800 inline-flex items-center gap-1">
                 <span class="hidden sm:inline">Next</span>
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-amber-400"></i>
               </button>
@@ -405,27 +418,50 @@
           </div>
         </div>
 
-        <!-- MOBILE & PORTRAIT TABLET AGENDA VIEW (< 768px) -->
-        <div id="mobileCalendarAgenda" class="md:hidden space-y-3">
-          <!-- Rendered dynamically for iPhone / iPad Portrait -->
-        </div>
-
-        <!-- DESKTOP & LANDSCAPE IPAD 7-COLUMN GRID (>= 768px) -->
-        <div class="hidden md:block bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl p-4">
-          <!-- Day Name Headers -->
-          <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-zinc-400 uppercase tracking-wider">
-            <div class="p-2 bg-zinc-900/60 rounded-lg text-amber-400">Sun</div>
-            <div class="p-2 bg-zinc-900/60 rounded-lg">Mon</div>
-            <div class="p-2 bg-zinc-900/60 rounded-lg">Tue</div>
-            <div class="p-2 bg-zinc-900/60 rounded-lg">Wed</div>
-            <div class="p-2 bg-zinc-900/60 rounded-lg">Thu</div>
-            <div class="p-2 bg-zinc-900/60 rounded-lg">Fri</div>
-            <div class="p-2 bg-zinc-900/60 rounded-lg text-amber-400">Sat</div>
+        <!-- 7-DAY WEEK VIEW CONTAINER (DEFAULT OR TOGGLED) -->
+        <div id="weekCalendarContainer" class="space-y-3">
+          <!-- Mobile / Tablet Portrait 7-Day Quick Strip (< 768px) -->
+          <div id="mobileWeekStrip" class="md:hidden grid grid-cols-7 gap-1.5 bg-zinc-950 p-2.5 rounded-xl border border-zinc-800">
+            <!-- Rendered by JS -->
           </div>
 
-          <!-- Calendar Days Box Grid -->
-          <div id="calendarDaysGrid" class="grid grid-cols-7 gap-2 auto-rows-fr">
+          <!-- Mobile / Tablet Portrait 7-Day Detailed Stack (< 768px) -->
+          <div id="mobileWeekAgenda" class="md:hidden space-y-3">
             <!-- Rendered by JS -->
+          </div>
+
+          <!-- Desktop & Landscape Tablet 7-Day Columns (>= 768px) -->
+          <div class="hidden md:block bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl p-4">
+            <div id="desktopWeekGrid" class="grid grid-cols-7 gap-2.5">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- FULL MONTH VIEW CONTAINER -->
+        <div id="monthCalendarContainer" class="hidden space-y-3">
+          <!-- Mobile & Portrait Tablet Month Agenda (< 768px) -->
+          <div id="mobileCalendarAgenda" class="md:hidden space-y-3">
+            <!-- Rendered dynamically for iPhone / iPad Portrait -->
+          </div>
+
+          <!-- Desktop & Landscape iPad 7-Column Month Grid (>= 768px) -->
+          <div class="hidden md:block bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl p-4">
+            <!-- Day Name Headers -->
+            <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-zinc-400 uppercase tracking-wider">
+              <div class="p-2 bg-zinc-900/60 rounded-lg text-amber-400">Sun</div>
+              <div class="p-2 bg-zinc-900/60 rounded-lg">Mon</div>
+              <div class="p-2 bg-zinc-900/60 rounded-lg">Tue</div>
+              <div class="p-2 bg-zinc-900/60 rounded-lg">Wed</div>
+              <div class="p-2 bg-zinc-900/60 rounded-lg">Thu</div>
+              <div class="p-2 bg-zinc-900/60 rounded-lg">Fri</div>
+              <div class="p-2 bg-zinc-900/60 rounded-lg text-amber-400">Sat</div>
+            </div>
+
+            <!-- Calendar Days Box Grid -->
+            <div id="calendarDaysGrid" class="grid grid-cols-7 gap-2 auto-rows-fr">
+              <!-- Rendered by JS -->
+            </div>
           </div>
         </div>
       </div>
@@ -662,6 +698,7 @@
     let pendingSignatureDataUrl = null;
 
     let calendarCurrentDate = new Date();
+    let calendarViewMode = 'week'; // 'week' (7-day view) or 'month' (full month view)
     let mobileCalendarMode = 'scheduled';
 
     let monthlyRevenueChartInstance = null;
@@ -713,7 +750,6 @@
       initSignaturePad();
     });
 
-    // STRICT SUPABASE AUTH LOGIN FUNCTION
     async function handleLogin(e) {
       e.preventDefault();
       initAudioContext();
@@ -1547,10 +1583,33 @@
     }
 
     /* ----------------------------------------------------
-       RESPONSIVE WORK CALENDAR (MOBILE AGENDA + DESKTOP GRID)
+       RESPONSIVE WORK CALENDAR (7-DAY WEEK + FULL MONTH)
     ---------------------------------------------------- */
-    function changeCalendarMonth(offset) {
-      calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + offset);
+    function setCalendarViewMode(mode) {
+      calendarViewMode = mode;
+      const weekBtn = document.getElementById('calViewWeekBtn');
+      const monthBtn = document.getElementById('calViewMonthBtn');
+      const mobileFilterWrapper = document.getElementById('mobileMonthFilterWrapper');
+
+      if (mode === 'week') {
+        weekBtn.className = 'px-3 py-1.5 rounded-lg font-extrabold bg-amber-500 text-black transition inline-flex items-center gap-1.5';
+        monthBtn.className = 'px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white transition inline-flex items-center gap-1.5';
+        mobileFilterWrapper.classList.add('hidden');
+      } else {
+        monthBtn.className = 'px-3 py-1.5 rounded-lg font-extrabold bg-amber-500 text-black transition inline-flex items-center gap-1.5';
+        weekBtn.className = 'px-3 py-1.5 rounded-lg font-semibold text-zinc-400 hover:text-white transition inline-flex items-center gap-1.5';
+        mobileFilterWrapper.classList.remove('hidden');
+        mobileFilterWrapper.classList.add('flex');
+      }
+      renderCalendarView();
+    }
+
+    function navigateCalendar(offset) {
+      if (calendarViewMode === 'week') {
+        calendarCurrentDate.setDate(calendarCurrentDate.getDate() + (offset * 7));
+      } else {
+        calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + offset);
+      }
       renderCalendarView();
     }
 
@@ -1590,116 +1649,142 @@
       return 'bg-zinc-900 text-zinc-200 border-zinc-700';
     }
 
+    function getBookingsForExactDate(targetYear, targetMonth, targetDay) {
+      return allBookings.filter(b => {
+        if (b.payment_status === 'Cancelled') return false;
+        const parsed = parseSafeDateParts(b);
+        return parsed && parsed.year === targetYear && parsed.month === targetMonth && parsed.day === targetDay;
+      }).sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
+    }
+
+    function scrollToMobileWeekDay(dayIndex) {
+      const targetEl = document.getElementById(`mobileWeekDayCard_${dayIndex}`);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
     function renderCalendarView() {
-      const monthTitleEl = document.getElementById('calendarMonthTitle');
-      const gridEl = document.getElementById('calendarDaysGrid');
-      const mobileAgendaEl = document.getElementById('mobileCalendarAgenda');
-
-      const year = calendarCurrentDate.getFullYear();
-      const month = calendarCurrentDate.getMonth();
-
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-
-      const monthName = firstDay.toLocaleString('default', { month: 'long' });
-      monthTitleEl.textContent = `${monthName} ${year}`;
-
-      const startingDayIndex = firstDay.getDay();
-      const totalDaysInMonth = lastDay.getDate();
+      const periodTitleEl = document.getElementById('calendarPeriodTitle');
+      const weekContainer = document.getElementById('weekCalendarContainer');
+      const monthContainer = document.getElementById('monthCalendarContainer');
 
       const today = new Date();
-      const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
-      const todayDateNumber = today.getDate();
+      today.setHours(0, 0, 0, 0);
 
-      const bookingsByDay = {};
-      allBookings.forEach(b => {
-        if (b.payment_status === 'Cancelled') return;
-        const parsed = parseSafeDateParts(b);
-        if (parsed && parsed.year === year && parsed.month === month) {
-          if (!bookingsByDay[parsed.day]) bookingsByDay[parsed.day] = [];
-          bookingsByDay[parsed.day].push(b);
+      if (calendarViewMode === 'week') {
+        weekContainer.classList.remove('hidden');
+        monthContainer.classList.add('hidden');
+
+        // Calculate Sunday to Saturday for the selected week
+        const startOfWeek = new Date(calendarCurrentDate);
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+        const startMonthShort = startOfWeek.toLocaleString('default', { month: 'short' });
+        const endMonthShort = endOfWeek.toLocaleString('default', { month: 'short' });
+        const titleText = startMonthShort === endMonthShort
+          ? `${startMonthShort} ${startOfWeek.getDate()} – ${endOfWeek.getDate()}, ${endOfWeek.getFullYear()}`
+          : `${startMonthShort} ${startOfWeek.getDate()} – ${endMonthShort} ${endOfWeek.getDate()}, ${endOfWeek.getFullYear()}`;
+        periodTitleEl.textContent = titleText;
+
+        const weekDays = [];
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(startOfWeek);
+          d.setDate(startOfWeek.getDate() + i);
+          const isToday = d.getTime() === today.getTime();
+          const dayBookings = getBookingsForExactDate(d.getFullYear(), d.getMonth(), d.getDate());
+          weekDays.push({
+            dateObj: d,
+            weekdayShort: d.toLocaleString('default', { weekday: 'short' }),
+            monthShort: d.toLocaleString('default', { month: 'short' }),
+            dayNum: d.getDate(),
+            isToday,
+            isWeekend: i === 0 || i === 6,
+            bookings: dayBookings
+          });
         }
-      });
 
-      // 1. RENDER DESKTOP / TABLET LANDSCAPE 7-COLUMN GRID
-      let desktopHtml = '';
-      for (let i = 0; i < startingDayIndex; i++) {
-        desktopHtml += `<div class="bg-zinc-950/40 border border-zinc-900 rounded-xl p-2 min-h-[115px]"></div>`;
-      }
+        // 1. Desktop & Landscape Tablet 7-Day Columns
+        const desktopWeekGrid = document.getElementById('desktopWeekGrid');
+        desktopWeekGrid.innerHTML = weekDays.map(wd => `
+          <div class="bg-zinc-900/40 border ${wd.isToday ? 'border-amber-500 bg-amber-950/15' : 'border-zinc-800'} rounded-xl p-2.5 min-h-[340px] flex flex-col justify-between transition">
+            <div>
+              <!-- Day Column Header -->
+              <div class="text-center pb-2.5 mb-2.5 border-b ${wd.isToday ? 'border-amber-500/40' : 'border-zinc-800'}">
+                <span class="block text-[10px] font-extrabold uppercase tracking-widest ${wd.isToday || wd.isWeekend ? 'text-amber-400' : 'text-zinc-400'}">
+                  ${wd.weekdayShort}
+                </span>
+                <div class="mt-1 inline-flex items-center justify-center ${wd.isToday ? 'bg-amber-500 text-black font-black px-2.5 py-0.5 rounded-full text-xs' : 'text-white font-extrabold text-sm'}">
+                  ${wd.monthShort} ${wd.dayNum}
+                </div>
+                <div class="mt-1">
+                  <span class="text-[10px] font-bold ${wd.bookings.length > 0 ? 'text-amber-400' : 'text-zinc-600'}">
+                    ${wd.bookings.length} ${wd.bookings.length === 1 ? 'Job' : 'Jobs'}
+                  </span>
+                </div>
+              </div>
 
-      for (let day = 1; day <= totalDaysInMonth; day++) {
-        const isToday = isCurrentMonth && day === todayDateNumber;
-        const dayBookings = bookingsByDay[day] || [];
-        dayBookings.sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
-
-        desktopHtml += `
-          <div class="bg-zinc-900/40 border ${isToday ? 'border-amber-500 bg-amber-950/15' : 'border-zinc-800/80'} rounded-xl p-2 min-h-[125px] flex flex-col justify-start transition hover:border-amber-500/40">
-            <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-zinc-800/60">
-              <span class="text-xs font-black ${isToday ? 'bg-amber-500 text-black px-2 py-0.5 rounded-full' : 'text-zinc-300'}">
-                ${day}
-              </span>
-              ${dayBookings.length > 0 ? `<span class="text-[10px] font-bold text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded-md border border-amber-500/30">${dayBookings.length} job(s)</span>` : ''}
-            </div>
-
-            <div class="space-y-1.5 overflow-y-auto max-h-[145px] pr-0.5">
-              ${dayBookings.map(b => {
-                const badgeColor = getJobBadgeStyle(b);
-                return `
-                  <div onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer bg-zinc-950 hover:bg-zinc-900 border ${badgeColor} p-1.5 rounded-lg text-[10px] space-y-0.5 transition shadow-sm">
-                    <div class="flex justify-between font-bold truncate">
-                      <span class="text-white truncate">${escapeHtml(b.client_name || 'Client')}</span>
-                      <span class="text-amber-400 font-extrabold ml-1">#${b.id}</span>
+              <!-- Day Jobs List -->
+              <div class="space-y-2 max-h-[360px] overflow-y-auto pr-0.5">
+                ${wd.bookings.length === 0 ? `
+                  <div class="py-8 text-center text-[11px] text-zinc-600 italic">Open</div>
+                ` : wd.bookings.map(b => {
+                  const badgeColor = getJobBadgeStyle(b);
+                  return `
+                    <div onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer bg-zinc-950 hover:bg-zinc-900 border ${badgeColor} p-2.5 rounded-lg text-[11px] space-y-1 transition shadow-sm">
+                      <div class="flex justify-between items-center font-bold">
+                        <span class="text-amber-400 font-extrabold">#${b.id}</span>
+                        <span class="text-white font-extrabold">$${parseFloat(b.amount_paid || 0).toFixed(0)}</span>
+                      </div>
+                      <div class="font-extrabold text-white truncate">${escapeHtml(b.client_name || 'Client')}</div>
+                      <div class="text-[10px] text-amber-300/90 font-semibold flex items-center gap-1">
+                        <i data-lucide="clock" class="w-3 h-3 shrink-0"></i>
+                        <span class="truncate">${escapeHtml(b.time_slot || 'Standard')}</span>
+                      </div>
+                      <div class="text-[10px] text-zinc-400 truncate flex items-center gap-1">
+                        <i data-lucide="truck" class="w-3 h-3 shrink-0 text-zinc-500"></i>
+                        <span class="truncate">${escapeHtml(b.vehicle_category || 'Vehicle')}</span>
+                      </div>
                     </div>
-                    <div class="text-zinc-400 truncate text-[9px] flex items-center justify-between">
-                      <span class="inline-flex items-center gap-1"><i data-lucide="clock" class="w-2.5 h-2.5 text-amber-400"></i> ${escapeHtml(b.time_slot || 'Standard')}</span>
-                      <span class="font-extrabold text-white">$${parseFloat(b.amount_paid || 0).toFixed(0)}</span>
-                    </div>
-                    <div class="text-[9px] font-semibold text-zinc-400 truncate inline-flex items-center gap-1">
-                      <i data-lucide="truck" class="w-2.5 h-2.5 text-zinc-500"></i>
-                      <span>${escapeHtml(b.vehicle_category || 'Vehicle')}</span>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
+                  `;
+                }).join('')}
+              </div>
             </div>
           </div>
-        `;
-      }
-      gridEl.innerHTML = desktopHtml;
+        `).join('');
 
-      // 2. RENDER MOBILE & PORTRAIT TABLET AGENDA VIEW (iPhone / iPad Safari Friendly)
-      let mobileHtml = '';
-      let renderedDaysCount = 0;
+        // 2. Mobile / Portrait Tablet 7-Day Quick Strip + Vertical 7-Day Stack
+        const mobileWeekStrip = document.getElementById('mobileWeekStrip');
+        mobileWeekStrip.innerHTML = weekDays.map((wd, idx) => `
+          <button onclick="scrollToMobileWeekDay(${idx})" class="flex flex-col items-center justify-center py-2 px-1 rounded-lg border ${wd.isToday ? 'bg-amber-500 text-black border-amber-400 font-black' : 'bg-zinc-900/70 text-zinc-300 border-zinc-800'} transition">
+            <span class="text-[10px] uppercase tracking-wider ${wd.isToday ? 'text-black' : 'text-zinc-400'}">${wd.weekdayShort}</span>
+            <span class="text-xs font-extrabold mt-0.5">${wd.dayNum}</span>
+            <span class="mt-1 w-1.5 h-1.5 rounded-full ${wd.bookings.length > 0 ? (wd.isToday ? 'bg-black' : 'bg-amber-400') : 'bg-transparent'}"></span>
+          </button>
+        `).join('');
 
-      for (let day = 1; day <= totalDaysInMonth; day++) {
-        const isToday = isCurrentMonth && day === todayDateNumber;
-        const dayBookings = bookingsByDay[day] || [];
-
-        if (mobileCalendarMode === 'scheduled' && dayBookings.length === 0 && !isToday) {
-          continue;
-        }
-
-        renderedDaysCount++;
-        dayBookings.sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
-        const weekdayLabel = new Date(year, month, day).toLocaleString('default', { weekday: 'short' });
-
-        mobileHtml += `
-          <div class="bg-zinc-950 border ${isToday ? 'border-amber-500' : 'border-zinc-800'} rounded-xl overflow-hidden shadow-lg">
-            <div class="px-4 py-2.5 ${isToday ? 'bg-amber-950/35 border-b border-amber-500/40' : 'bg-zinc-900/60 border-b border-zinc-800'} flex justify-between items-center">
+        const mobileWeekAgenda = document.getElementById('mobileWeekAgenda');
+        mobileWeekAgenda.innerHTML = weekDays.map((wd, idx) => `
+          <div id="mobileWeekDayCard_${idx}" class="bg-zinc-950 border ${wd.isToday ? 'border-amber-500' : 'border-zinc-800'} rounded-xl overflow-hidden shadow-lg">
+            <div class="px-4 py-2.5 ${wd.isToday ? 'bg-amber-950/35 border-b border-amber-500/40' : 'bg-zinc-900/60 border-b border-zinc-800'} flex justify-between items-center">
               <div class="flex items-center gap-2">
-                <span class="text-xs font-black uppercase tracking-wider ${isToday ? 'text-amber-400' : 'text-zinc-400'}">${weekdayLabel}</span>
-                <span class="text-sm font-black text-white">${monthName.slice(0, 3)} ${day}</span>
-                ${isToday ? `<span class="bg-amber-500 text-black text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Today</span>` : ''}
+                <span class="text-xs font-black uppercase tracking-wider ${wd.isToday ? 'text-amber-400' : 'text-zinc-400'}">${wd.weekdayShort}</span>
+                <span class="text-sm font-black text-white">${wd.monthShort} ${wd.dayNum}</span>
+                ${wd.isToday ? `<span class="bg-amber-500 text-black text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Today</span>` : ''}
               </div>
-              <span class="text-[11px] font-bold ${dayBookings.length > 0 ? 'text-amber-400' : 'text-zinc-500'}">
-                ${dayBookings.length} ${dayBookings.length === 1 ? 'Job' : 'Jobs'}
+              <span class="text-[11px] font-bold ${wd.bookings.length > 0 ? 'text-amber-400' : 'text-zinc-500'}">
+                ${wd.bookings.length} ${wd.bookings.length === 1 ? 'Job' : 'Jobs'}
               </span>
             </div>
 
             <div class="p-3 space-y-2.5">
-              ${dayBookings.length === 0 ? `
-                <p class="text-xs text-zinc-500 italic py-1">No detailing jobs scheduled for this date.</p>
-              ` : dayBookings.map(b => {
+              ${wd.bookings.length === 0 ? `
+                <p class="text-xs text-zinc-500 italic py-0.5">No detailing jobs scheduled.</p>
+              ` : wd.bookings.map(b => {
                 const badgeColor = getJobBadgeStyle(b);
                 const pmLabel = getPaymentMethodLabel(b);
                 return `
@@ -1740,19 +1825,176 @@
               }).join('')}
             </div>
           </div>
-        `;
+        `).join('');
+
+      } else {
+        // FULL MONTH VIEW
+        weekContainer.classList.add('hidden');
+        monthContainer.classList.remove('hidden');
+
+        const gridEl = document.getElementById('calendarDaysGrid');
+        const mobileAgendaEl = document.getElementById('mobileCalendarAgenda');
+
+        const year = calendarCurrentDate.getFullYear();
+        const month = calendarCurrentDate.getMonth();
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+
+        const monthName = firstDay.toLocaleString('default', { month: 'long' });
+        periodTitleEl.textContent = `${monthName} ${year}`;
+
+        const startingDayIndex = firstDay.getDay();
+        const totalDaysInMonth = lastDay.getDate();
+
+        const now = new Date();
+        const isCurrentMonth = now.getFullYear() === year && now.getMonth() === month;
+        const todayDateNumber = now.getDate();
+
+        const bookingsByDay = {};
+        allBookings.forEach(b => {
+          if (b.payment_status === 'Cancelled') return;
+          const parsed = parseSafeDateParts(b);
+          if (parsed && parsed.year === year && parsed.month === month) {
+            if (!bookingsByDay[parsed.day]) bookingsByDay[parsed.day] = [];
+            bookingsByDay[parsed.day].push(b);
+          }
+        });
+
+        // 1. Desktop & Landscape Tablet 7-Column Full Month Grid
+        let desktopHtml = '';
+        for (let i = 0; i < startingDayIndex; i++) {
+          desktopHtml += `<div class="bg-zinc-950/40 border border-zinc-900 rounded-xl p-2 min-h-[115px]"></div>`;
+        }
+
+        for (let day = 1; day <= totalDaysInMonth; day++) {
+          const isToday = isCurrentMonth && day === todayDateNumber;
+          const dayBookings = bookingsByDay[day] || [];
+          dayBookings.sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
+
+          desktopHtml += `
+            <div class="bg-zinc-900/40 border ${isToday ? 'border-amber-500 bg-amber-950/15' : 'border-zinc-800/80'} rounded-xl p-2 min-h-[125px] flex flex-col justify-start transition hover:border-amber-500/40">
+              <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-zinc-800/60">
+                <span class="text-xs font-black ${isToday ? 'bg-amber-500 text-black px-2 py-0.5 rounded-full' : 'text-zinc-300'}">
+                  ${day}
+                </span>
+                ${dayBookings.length > 0 ? `<span class="text-[10px] font-bold text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded-md border border-amber-500/30">${dayBookings.length} job(s)</span>` : ''}
+              </div>
+
+              <div class="space-y-1.5 overflow-y-auto max-h-[145px] pr-0.5">
+                ${dayBookings.map(b => {
+                  const badgeColor = getJobBadgeStyle(b);
+                  return `
+                    <div onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer bg-zinc-950 hover:bg-zinc-900 border ${badgeColor} p-1.5 rounded-lg text-[10px] space-y-0.5 transition shadow-sm">
+                      <div class="flex justify-between font-bold truncate">
+                        <span class="text-white truncate">${escapeHtml(b.client_name || 'Client')}</span>
+                        <span class="text-amber-400 font-extrabold ml-1">#${b.id}</span>
+                      </div>
+                      <div class="text-zinc-400 truncate text-[9px] flex items-center justify-between">
+                        <span class="inline-flex items-center gap-1"><i data-lucide="clock" class="w-2.5 h-2.5 text-amber-400"></i> ${escapeHtml(b.time_slot || 'Standard')}</span>
+                        <span class="font-extrabold text-white">$${parseFloat(b.amount_paid || 0).toFixed(0)}</span>
+                      </div>
+                      <div class="text-[9px] font-semibold text-zinc-400 truncate inline-flex items-center gap-1">
+                        <i data-lucide="truck" class="w-2.5 h-2.5 text-zinc-500"></i>
+                        <span>${escapeHtml(b.vehicle_category || 'Vehicle')}</span>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }
+        gridEl.innerHTML = desktopHtml;
+
+        // 2. Mobile & Portrait Tablet Month Agenda
+        let mobileHtml = '';
+        let renderedDaysCount = 0;
+
+        for (let day = 1; day <= totalDaysInMonth; day++) {
+          const isToday = isCurrentMonth && day === todayDateNumber;
+          const dayBookings = bookingsByDay[day] || [];
+
+          if (mobileCalendarMode === 'scheduled' && dayBookings.length === 0 && !isToday) {
+            continue;
+          }
+
+          renderedDaysCount++;
+          dayBookings.sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
+          const weekdayLabel = new Date(year, month, day).toLocaleString('default', { weekday: 'short' });
+
+          mobileHtml += `
+            <div class="bg-zinc-950 border ${isToday ? 'border-amber-500' : 'border-zinc-800'} rounded-xl overflow-hidden shadow-lg">
+              <div class="px-4 py-2.5 ${isToday ? 'bg-amber-950/35 border-b border-amber-500/40' : 'bg-zinc-900/60 border-b border-zinc-800'} flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-black uppercase tracking-wider ${isToday ? 'text-amber-400' : 'text-zinc-400'}">${weekdayLabel}</span>
+                  <span class="text-sm font-black text-white">${monthName.slice(0, 3)} ${day}</span>
+                  ${isToday ? `<span class="bg-amber-500 text-black text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Today</span>` : ''}
+                </div>
+                <span class="text-[11px] font-bold ${dayBookings.length > 0 ? 'text-amber-400' : 'text-zinc-500'}">
+                  ${dayBookings.length} ${dayBookings.length === 1 ? 'Job' : 'Jobs'}
+                </span>
+              </div>
+
+              <div class="p-3 space-y-2.5">
+                ${dayBookings.length === 0 ? `
+                  <p class="text-xs text-zinc-500 italic py-1">No detailing jobs scheduled for this date.</p>
+                ` : dayBookings.map(b => {
+                  const badgeColor = getJobBadgeStyle(b);
+                  const pmLabel = getPaymentMethodLabel(b);
+                  return `
+                    <div onclick="openOrderDetailsModal(${b.id})" class="active:scale-[0.99] cursor-pointer bg-zinc-900/70 hover:bg-zinc-900 border ${badgeColor} p-3.5 rounded-xl space-y-2 transition">
+                      <div class="flex justify-between items-start gap-2">
+                        <div>
+                          <div class="flex items-center gap-2">
+                            <span class="text-xs font-black text-amber-400">#${b.id}</span>
+                            <span class="text-sm font-extrabold text-white">${escapeHtml(b.client_name || 'Client')}</span>
+                          </div>
+                          <p class="text-xs text-zinc-300 font-medium mt-0.5">${escapeHtml(b.service_type || 'Detailing Package')}</p>
+                        </div>
+                        <div class="text-right shrink-0">
+                          <span class="text-sm font-extrabold text-white block">$${parseFloat(b.amount_paid || 0).toFixed(2)}</span>
+                          <span class="text-[10px] text-amber-400 font-semibold">${pmLabel}</span>
+                        </div>
+                      </div>
+
+                      <div class="pt-2 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
+                        <span class="inline-flex items-center gap-1 font-semibold text-zinc-200">
+                          <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i>
+                          ${escapeHtml(b.time_slot || 'Standard Window')}
+                        </span>
+                        <span class="inline-flex items-center gap-1">
+                          <i data-lucide="truck" class="w-3.5 h-3.5 text-zinc-500"></i>
+                          ${escapeHtml(b.vehicle_category || 'Vehicle')}
+                        </span>
+                      </div>
+
+                      ${b.service_address ? `
+                        <div class="text-[11px] text-zinc-400 truncate flex items-center gap-1">
+                          <i data-lucide="map-pin" class="w-3 h-3 text-amber-400 shrink-0"></i>
+                          <span class="truncate">${escapeHtml(b.service_address)}</span>
+                        </div>
+                      ` : ''}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        if (renderedDaysCount === 0) {
+          mobileHtml = `
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6 text-center space-y-2">
+              <p class="text-xs text-zinc-400">No jobs scheduled in ${monthName} ${year}.</p>
+              <button onclick="setMobileCalendarMode('all')" class="text-xs text-amber-400 font-bold underline">Show all days in ${monthName}</button>
+            </div>
+          `;
+        }
+
+        mobileAgendaEl.innerHTML = mobileHtml;
       }
 
-      if (renderedDaysCount === 0) {
-        mobileHtml = `
-          <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6 text-center space-y-2">
-            <p class="text-xs text-zinc-400">No jobs scheduled in ${monthName} ${year}.</p>
-            <button onclick="setMobileCalendarMode('all')" class="text-xs text-amber-400 font-bold underline">Show all days in ${monthName}</button>
-          </div>
-        `;
-      }
-
-      mobileAgendaEl.innerHTML = mobileHtml;
       refreshIcons();
     }
 
