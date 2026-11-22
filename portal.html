@@ -853,7 +853,67 @@
     }
 
     /* ----------------------------------------------------
-       SERVICE DURATION TRACKER HELPERS
+       SUPABASE COLUMN SYNC HELPERS (status + started_at)
+    ---------------------------------------------------- */
+    function getNormalizedBookingStatus(b) {
+      if (!b) return 'Pending';
+      return b.status || b.payment_status || 'Pending';
+    }
+
+    async function syncBookingRecordToSupabase(bookingId, patchFields) {
+      let { error } = await supabaseClient
+        .from('bookings')
+        .update(patchFields)
+        .eq('id', bookingId);
+
+      if (error) {
+        console.warn('Primary update issue, retrying with minimal schema fields:', error.message);
+
+        // Retry with status + started_at
+        if (patchFields.status) {
+          const primaryMinimal = { status: patchFields.status };
+          if (patchFields.started_at !== undefined) primaryMinimal.started_at = patchFields.started_at;
+          if (patchFields.completed_at !== undefined) primaryMinimal.completed_at = patchFields.completed_at;
+          if (patchFields.client_signature !== undefined) primaryMinimal.client_signature = patchFields.client_signature;
+
+          const retry1 = await supabaseClient
+            .from('bookings')
+            .update(primaryMinimal)
+            .eq('id', bookingId);
+          if (!retry1.error) return;
+        }
+
+        // Fallback to payment_status + in_progress_at
+        const fallbackMinimal = { payment_status: patchFields.payment_status || patchFields.status };
+        if (patchFields.in_progress_at !== undefined) fallbackMinimal.in_progress_at = patchFields.in_progress_at;
+        if (patchFields.completed_at !== undefined) fallbackMinimal.completed_at = patchFields.completed_at;
+        if (patchFields.client_signature !== undefined) fallbackMinimal.client_signature = patchFields.client_signature;
+
+        const retry2 = await supabaseClient
+          .from('bookings')
+          .update(fallbackMinimal)
+          .eq('id', bookingId);
+
+        if (retry2.error) {
+          // Absolute minimal status-only fallback
+          const lastResort = await supabaseClient
+            .from('bookings')
+            .update({ status: patchFields.status || patchFields.payment_status })
+            .eq('id', bookingId);
+
+          if (lastResort.error) {
+            const legacyResort = await supabaseClient
+              .from('bookings')
+              .update({ payment_status: patchFields.payment_status || patchFields.status })
+              .eq('id', bookingId);
+            if (legacyResort.error) throw legacyResort.error;
+          }
+        }
+      }
+    }
+
+    /* ----------------------------------------------------
+       SERVICE DURATION TRACKER HELPERS (started_at)
     ---------------------------------------------------- */
     function getLocalStartTimesMap() {
       try {
@@ -873,20 +933,15 @@
       }
     }
 
-    function clearLocalStartTime(bookingId) {
-      try {
-        const map = getLocalStartTimesMap();
-        delete map[String(bookingId)];
-        localStorage.setItem('kw_service_start_times', JSON.stringify(map));
-      } catch (e) {
-        console.warn('Local duration clear warning:', e);
-      }
-    }
-
     function getServiceStartTimestamp(b) {
       if (!b) return null;
       const localMap = getLocalStartTimesMap();
-      const rawStart = b.in_progress_at || localMap[String(b.id)] || (b.payment_status === 'In Progress' ? b.updated_at : null);
+      const status = getNormalizedBookingStatus(b);
+      const rawStart =
+        b.started_at ||
+        b.in_progress_at ||
+        localMap[String(b.id)] ||
+        (status === 'In Progress' ? b.updated_at : null);
       if (!rawStart) return null;
       const ms = new Date(rawStart).getTime();
       return isNaN(ms) ? null : ms;
@@ -912,8 +967,9 @@
     function getBookingDurationDisplay(b) {
       const startMs = getServiceStartTimestamp(b);
       if (!startMs) return null;
+      const status = getNormalizedBookingStatus(b);
 
-      if (b.payment_status === 'In Progress') {
+      if (status === 'In Progress') {
         const elapsed = Date.now() - startMs;
         return {
           isLive: true,
@@ -923,7 +979,7 @@
         };
       }
 
-      if (b.payment_status === 'Completed' && b.completed_at) {
+      if (status === 'Completed' && b.completed_at) {
         const endMs = new Date(b.completed_at).getTime();
         if (!isNaN(endMs) && endMs >= startMs) {
           const totalMs = endMs - startMs;
@@ -981,7 +1037,7 @@
 
         if (activeOrderModalId && !document.getElementById('orderDetailsModal').classList.contains('hidden')) {
           const activeBooking = allBookings.find(item => item.id === activeOrderModalId);
-          if (activeBooking && activeBooking.payment_status === 'In Progress') {
+          if (activeBooking && getNormalizedBookingStatus(activeBooking) === 'In Progress') {
             const startMs = getServiceStartTimestamp(activeBooking);
             if (startMs) {
               const timerEl = document.getElementById('detailDurationTimer');
@@ -1295,7 +1351,7 @@
     }
 
     function getPaymentMethodLabel(b) {
-      const pStatus = (b.payment_status || '').toLowerCase();
+      const pStatus = (b.payment_status || b.status || '').toLowerCase();
       const pMethod = (b.payment_method || '').toLowerCase();
       
       if (pStatus.includes('cash_zelle') || pStatus.includes('cash') || pStatus.includes('zelle') ||
@@ -1461,6 +1517,7 @@
       if (!b) return;
 
       activeOrderModalId = bookingId;
+      const currentStatus = getNormalizedBookingStatus(b);
 
       updateModalDurationBanner(b);
 
@@ -1501,7 +1558,7 @@
       document.getElementById('detailServiceDate').textContent = b.service_date || 'N/A';
       document.getElementById('detailTimeSlot').textContent = b.time_slot || 'Standard Window';
 
-      updateModalStatusButtonsUI(b.payment_status || 'Pending');
+      updateModalStatusButtonsUI(currentStatus);
 
       document.getElementById('detailVehicleCategory').textContent = (b.vehicle_category || 'Vehicle').toUpperCase();
       document.getElementById('detailServiceType').textContent = b.service_type || 'Detailing Package';
@@ -1665,25 +1722,14 @@
       const completedIso = new Date().toISOString();
 
       try {
-        let { error } = await supabaseClient
-          .from('bookings')
-          .update({ 
-            payment_status: 'Completed',
-            client_signature: pendingSignatureDataUrl,
-            completed_at: completedIso
-          })
-          .eq('id', pendingCompletionBookingId);
+        await syncBookingRecordToSupabase(pendingCompletionBookingId, {
+          status: 'Completed',
+          payment_status: 'Completed',
+          client_signature: pendingSignatureDataUrl,
+          completed_at: completedIso
+        });
 
-        if (error) {
-          console.warn('Full update failed, attempting status-only fallback:', error.message);
-          const fallback = await supabaseClient
-            .from('bookings')
-            .update({ payment_status: 'Completed' })
-            .eq('id', pendingCompletionBookingId);
-            
-          if (fallback.error) throw fallback.error;
-        }
-
+        booking.status = 'Completed';
         booking.payment_status = 'Completed';
         booking.client_signature = pendingSignatureDataUrl;
         booking.completed_at = completedIso;
@@ -1749,31 +1795,29 @@
           startIso = existingStartMs ? new Date(existingStartMs).toISOString() : new Date().toISOString();
           setLocalStartTime(id, startIso);
 
-          const { error } = await supabaseClient
-            .from('bookings')
-            .update({ payment_status: newStatus, in_progress_at: startIso })
-            .eq('id', id);
-
-          if (error) {
-            const fallback = await supabaseClient
-              .from('bookings')
-              .update({ payment_status: newStatus })
-              .eq('id', id);
-            if (fallback.error) throw fallback.error;
-          }
+          await syncBookingRecordToSupabase(id, {
+            status: newStatus,
+            payment_status: newStatus,
+            started_at: startIso,
+            in_progress_at: startIso
+          });
 
           if (item) {
+            item.status = newStatus;
             item.payment_status = newStatus;
+            item.started_at = startIso;
             item.in_progress_at = startIso;
           }
         } else {
-          const { error } = await supabaseClient
-            .from('bookings')
-            .update({ payment_status: newStatus })
-            .eq('id', id);
+          await syncBookingRecordToSupabase(id, {
+            status: newStatus,
+            payment_status: newStatus
+          });
 
-          if (error) throw error;
-          if (item) item.payment_status = newStatus;
+          if (item) {
+            item.status = newStatus;
+            item.payment_status = newStatus;
+          }
         }
         
         buildClientUsageMap();
@@ -1877,9 +1921,9 @@
         .channel('public:bookings')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bookings' }, async payload => {
           const newBooking = payload.new;
-          if (!newBooking.payment_status) {
-            newBooking.payment_status = 'Pending';
-          }
+          const resolvedStatus = getNormalizedBookingStatus(newBooking);
+          newBooking.status = resolvedStatus;
+          newBooking.payment_status = resolvedStatus;
           allBookings.unshift(newBooking);
 
           await autoSaveContact(newBooking);
@@ -1905,14 +1949,16 @@
         const previousCount = allBookings.length;
         const localStarts = getLocalStartTimesMap();
         const freshData = (data || []).map(b => {
-          const status = b.payment_status || 'Pending';
-          const resolvedStart = b.in_progress_at || localStarts[String(b.id)] || null;
-          if (b.in_progress_at) {
-            setLocalStartTime(b.id, b.in_progress_at);
+          const status = getNormalizedBookingStatus(b);
+          const resolvedStart = b.started_at || b.in_progress_at || localStarts[String(b.id)] || null;
+          if (resolvedStart) {
+            setLocalStartTime(b.id, resolvedStart);
           }
           return {
             ...b,
+            status: status,
             payment_status: status,
+            started_at: resolvedStart,
             in_progress_at: resolvedStart
           };
         });
@@ -1984,7 +2030,7 @@
       const sortedChronological = [...allBookings].reverse();
 
       sortedChronological.forEach(b => {
-        if (b.payment_status === 'Cancelled') return;
+        if (getNormalizedBookingStatus(b) === 'Cancelled') return;
         
         const key = (b.email || b.phone || b.client_name || '').toLowerCase().trim();
         if (!key) return;
@@ -2024,7 +2070,8 @@
       let oneTimeOrdersRev = 0;
 
       allBookings.forEach(b => {
-        if (b.payment_status === 'Cancelled') return;
+        const status = getNormalizedBookingStatus(b);
+        if (status === 'Cancelled') return;
 
         const amount = parseFloat(b.amount_paid) || 0;
         const bookingDate = new Date(b.created_at || b.service_date);
@@ -2051,7 +2098,7 @@
           oneTimeOrdersRev += amount;
         }
 
-        if (b.payment_status !== 'Completed') {
+        if (status !== 'Completed') {
           pendingCount++;
         }
       });
@@ -2077,7 +2124,7 @@
       const stats = {};
 
       allBookings.forEach(b => {
-        if (b.payment_status === 'Cancelled') return;
+        if (getNormalizedBookingStatus(b) === 'Cancelled') return;
         const selectedItems = parseBookingAddOns(b);
 
         selectedItems.forEach(item => {
@@ -2119,7 +2166,7 @@
 
         let monthlyTotal = 0;
         allBookings.forEach(b => {
-          if (b.payment_status === 'Cancelled') return;
+          if (getNormalizedBookingStatus(b) === 'Cancelled') return;
           const bDate = new Date(b.created_at || b.service_date);
           if (bDate.getMonth() === d.getMonth() && bDate.getFullYear() === d.getFullYear()) {
             monthlyTotal += parseFloat(b.amount_paid) || 0;
@@ -2178,7 +2225,7 @@
       let subTotal = 0;
       let oneTimeTotal = 0;
       allBookings.forEach(b => {
-        if (b.payment_status === 'Cancelled') return;
+        if (getNormalizedBookingStatus(b) === 'Cancelled') return;
         const amt = parseFloat(b.amount_paid) || 0;
         const isSub = getIsSubscription(b);
         if (isSub) subTotal += amt;
@@ -2375,10 +2422,11 @@
       const pmLabel = getPaymentMethodLabel(b);
       const isCashZelle = pmLabel === 'Cash / Zelle';
       const isSub = getIsSubscription(b);
+      const status = getNormalizedBookingStatus(b);
 
-      if (b.payment_status === 'Completed') {
+      if (status === 'Completed') {
         return 'bg-zinc-900/80 text-zinc-400 border-zinc-800';
-      } else if (b.payment_status === 'Paid & Confirmed') {
+      } else if (status === 'Paid & Confirmed') {
         return 'bg-amber-950/35 text-white border-amber-500/70';
       } else if (isSub) {
         return 'bg-amber-950/45 text-amber-200 border-amber-400/60';
@@ -2390,7 +2438,7 @@
 
     function getBookingsForExactDate(targetYear, targetMonth, targetDay) {
       return allBookings.filter(b => {
-        if (b.payment_status === 'Cancelled') return false;
+        if (getNormalizedBookingStatus(b) === 'Cancelled') return false;
         const parsed = parseSafeDateParts(b);
         return parsed && parsed.year === targetYear && parsed.month === targetMonth && parsed.day === targetDay;
       }).sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
@@ -2589,7 +2637,7 @@
 
         const bookingsByDay = {};
         allBookings.forEach(b => {
-          if (b.payment_status === 'Cancelled') return;
+          if (getNormalizedBookingStatus(b) === 'Cancelled') return;
           const parsed = parseSafeDateParts(b);
           if (parsed && parsed.year === year && parsed.month === month) {
             if (!bookingsByDay[parsed.day]) bookingsByDay[parsed.day] = [];
@@ -2758,7 +2806,7 @@
           };
         }
 
-        if (b.payment_status !== 'Cancelled') {
+        if (getNormalizedBookingStatus(b) !== 'Cancelled') {
           contactMap[key].serviceCount += 1;
         }
         if (b.service_address && contactMap[key].address === 'N/A') {
@@ -2887,13 +2935,19 @@
       let filtered = allBookings;
 
       if (currentFilter === 'Upcoming') {
-        filtered = allBookings.filter(b => b.payment_status !== 'Completed' && b.payment_status !== 'Cancelled');
+        filtered = allBookings.filter(b => {
+          const st = getNormalizedBookingStatus(b);
+          return st !== 'Completed' && st !== 'Cancelled';
+        });
       } else if (currentFilter === 'Pending') {
-        filtered = allBookings.filter(b => b.payment_status === 'Pending' || b.payment_status === 'Paid & Confirmed');
+        filtered = allBookings.filter(b => {
+          const st = getNormalizedBookingStatus(b);
+          return st === 'Pending' || st === 'Paid & Confirmed';
+        });
       } else if (currentFilter === 'Completed') {
-        filtered = allBookings.filter(b => b.payment_status === 'Completed');
+        filtered = allBookings.filter(b => getNormalizedBookingStatus(b) === 'Completed');
       } else if (currentFilter === 'Subscription') {
-        filtered = allBookings.filter(b => getIsSubscription(b) && b.payment_status !== 'Completed');
+        filtered = allBookings.filter(b => getIsSubscription(b) && getNormalizedBookingStatus(b) !== 'Completed');
       }
 
       document.getElementById('orderCount').textContent = `Total Displayed: ${filtered.length}`;
@@ -2910,7 +2964,7 @@
         const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(b.service_address || '')}`;
         const isSub = getIsSubscription(b);
         const hasSignature = !!b.client_signature;
-        const status = b.payment_status || 'Pending';
+        const status = getNormalizedBookingStatus(b);
         const isCashZelleDue = getPaymentMethodLabel(b) === 'Cash / Zelle' && status !== 'Completed' && status !== 'Cancelled';
         const durationInfo = getBookingDurationDisplay(b);
 
