@@ -162,7 +162,7 @@
       <!-- Modal Content Body -->
       <div class="p-5 sm:p-6 overflow-y-auto ios-scroll space-y-4 text-xs">
 
-        <!-- 1. CLIENT INFORMATION, ADDRESS & BOOKED TIME (TOP PRIORITY) -->
+        <!-- 1. CLIENT INFORMATION, ADDRESS & BOOKED TIME -->
         <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
             <span class="font-bold text-amber-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
@@ -765,26 +765,20 @@
         </div>
       </div>
 
-      <!-- STREAMLINED ORDERS TABLE CONTAINER (5 ESSENTIAL COLUMNS) -->
+      <!-- STREAMLINED 3-COLUMN ORDERS TABLE CONTAINER -->
       <div id="ordersTableSection" class="bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl overflow-hidden">
-        <div class="px-4 py-2.5 bg-zinc-900/50 border-b border-zinc-800 text-zinc-400 text-[11px] flex items-center gap-2">
-          <i data-lucide="info" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
-          <span>Tap any order row to view client info, address, booked time, and update status (On My Way, In Progress, or Completed with signature).</span>
-        </div>
         <div class="overflow-x-auto ios-scroll">
           <table class="w-full text-left text-xs">
             <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase tracking-wider font-semibold">
               <tr>
-                <th class="p-3.5">Order ID &amp; Client</th>
-                <th class="p-3.5">Schedule &amp; Location</th>
-                <th class="p-3.5">Vehicle, Package &amp; Add-Ons</th>
-                <th class="p-3.5">Amount / Method</th>
-                <th class="p-3.5">Status &amp; Action</th>
+                <th class="p-3.5">Order</th>
+                <th class="p-3.5">Schedule</th>
+                <th class="p-3.5">Status</th>
               </tr>
             </thead>
             <tbody id="dispatchTableBody" class="divide-y divide-zinc-900">
               <tr>
-                <td colspan="5" class="p-6 text-center text-zinc-500">Loading bookings...</td>
+                <td colspan="3" class="p-6 text-center text-zinc-500">Loading bookings...</td>
               </tr>
             </tbody>
           </table>
@@ -813,7 +807,7 @@
     let pendingSignatureDataUrl = null;
 
     let calendarCurrentDate = new Date();
-    let calendarViewMode = 'week'; // 'week' (7-day view) or 'month' (full month view)
+    let calendarViewMode = 'week';
     let mobileCalendarMode = 'scheduled';
 
     let monthlyRevenueChartInstance = null;
@@ -1157,7 +1151,6 @@
 
     /* ----------------------------------------------------
        ORDER DETAILS MODAL & 3-BUTTON STATUS WORKFLOW
-       (DIRECT PHONE SMS + EMAIL + ONE-TIME GRAY-OUT LOCK)
     ---------------------------------------------------- */
     function updateModalStatusButtonsUI(status) {
       const currentStatusPill = document.getElementById('detailCurrentStatusPill');
@@ -1697,7 +1690,7 @@
         console.error('Error fetching bookings:', err);
         document.getElementById('dispatchTableBody').innerHTML = `
           <tr>
-            <td colspan="5" class="p-6 text-center text-amber-400">
+            <td colspan="3" class="p-6 text-center text-amber-400">
               Failed to load bookings. Verify your login status or Supabase RLS policies.
             </td>
           </tr>`;
@@ -2609,7 +2602,8 @@
     }
 
     /* ----------------------------------------------------
-       STREAMLINED 5-COLUMN DISPATCH TABLE RENDERER
+       STREAMLINED 3-COLUMN DISPATCH TABLE RENDERER
+       (ORDER | SCHEDULE | STATUS)
     ---------------------------------------------------- */
     function renderTable() {
       const tbody = document.getElementById('dispatchTableBody');
@@ -2665,7 +2659,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="5" class="p-6 text-center text-zinc-500">No ${currentFilter.toLowerCase()} orders found in this view.</td>
+            <td colspan="3" class="p-6 text-center text-zinc-500">No ${currentFilter.toLowerCase()} orders found in this view.</td>
           </tr>`;
         return;
       }
@@ -2675,82 +2669,71 @@
         const isSub = getIsSubscription(b);
         const hasSignature = !!b.client_signature;
         const status = b.payment_status || 'Pending';
-        const paymentLabel = getPaymentMethodLabel(b);
-        const isCashZelle = paymentLabel === 'Cash / Zelle';
-        const selectedAddOns = parseBookingAddOns(b);
+        const isCashZelleDue = getPaymentMethodLabel(b) === 'Cash / Zelle' && status !== 'Completed' && status !== 'Cancelled';
 
         return `
-          <tr onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer hover:bg-zinc-900/80 transition group">
+          <tr onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer hover:bg-zinc-900/80 active:bg-zinc-900 transition group">
             
-            <!-- COLUMN 1: Order ID & Client Info -->
-            <td class="p-3.5">
+            <!-- COLUMN 1: ORDER (ID, Subscription Tag, Client & Phone) -->
+            <td class="p-3.5 align-top">
               <div class="flex items-center gap-1.5 mb-0.5">
-                <span class="font-bold text-white group-hover:text-amber-400 transition text-sm">#${b.id}</span>
-                <span class="bg-zinc-900 border border-zinc-800 text-[9px] text-zinc-400 px-1.5 py-0.5 rounded font-bold group-hover:border-amber-500/60 group-hover:text-amber-300 transition inline-flex items-center gap-1">
-                  <i data-lucide="eye" class="w-2.5 h-2.5"></i>
-                  <span>Open Order</span>
-                </span>
+                <span class="font-black text-white group-hover:text-amber-400 transition text-sm">#${b.id}</span>
+                ${isSub ? `<span class="bg-amber-950/70 text-amber-300 border border-amber-500/50 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Sub</span>` : ''}
               </div>
-              <div class="font-extrabold text-white text-xs">${escapeHtml(b.client_name)}</div>
-              <div class="text-[10px] text-zinc-400" onclick="event.stopPropagation()">
-                <a href="tel:${b.phone}" class="hover:underline text-amber-400 font-semibold">${escapeHtml(b.phone)}</a>
-              </div>
-            </td>
-
-            <!-- COLUMN 2: Schedule & Service Address -->
-            <td class="p-3.5">
-              <div class="text-amber-400 font-bold text-xs">${b.service_date || 'N/A'} <span class="text-zinc-300 font-normal">(${escapeHtml(b.time_slot || 'Standard')})</span></div>
-              <div class="text-zinc-300 max-w-xs truncate text-[11px] mt-0.5">${escapeHtml(b.service_address || 'N/A')}</div>
-              <a href="${mapsUrl}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-[10px] text-amber-400 hover:text-amber-300 font-bold mt-0.5">
-                <i data-lucide="map-pin" class="w-3 h-3"></i>
-                <span>Open Maps</span>
-              </a>
-            </td>
-
-            <!-- COLUMN 3: Vehicle, Service Package & Selected Add-Ons -->
-            <td class="p-3.5">
-              <div class="flex flex-wrap items-center gap-1.5 mb-1">
-                <span class="bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-[10px] font-bold text-zinc-200">
-                  ${escapeHtml(b.vehicle_category || 'Vehicle')}
-                </span>
-                ${isSub 
-                  ? `<span class="bg-amber-950/60 text-amber-300 border border-amber-500/50 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Sub</span>` 
-                  : `<span class="bg-zinc-900 text-zinc-400 border border-zinc-800 px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider">One-Time</span>`}
-                ${selectedAddOns.length > 0 
-                  ? `<span class="bg-amber-500/15 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded text-[9px] font-extrabold">+${selectedAddOns.length} Add-On${selectedAddOns.length > 1 ? 's' : ''}</span>` 
-                  : ''}
-              </div>
-              <div class="text-[11px] text-zinc-300 font-semibold max-w-xs truncate">${escapeHtml(b.service_type || 'Detailing Package')}</div>
-              ${selectedAddOns.length > 0 ? `
-                <div class="text-[10px] text-amber-400/90 truncate max-w-xs mt-0.5">
-                  ${selectedAddOns.map(a => escapeHtml(a.price !== null ? `${a.name} ($${a.price})` : a.name)).join(' • ')}
+              <div class="font-extrabold text-white text-xs leading-snug">${escapeHtml(b.client_name)}</div>
+              ${b.phone ? `
+                <div class="text-[11px] mt-0.5" onclick="event.stopPropagation()">
+                  <a href="tel:${b.phone}" class="hover:underline text-amber-400 font-semibold">${escapeHtml(b.phone)}</a>
                 </div>
               ` : ''}
             </td>
 
-            <!-- COLUMN 4: Amount & Payment Type -->
-            <td class="p-3.5">
-              <div class="font-extrabold text-white text-sm">$${parseFloat(b.amount_paid || 0).toFixed(2)}</div>
-              <div class="text-[10px] ${isCashZelle ? 'text-amber-400 font-bold' : 'text-zinc-400 font-semibold'} truncate max-w-[120px]" title="${paymentLabel}">
-                ${paymentLabel}
+            <!-- COLUMN 2: SCHEDULE (Date, Time Window & Truncated Address + Maps) -->
+            <td class="p-3.5 align-top">
+              <div class="text-amber-400 font-bold text-xs leading-snug">
+                ${b.service_date || 'N/A'} <span class="text-zinc-300 font-normal">· ${escapeHtml(b.time_slot || 'Standard')}</span>
               </div>
+              <div class="text-zinc-400 max-w-[170px] sm:max-w-xs truncate text-[11px] mt-0.5">${escapeHtml(b.service_address || 'N/A')}</div>
+              ${b.service_address ? `
+                <a href="${mapsUrl}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-[10px] text-amber-400 hover:text-amber-300 font-bold mt-1">
+                  <i data-lucide="map-pin" class="w-3 h-3"></i>
+                  <span>Maps</span>
+                </a>
+              ` : ''}
             </td>
 
-            <!-- COLUMN 5: Status Dropdown & Signature Action -->
-            <td class="p-3.5 space-y-1" onclick="event.stopPropagation()">
-              <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-amber-500 ${getStatusColorClass(status)}">
-                <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
-                <option value="Paid & Confirmed" ${status === 'Paid & Confirmed' ? 'selected' : ''}>Paid &amp; Confirmed</option>
-                <option value="On My Way" ${(status === 'On My Way' || status === 'Dispatched') ? 'selected' : ''}>On My Way</option>
-                <option value="In Progress" ${status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
-                <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-              </select>
-              ${hasSignature ? `
-                <div class="text-[9px] text-amber-400 font-semibold inline-flex items-center gap-1">
-                  <i data-lucide="check-circle" class="w-3 h-3"></i>
-                  <span>Signed</span>
-                </div>` : ''}
+            <!-- COLUMN 3: STATUS (Dropdown, Collect Cash/Zelle Cue & Modal Chevron) -->
+            <td class="p-3.5 align-top">
+              <div class="flex items-center justify-between gap-2">
+                <div class="space-y-1" onclick="event.stopPropagation()">
+                  <select onchange="handleStatusDropdownChange(${b.id}, this.value)" class="bg-black border border-zinc-800 rounded-lg px-2 py-1.5 text-xs font-semibold focus:outline-none focus:border-amber-500 ${getStatusColorClass(status)}">
+                    <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="Paid & Confirmed" ${status === 'Paid & Confirmed' ? 'selected' : ''}>Paid &amp; Confirmed</option>
+                    <option value="On My Way" ${(status === 'On My Way' || status === 'Dispatched') ? 'selected' : ''}>On My Way</option>
+                    <option value="In Progress" ${status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
+                    <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                  </select>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    ${isCashZelleDue ? `
+                      <span class="bg-amber-500/15 border border-amber-500/40 text-amber-300 text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                        Cash/Zelle
+                      </span>
+                    ` : ''}
+                    ${hasSignature ? `
+                      <span class="text-[10px] text-amber-400 font-semibold inline-flex items-center gap-1">
+                        <i data-lucide="check-circle" class="w-3 h-3"></i>
+                        <span>Signed</span>
+                      </span>
+                    ` : ''}
+                  </div>
+                </div>
+
+                <!-- Right-edge tap/click affordance for modal -->
+                <span aria-hidden="true" class="text-zinc-500 group-hover:text-amber-400 group-hover:translate-x-0.5 transition shrink-0">
+                  <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </span>
+              </div>
             </td>
 
           </tr>
