@@ -121,27 +121,27 @@
         </div>
 
         <!-- 2. THREE STATUS ACTION BUTTONS (ON MY WAY | IN PROGRESS | COMPLETED -> SIGNATURE) -->
-        <div class="bg-zinc-900/70 border border-amber-500/30 rounded-xl p-4 space-y-2.5">
+        <div id="dispatchStatusActionBox" class="bg-zinc-900/70 border border-amber-500/30 rounded-xl p-4 space-y-2.5">
           <div class="flex justify-between items-center">
             <span class="font-bold text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
               <i data-lucide="navigation" class="w-3.5 h-3.5 text-amber-400"></i>
               Dispatch Status Action
             </span>
-            <span class="text-[10px] text-zinc-400">Tap to update live status</span>
+            <span class="text-[10px] text-zinc-400">Opens SMS on your phone &amp; emails client</span>
           </div>
 
           <div class="grid grid-cols-3 gap-2">
-            <button id="btnStatusOnMyWay" onclick="handleModalStatusAction('On My Way')" class="py-3 px-2 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 text-zinc-200 font-extrabold text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-sm">
+            <button id="btnStatusOnMyWay" onclick="handleModalStatusAction('On My Way')" class="py-3 px-2 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 text-zinc-200 font-extrabold text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-sm cursor-pointer">
               <i data-lucide="truck" class="w-4 h-4 text-amber-400"></i>
-              <span>On My Way</span>
+              <span id="labelOnMyWay">On My Way</span>
             </button>
 
-            <button id="btnStatusInProgress" onclick="handleModalStatusAction('In Progress')" class="py-3 px-2 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 text-zinc-200 font-extrabold text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-sm">
+            <button id="btnStatusInProgress" onclick="handleModalStatusAction('In Progress')" class="py-3 px-2 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 text-zinc-200 font-extrabold text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-sm cursor-pointer">
               <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
-              <span>In Progress</span>
+              <span id="labelInProgress">In Progress</span>
             </button>
 
-            <button id="btnStatusCompleted" onclick="handleModalStatusAction('Completed')" class="py-3 px-2 rounded-xl border border-amber-500/50 bg-amber-500 hover:bg-amber-400 text-black font-black text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-lg shadow-amber-900/25">
+            <button id="btnStatusCompleted" onclick="handleModalStatusAction('Completed')" class="py-3 px-2 rounded-xl border border-amber-500/50 bg-amber-500 hover:bg-amber-400 text-black font-black text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-lg shadow-amber-900/25 cursor-pointer">
               <i data-lucide="pen-tool" class="w-4 h-4 text-black"></i>
               <span>Completed</span>
             </button>
@@ -965,6 +965,7 @@
 
     /* ----------------------------------------------------
        ORDER DETAILS MODAL & 3-BUTTON STATUS WORKFLOW
+       (DIRECT PHONE SMS + EMAIL + ONE-TIME GRAY-OUT LOCK)
     ---------------------------------------------------- */
     function updateModalStatusButtonsUI(status) {
       const currentStatusPill = document.getElementById('detailCurrentStatusPill');
@@ -972,28 +973,106 @@
         currentStatusPill.textContent = status || 'Pending';
       }
 
+      const actionBox = document.getElementById('dispatchStatusActionBox');
       const btnOnMyWay = document.getElementById('btnStatusOnMyWay');
       const btnInProgress = document.getElementById('btnStatusInProgress');
       const btnCompleted = document.getElementById('btnStatusCompleted');
+      const labelOnMyWay = document.getElementById('labelOnMyWay');
+      const labelInProgress = document.getElementById('labelInProgress');
 
-      const baseInactive = 'py-3 px-2 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 text-zinc-200 font-extrabold text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-sm';
-      const activeStep = 'py-3 px-2 rounded-xl border-2 border-amber-400 bg-amber-950/60 text-amber-300 font-black text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-md shadow-amber-900/20';
+      // Hide the entire Dispatch Status Action box once order is Completed
+      if (actionBox) {
+        if (status === 'Completed') {
+          actionBox.classList.add('hidden');
+          return;
+        } else {
+          actionBox.classList.remove('hidden');
+        }
+      }
 
+      const readyStyle = 'py-3 px-2 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 text-zinc-200 font-extrabold text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-sm cursor-pointer';
+      const sentGrayedStyle = 'py-3 px-2 rounded-xl border border-zinc-800 bg-zinc-900/40 text-zinc-500 font-bold text-[11px] sm:text-xs flex flex-col items-center justify-center gap-1 opacity-50 cursor-not-allowed pointer-events-none';
+
+      // "On My Way" grays out & locks once sent (or once job moves past it to In Progress)
+      const onMyWaySent = (status === 'On My Way' || status === 'Dispatched' || status === 'In Progress');
       if (btnOnMyWay) {
-        btnOnMyWay.className = (status === 'On My Way' || status === 'Dispatched') ? activeStep : baseInactive;
+        btnOnMyWay.disabled = onMyWaySent;
+        btnOnMyWay.className = onMyWaySent ? sentGrayedStyle : readyStyle;
+        if (labelOnMyWay) {
+          labelOnMyWay.textContent = onMyWaySent ? 'On My Way (Sent)' : 'On My Way';
+        }
       }
+
+      // "In Progress" grays out & locks once sent
+      const inProgressSent = (status === 'In Progress');
       if (btnInProgress) {
-        btnInProgress.className = (status === 'In Progress') ? activeStep : baseInactive;
+        btnInProgress.disabled = inProgressSent;
+        btnInProgress.className = inProgressSent ? sentGrayedStyle : readyStyle;
+        if (labelInProgress) {
+          labelInProgress.textContent = inProgressSent ? 'In Progress (Sent)' : 'In Progress';
+        }
       }
+
       if (btnCompleted) {
-        btnCompleted.className = (status === 'Completed')
-          ? 'py-3 px-2 rounded-xl border-2 border-amber-300 bg-amber-400 text-black font-black text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-lg'
-          : 'py-3 px-2 rounded-xl border border-amber-500/50 bg-amber-500 hover:bg-amber-400 text-black font-black text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-lg shadow-amber-900/25';
+        btnCompleted.disabled = false;
+        btnCompleted.className = 'py-3 px-2 rounded-xl border border-amber-500/50 bg-amber-500 hover:bg-amber-400 text-black font-black text-[11px] sm:text-xs transition flex flex-col items-center justify-center gap-1 shadow-lg shadow-amber-900/25 cursor-pointer';
+      }
+    }
+
+    function launchNativePhoneSMS(booking, targetStatus) {
+      const rawPhone = (booking.phone || '').replace(/[^\d+]/g, '');
+      if (!rawPhone) return;
+
+      const clientFirst = (booking.client_name || 'Client').trim().split(' ')[0];
+      const serviceName = booking.service_type || 'detailing service';
+      const address = booking.service_address || 'your scheduled location';
+
+      let messageBody = '';
+      if (targetStatus === 'On My Way') {
+        messageBody = `Hi ${clientFirst}, this is KW Commercial Fleet Care! Our mobile detailing technician is ON THE WAY to ${address} for your ${serviceName} (Order #${booking.id}).`;
+      } else if (targetStatus === 'In Progress') {
+        messageBody = `Hi ${clientFirst}, your ${serviceName} (Order #${booking.id}) with KW Commercial Fleet Care is now IN PROGRESS! We will notify you once we wrap up.`;
+      }
+
+      if (!messageBody) return;
+
+      // Cross-platform iOS / Android native SMS URI using your device's own phone number
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const separator = isIOS ? '&' : '?';
+      const smsUrl = `sms:${rawPhone}${separator}body=${encodeURIComponent(messageBody)}`;
+
+      window.location.href = smsUrl;
+    }
+
+    async function sendStatusUpdateEmail(booking, targetStatus) {
+      if (!booking.email) return;
+      try {
+        await fetch(`${SUPABASE_URL}/functions/v1/send-completion-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({
+            type: 'status_update',
+            status: targetStatus,
+            bookingId: booking.id,
+            clientName: booking.client_name,
+            clientEmail: booking.email,
+            serviceType: booking.service_type,
+            serviceAddress: booking.service_address,
+            timeSlot: booking.time_slot
+          })
+        });
+      } catch (err) {
+        console.warn('Status email notification warning:', err);
       }
     }
 
     async function handleModalStatusAction(targetStatus) {
       if (!activeOrderModalId) return;
+      const booking = allBookings.find(b => b.id === activeOrderModalId);
+      if (!booking) return;
 
       if (targetStatus === 'Completed') {
         const orderIdToComplete = activeOrderModalId;
@@ -1002,9 +1081,19 @@
         return;
       }
 
-      await updateStatus(activeOrderModalId, targetStatus);
+      // 1. Immediately gray out & disable button so it cannot be tapped twice
       updateModalStatusButtonsUI(targetStatus);
-      showToast('Status Updated', `Order #${activeOrderModalId} marked as "${targetStatus}".`);
+
+      // 2. Save new status in Supabase
+      await updateStatus(activeOrderModalId, targetStatus);
+
+      // 3. Trigger automated status email in background
+      sendStatusUpdateEmail(booking, targetStatus);
+
+      // 4. Open your phone's native Messages app pre-filled with the client's number & status text
+      launchNativePhoneSMS(booking, targetStatus);
+
+      showToast('Status Sent', `"${targetStatus}" recorded & ready to send from your phone.`);
     }
 
     function openOrderDetailsModal(bookingId) {
@@ -1051,7 +1140,7 @@
       document.getElementById('detailServiceDate').textContent = b.service_date || 'N/A';
       document.getElementById('detailTimeSlot').textContent = b.time_slot || 'Standard Window';
 
-      // Sync 3 Status Action Buttons
+      // Sync 3 Status Action Buttons (hides box if Completed; grays out sent buttons)
       updateModalStatusButtonsUI(b.payment_status || 'Pending');
 
       // Vehicle, Package & Add-Ons
@@ -1264,7 +1353,12 @@
       if (value === 'Completed') {
         openSignatureModal(id);
       } else {
+        const booking = allBookings.find(b => b.id === id);
         updateStatus(id, value);
+        if (booking && (value === 'On My Way' || value === 'In Progress')) {
+          sendStatusUpdateEmail(booking, value);
+          launchNativePhoneSMS(booking, value);
+        }
       }
     }
 
