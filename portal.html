@@ -718,11 +718,6 @@
 
     /**
      * Dynamically parses the exact add-ons & prices selected by the client on the booking site.
-     * Supports:
-     * 1) JSON arrays: [{"name": "Pet Hair Removal", "price": 75}] or ["Pet Hair Removal ($75)"]
-     * 2) JSON objects: {"Pet Hair Removal": 75, "Engine Bay": 125}
-     * 3) Formatted strings: "Pet Hair Removal ($75), Engine Bay Cleaning - $125" or "Pet Hair Removal +$75"
-     * 4) Plain comma/semicolon/newline-separated strings: "Pet Hair Removal, Engine Bay Cleaning"
      */
     function parseBookingAddOns(b) {
       const raw = b.add_ons ?? b.addons ?? b.selected_addons ?? b.selected_add_ons ?? null;
@@ -734,7 +729,6 @@
         const cleaned = String(str).trim();
         if (!cleaned || cleaned.toLowerCase() === 'none' || cleaned.toLowerCase() === 'no add-ons') return null;
 
-        // Match patterns like "Name ($75.00)", "Name - $75", "Name: $75", "Name +$75"
         const priceMatch = cleaned.match(/^(.*?)(?:\s*[\(\-\:\+]\s*\$?\s*(\d+(?:\.\d{1,2})?)\s*\)?|\s+\$(\d+(?:\.\d{1,2})?))$/);
         if (priceMatch) {
           const name = priceMatch[1].replace(/[\(\-\:\+]+$/, '').trim();
@@ -768,7 +762,6 @@
         }
       };
 
-      // Handle already-parsed JS Array or Object (e.g., Supabase JSONB column)
       if (Array.isArray(raw)) {
         raw.forEach(item => normalizeItem(item));
         return results;
@@ -787,7 +780,6 @@
         return results;
       }
 
-      // Handle String (JSON string or delimited text)
       const strVal = String(raw).trim();
       if (!strVal || strVal.toLowerCase() === 'none' || strVal === '[]' || strVal === '{}') {
         return [];
@@ -802,7 +794,6 @@
         }
       }
 
-      // Split by comma, semicolon, pipe, or newline (avoiding splitting inside parentheses)
       const parts = strVal.split(/,(?![^\(\)]*\))|;|\||\n/);
       parts.forEach(part => {
         const parsed = extractNameAndPrice(part);
@@ -975,7 +966,6 @@
         ? 'bg-amber-950/60 text-amber-300 border border-amber-500/50 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0'
         : 'bg-zinc-900 text-zinc-300 border border-zinc-800 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shrink-0';
 
-      // Render exact Add-Ons clicked by the client on the booking site
       const addOnsContainer = document.getElementById('detailAddOnsList');
       const addOnsSubtotalBadge = document.getElementById('detailAddOnsSubtotalBadge');
       const selectedAddOns = parseBookingAddOns(b);
@@ -1478,9 +1468,6 @@
       renderCharts();
     }
 
-    /**
-     * Dynamically aggregates all Add-Ons actually selected by clients in Supabase `bookings`
-     */
     function calculateAddOnsData() {
       const stats = {};
 
