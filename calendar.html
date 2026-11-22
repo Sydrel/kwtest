@@ -107,15 +107,15 @@
   <!-- Main 3-Step Wizard & Order View Container -->
   <div class="max-w-2xl w-full bg-zinc-950 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-2xl border border-[#8A6814]/40">
     
-    <!-- Beta Testing Banner + Live Order View & Services Alert Buttons -->
-    <div id="topBannerBar" class="mb-5 p-3 bg-black border border-zinc-800 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-md">
+    <!-- Beta Testing Banner (Green) + Live Order View & Services Alert Buttons -->
+    <div id="topBannerBar" class="mb-5 p-3 bg-black border border-emerald-500/30 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-md">
       <div class="flex items-start gap-2.5 flex-1 min-w-[200px]">
         <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
         </span>
         <div>
-          <p class="text-xs font-bold text-red-500 tracking-wide uppercase">System Notification &mdash; Beta Testing</p>
+          <p class="text-xs font-bold text-emerald-400 tracking-wide uppercase">System Notification &mdash; Beta Testing</p>
           <p class="text-[11px] text-zinc-400 leading-snug mt-0.5">
             Our booking system is currently operating in <strong class="text-white">Beta Testing</strong> mode.
           </p>
@@ -1309,6 +1309,7 @@
     // LIVE ORDER VIEW & SERVICE DURATION TRACKER
     // ==========================================
     let activeOrderChannel = null;
+    let orderSyncInterval = null;
     let detailingTimerInterval = null;
     let detailingStartTime = null;
 
@@ -1378,7 +1379,6 @@
 
       if (booking.id) {
         if (activeOrderChannel) supabaseClient.removeChannel(activeOrderChannel);
-
         activeOrderChannel = supabaseClient
           .channel(`order-status-${booking.id}`)
           .on(
@@ -1390,11 +1390,23 @@
               filter: `id=eq.${booking.id}`,
             },
             (payload) => {
-              const updated = payload.new;
-              applyOrderStatusUI(updated.status || 'Confirmed', updated.started_at);
+              applyOrderStatusUI(payload.new.status || 'Confirmed', payload.new.started_at);
             }
           )
           .subscribe();
+
+        if (orderSyncInterval) clearInterval(orderSyncInterval);
+        orderSyncInterval = setInterval(async () => {
+          const { data: fresh, error } = await supabaseClient
+            .from('bookings')
+            .select('status, started_at')
+            .eq('id', booking.id)
+            .single();
+
+          if (!error && fresh) {
+            applyOrderStatusUI(fresh.status || 'Confirmed', fresh.started_at);
+          }
+        }, 3000);
       }
     }
 
