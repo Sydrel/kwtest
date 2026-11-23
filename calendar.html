@@ -93,21 +93,23 @@
     </div>
   </div>
 
-  <!-- Logo Header -->
-  <div class="mb-5 text-center max-w-xl">
-    <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Washing & Mobile Detailing LLC Logo" class="h-14 sm:h-16 mx-auto mb-2 object-contain filter drop-shadow-[0_0_12px_rgba(197,155,39,0.25)]">
-    <h1 class="text-base sm:text-lg md:text-xl font-bold text-white tracking-wide uppercase">
-      KW COMMERCIAL FLEET WASHING <span class="text-red-600">&</span> <span class="text-[#C59B27]">MOBILE DETAILING LLC</span>
-    </h1>
-    <p class="text-[11px] sm:text-xs text-zinc-400 mt-1">
-      Professional Mobile Service Direct to Your Location <span class="text-[#8A6814] mx-1">|</span> <span class="text-[#C59B27] font-medium">Mon–Sat: 5AM–6PM</span>
-    </p>
-  </div>
+  <!-- Logo Header (Logo on Left Side, Balanced to Container Width) -->
+  <header class="mb-5 max-w-2xl w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-3 sm:gap-4 px-1">
+    <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Washing & Mobile Detailing LLC Logo" class="h-14 sm:h-16 w-auto flex-shrink-0 object-contain filter drop-shadow-[0_0_12px_rgba(197,155,39,0.25)]">
+    <div class="text-center sm:text-left min-w-0 flex-1">
+      <h1 class="text-sm sm:text-base md:text-[17px] font-bold text-white tracking-wide uppercase leading-snug">
+        KW COMMERCIAL FLEET WASHING <span class="text-red-600">&amp;</span> <span class="text-[#C59B27]">MOBILE DETAILING LLC</span>
+      </h1>
+      <p class="text-[11px] sm:text-xs text-zinc-400 mt-1 leading-snug">
+        Professional Mobile Service Direct to Your Location <span class="text-[#8A6814] mx-1">|</span> <span class="text-[#C59B27] font-medium whitespace-nowrap">Mon–Sat: 5AM–6PM</span>
+      </p>
+    </div>
+  </header>
 
   <!-- Main 3-Step Wizard & Order View Container -->
   <div class="max-w-2xl w-full bg-zinc-950 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-2xl border border-[#8A6814]/40">
     
-    <!-- Beta Testing Banner (Green) + Live Order View & Services Alert Buttons -->
+    <!-- System Notification Banner (Green) + Live Order View & Services Alert Buttons -->
     <div id="topBannerBar" class="mb-5 p-3 bg-black border border-emerald-500/30 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-md">
       <div class="flex items-start gap-2.5 flex-1 min-w-[200px]">
         <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
@@ -115,9 +117,9 @@
           <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
         </span>
         <div>
-          <p class="text-xs font-bold text-emerald-400 tracking-wide uppercase">System Notification &mdash; Beta Testing</p>
+          <p class="text-xs font-bold text-emerald-400 tracking-wide uppercase">System Online &mdash; Live Booking</p>
           <p class="text-[11px] text-zinc-400 leading-snug mt-0.5">
-            Our booking system is currently operating in <strong class="text-white">Beta Testing</strong> mode.
+            Instant scheduling, live service tracking &amp; automated membership billing active.
           </p>
         </div>
       </div>
@@ -630,7 +632,33 @@
     </div>
   </div>
 
+  <!-- Production Footer with Version v1.0.0 Changelog Link & Nova Web Forge Credit -->
+  <footer class="mt-6 mb-2 text-center max-w-2xl w-full px-2">
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 text-[11px] text-zinc-500">
+      <span>&copy; 2026 KW Commercial Fleet Washing &amp; Mobile Detailing LLC</span>
+      <span class="hidden sm:inline text-zinc-700">&bull;</span>
+      <a id="footerChangelogLink" href="#changelog" target="_blank" rel="noopener noreferrer" title="View Release Notes & Hotfixes" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 hover:border-emerald-400/60 font-mono font-semibold transition">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        v1.0.0 &mdash; Changelog
+      </a>
+      <span class="hidden sm:inline text-zinc-700">&bull;</span>
+      <span>Development by <strong class="text-[#C59B27] font-semibold">Nova Web Forge</strong></span>
+    </div>
+  </footer>
+
   <script>
+    // ==============================================================
+    // PASTE YOUR PUBLIC CHANGELOG / RELEASE NOTES URL BELOW:
+    // ==============================================================
+    const CHANGELOG_URL = 'https://your-changelog-link-here.com';
+
+    (function bindChangelogFooterLink() {
+      const linkEl = document.getElementById('footerChangelogLink');
+      if (linkEl && CHANGELOG_URL && CHANGELOG_URL !== 'https://your-changelog-link-here.com') {
+        linkEl.href = CHANGELOG_URL;
+      }
+    })();
+
     function closeServicesAlert() {
       const modal = document.getElementById('servicesAlertModal');
       if (modal) modal.classList.add('hidden');
