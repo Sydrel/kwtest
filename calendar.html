@@ -630,31 +630,27 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Production Footer with Version v1.0.0 Changelog Link & Nova Web Forge Credit -->
-  <footer class="mt-6 mb-2 text-center max-w-2xl w-full px-2">
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 text-[11px] text-zinc-500">
-      <span>&copy; 2026 KW Commercial Fleet Washing &amp; Mobile Detailing LLC</span>
-      <span class="hidden sm:inline text-zinc-700">&bull;</span>
-      <a id="footerChangelogLink" href="#changelog" target="_blank" rel="noopener noreferrer" title="View Release Notes & Hotfixes" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-950 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 hover:border-emerald-400/60 font-mono font-semibold transition">
+    <!-- Container Footer: Version v1.0.0 & Nova Web Forge Credit -->
+    <footer class="mt-6 pt-4 border-t border-zinc-900 flex flex-wrap items-center justify-center gap-2.5 text-[11px] text-zinc-500">
+      <a id="footerChangelogLink" href="https://fearless-mulberry-c4d.notion.site/v1-0-0-Initial-Production-Release-42120cabc8b18096b686ca1ca4cd01c9?source=copy_link" target="_blank" rel="noopener noreferrer" title="View Release Notes & Hotfixes" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-black border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 hover:border-emerald-400/60 font-mono font-semibold transition">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-        v1.0.0 &mdash; Changelog
+        v1.0.0
       </a>
-      <span class="hidden sm:inline text-zinc-700">&bull;</span>
+      <span class="text-zinc-700">&bull;</span>
       <span>Development by <strong class="text-[#C59B27] font-semibold">Nova Web Forge</strong></span>
-    </div>
-  </footer>
+    </footer>
+  </div>
 
   <script>
     // ==============================================================
-    // PASTE YOUR PUBLIC CHANGELOG / RELEASE NOTES URL BELOW:
+    // PUBLIC CHANGELOG / RELEASE NOTES URL:
     // ==============================================================
-    const CHANGELOG_URL = 'https://your-changelog-link-here.com';
+    const CHANGELOG_URL = 'https://fearless-mulberry-c4d.notion.site/v1-0-0-Initial-Production-Release-42120cabc8b18096b686ca1ca4cd01c9?source=copy_link';
 
     (function bindChangelogFooterLink() {
       const linkEl = document.getElementById('footerChangelogLink');
-      if (linkEl && CHANGELOG_URL && CHANGELOG_URL !== 'https://your-changelog-link-here.com') {
+      if (linkEl && CHANGELOG_URL) {
         linkEl.href = CHANGELOG_URL;
       }
     })();
