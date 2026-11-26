@@ -16,7 +16,6 @@
   <!-- Lucide Crisp Vector Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    /* iOS Safari & Touch Device Optimizations */
     html, body {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -215,34 +214,30 @@
             </button>
           </div>
           <p class="text-[11px] text-zinc-400 text-center pt-0.5">
-            Selecting <strong class="text-amber-400">Completed</strong> logs this job into your Completed Revenue Report and opens the Client Signature pad.
+            Selecting <strong class="text-amber-400">Completed</strong> stops the service timer, records the job into your <strong class="text-white">Reports</strong>, and opens the Client Signature pad.
           </p>
         </div>
 
-        <!-- SUBSCRIPTION MANAGEMENT & CANCELLATION PANEL -->
-        <div id="detailSubscriptionManageBox" class="hidden bg-zinc-950 border border-red-500/35 rounded-xl p-4 sm:p-5 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-red-400 uppercase tracking-wider text-xs flex items-center gap-1.5">
+        <!-- SUBSCRIPTION MANAGEMENT BOX (CANCEL AT PERIOD END ONLY — NO IMMEDIATE CANCEL) -->
+        <div id="detailSubscriptionActionBox" class="hidden bg-zinc-950 border border-amber-500/40 rounded-xl p-4 sm:p-5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2.5">
+            <span class="font-bold text-amber-400 uppercase tracking-wider text-xs flex items-center gap-1.5">
               <i data-lucide="repeat" class="w-4 h-4"></i>
               Subscription Plan Management
             </span>
-            <span id="detailSubStatusBadge" class="bg-amber-500/15 border border-amber-500/40 text-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase">
-              Active Recurring
+            <span id="detailSubCancelStatusBadge" class="bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider">
+              Active Auto-Renew
             </span>
           </div>
-          <p class="text-[11px] text-zinc-400">
-            Cancel this client's recurring monthly plan in Stripe and stop future scheduled washes.
+
+          <p id="detailSubCancelDescription" class="text-xs text-zinc-300 leading-relaxed">
+            Client keeps full wash access through the end of their current paid billing period. No future renewals will be billed.
           </p>
-          <div class="flex flex-col sm:flex-row gap-2.5">
-            <button id="btnCancelSubPeriodEnd" onclick="openCancelSubscriptionModal(activeOrderModalId, 'period_end')" class="flex-1 bg-zinc-900 hover:bg-zinc-800 border border-amber-500/40 text-amber-300 font-bold py-2.5 px-3 rounded-xl text-xs transition inline-flex items-center justify-center gap-1.5">
-              <i data-lucide="calendar-off" class="w-3.5 h-3.5"></i>
-              <span>Cancel at End of Billing Cycle</span>
-            </button>
-            <button id="btnCancelSubImmediate" onclick="openCancelSubscriptionModal(activeOrderModalId, 'immediate')" class="flex-1 bg-red-950/60 hover:bg-red-900/70 border border-red-500/50 text-red-300 font-extrabold py-2.5 px-3 rounded-xl text-xs transition inline-flex items-center justify-center gap-1.5">
-              <i data-lucide="x-octagon" class="w-3.5 h-3.5"></i>
-              <span>Cancel Subscription Now</span>
-            </button>
-          </div>
+
+          <button id="btnCancelSubscriptionPeriodEnd" onclick="openCancelSubscriptionModal(activeOrderModalId)" class="w-full bg-zinc-900 hover:bg-red-950/40 border border-red-500/50 text-red-300 hover:text-red-200 font-extrabold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="calendar-x" class="w-4 h-4 text-red-400"></i>
+            <span>Cancel Subscription at Period End</span>
+          </button>
         </div>
 
         <!-- 2. CLIENT INFORMATION, ADDRESS & BOOKED TIME -->
@@ -382,35 +377,38 @@
 
   </div>
 
-  <!-- CANCEL SUBSCRIPTION CONFIRMATION MODAL -->
-  <div id="cancelSubscriptionModal" class="fixed inset-0 bg-black/90 z-[55] hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-950 border border-red-500/40 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4">
+  <!-- CANCEL SUBSCRIPTION AT PERIOD END MODAL (NO IMMEDIATE CANCEL OPTION) -->
+  <div id="cancelSubModal" class="fixed inset-0 bg-black/90 z-[55] hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-950 border border-amber-500/40 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4">
       <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i data-lucide="x-octagon" class="w-4 h-4 text-red-400"></i>
-          <span>Cancel Client Subscription</span>
-        </h3>
-        <button onclick="closeCancelSubscriptionModal()" class="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-zinc-900">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+            <i data-lucide="calendar-x" class="w-4 h-4 text-amber-400"></i>
+            <span>Cancel at Period End</span>
+          </h3>
+          <p id="cancelSubModalSubtitle" class="text-xs text-amber-400/90 mt-0.5">Order #-- | Client</p>
+        </div>
+        <button onclick="closeCancelSubscriptionModal()" aria-label="Close modal" class="text-zinc-400 hover:text-white p-2 rounded-lg hover:bg-zinc-900 transition">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2 text-xs">
-        <div class="flex justify-between"><span class="text-zinc-400">Client:</span><span id="cancelSubClientName" class="font-bold text-white">--</span></div>
-        <div class="flex justify-between"><span class="text-zinc-400">Plan:</span><span id="cancelSubPlanName" class="font-bold text-amber-400 truncate max-w-[200px]">--</span></div>
-        <div class="flex justify-between"><span class="text-zinc-400">Cancellation Mode:</span><span id="cancelSubModeLabel" class="font-bold text-red-400">--</span></div>
+      <div class="bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 space-y-2 text-xs text-zinc-300">
+        <p class="font-bold text-white">End-of-Cycle Cancellation Policy:</p>
+        <ul class="space-y-1.5 text-zinc-400 list-disc pl-4">
+          <li>This subscription will <strong class="text-amber-300">remain active until the end of the current paid billing period</strong>.</li>
+          <li>Automatic monthly renewal will be turned off so the client is not billed next cycle.</li>
+          <li>Immediate cancellation is disabled to protect paid client cycles.</li>
+        </ul>
       </div>
 
-      <p id="cancelSubDescription" class="text-xs text-zinc-300 leading-relaxed">
-        This will stop recurring Stripe billing for this client and cancel uncompleted future subscription appointments.
-      </p>
-
-      <div class="flex gap-2.5 pt-2">
+      <div class="flex gap-2.5 pt-1">
         <button onclick="closeCancelSubscriptionModal()" class="w-1/2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-bold py-3 rounded-xl transition">
           Keep Active
         </button>
-        <button id="confirmCancelSubBtn" onclick="executeSubscriptionCancellation()" class="w-1/2 bg-red-600 hover:bg-red-500 text-white text-xs font-extrabold py-3 rounded-xl transition shadow-lg">
-          Confirm Cancel
+        <button id="confirmCancelPeriodEndBtn" onclick="confirmCancelSubscriptionAtPeriodEnd()" class="w-1/2 bg-red-600 hover:bg-red-500 text-white text-xs font-extrabold py-3 rounded-xl transition shadow-lg inline-flex items-center justify-center gap-1.5 cursor-pointer">
+          <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i>
+          <span>Cancel at Period End</span>
         </button>
       </div>
     </div>
@@ -432,7 +430,7 @@
         </button>
       </div>
 
-      <p class="text-xs text-zinc-300">Have the client sign below with their finger or stylus to acknowledge completion of service and record this revenue in your Completed Report.</p>
+      <p class="text-xs text-zinc-300">Have the client sign below with their finger or stylus to acknowledge completion of service and finalize this order into your Completed Report.</p>
 
       <div class="border-2 border-amber-500/40 bg-white rounded-xl overflow-hidden touch-none relative">
         <canvas id="signatureCanvas" class="w-full h-48 sm:h-44 cursor-crosshair block"></canvas>
@@ -462,7 +460,7 @@
     <div class="bg-zinc-950 border border-amber-500/30 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4">
       <div class="pb-3 border-b border-zinc-800 text-center">
         <h3 class="text-lg font-bold text-white">Confirm Job Completion</h3>
-        <p class="text-xs text-zinc-400">Moves order to Completed Tab &amp; adds to End-of-Day Revenue Report</p>
+        <p class="text-xs text-zinc-400">Moves order to Completed Tab &amp; records revenue into Reports</p>
       </div>
 
       <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-2 text-xs">
@@ -471,7 +469,7 @@
         <div class="flex justify-between"><span class="text-zinc-400">Send Receipt To:</span><span id="confirmClientEmail" class="font-bold text-amber-300 truncate max-w-[180px]">--</span></div>
         <div class="flex justify-between"><span class="text-zinc-400">Service:</span><span id="confirmService" class="font-bold text-zinc-200 truncate max-w-[180px]">--</span></div>
         <div id="confirmDurationRow" class="flex justify-between hidden"><span class="text-zinc-400">Service Duration:</span><span id="confirmDuration" class="font-bold text-amber-400">--</span></div>
-        <div class="flex justify-between"><span class="text-zinc-400">Completed Revenue:</span><span id="confirmAmount" class="font-bold text-white">$0.00</span></div>
+        <div class="flex justify-between"><span class="text-zinc-400">Total Paid:</span><span id="confirmAmount" class="font-bold text-white">$0.00</span></div>
         
         <div class="pt-2 border-t border-zinc-800">
           <span class="text-zinc-400 block mb-1.5">Captured Signature:</span>
@@ -535,6 +533,7 @@
     <!-- Clean Header Bar with Slide-Out Menu Trigger -->
     <header class="flex flex-row justify-between items-center gap-3 pb-4 border-b border-zinc-800">
       <div class="flex items-center gap-3">
+        <!-- Left-to-Right Drawer Open Button -->
         <button onclick="openNavDrawer()" aria-label="Open Navigation Menu" class="bg-zinc-900 hover:bg-zinc-800 active:scale-95 border border-amber-500/40 text-white font-extrabold py-2.5 px-3.5 rounded-xl transition inline-flex items-center gap-2 shadow-sm">
           <i data-lucide="menu" class="w-4 h-4 text-amber-400"></i>
           <span class="text-xs uppercase tracking-wider">Menu</span>
@@ -683,20 +682,20 @@
         </div>
       </div>
 
-      <!-- REVENUE REPORTS TAB VIEW (COMPLETED JOBS ONLY) -->
+      <!-- REVENUE REPORTS TAB VIEW (SEPARATED: COMPLETED JOBS ONLY) -->
       <div id="revenueReportsSection" class="hidden space-y-6">
-        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="bg-zinc-950 p-4 rounded-xl border border-amber-500/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
               <h2 class="text-base font-bold text-white flex items-center gap-2">
                 <i data-lucide="trending-up" class="w-4 h-4 text-amber-400"></i>
-                <span>Completed Revenue &amp; End-of-Day Report</span>
+                <span>Completed Jobs End-of-Service Report</span>
               </h2>
               <span class="bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider">
-                Completed Jobs Only
+                Completed Orders Only
               </span>
             </div>
-            <p class="text-xs text-zinc-400 mt-0.5">Only orders signed and marked <strong class="text-amber-400">Completed</strong> appear here. Pending and active jobs are excluded until finished.</p>
+            <p class="text-xs text-zinc-400">Only jobs marked <strong class="text-white">Completed</strong> are counted here. Active/pending jobs stay separated until finished.</p>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-xs text-zinc-400">Chart Range:</span>
@@ -707,22 +706,22 @@
           </div>
         </div>
 
-        <!-- Metric KPI Cards (Today Completed, This Week, This Month, Total Completed, Active Subs, Open Queue) -->
+        <!-- Metric KPI Cards (Completed Revenue vs Separated Open Pipeline) -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div class="bg-zinc-950 p-4 rounded-xl border border-amber-500/40">
-            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Completed Today</p>
-            <p id="revToday" class="text-xl font-extrabold text-amber-400 mt-1">$0.00</p>
-          </div>
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">This Week</p>
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Completed (Week)</p>
             <p id="revWeek" class="text-xl font-extrabold text-amber-400 mt-1">$0.00</p>
           </div>
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">This Month</p>
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Completed (Month)</p>
             <p id="revMonth" class="text-xl font-extrabold text-amber-400 mt-1">$0.00</p>
           </div>
-          <div class="bg-zinc-950 p-4 rounded-xl border border-amber-500/30">
-            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Completed Total</p>
+          <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Completed (Year)</p>
+            <p id="revYear" class="text-xl font-extrabold text-amber-400 mt-1">$0.00</p>
+          </div>
+          <div class="bg-zinc-950 p-4 rounded-xl border border-amber-500/40">
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Finalized Revenue</p>
             <p id="revTotal" class="text-xl font-extrabold text-white mt-1">$0.00</p>
           </div>
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
@@ -730,8 +729,9 @@
             <p id="subCount" class="text-xl font-extrabold text-amber-300 mt-1">0</p>
           </div>
           <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
-            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Unfinished Queue</p>
-            <p id="pendingCount" class="text-xl font-extrabold text-zinc-400 mt-1">0</p>
+            <p class="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Open Pipeline</p>
+            <p id="pendingPipelineRev" class="text-xl font-extrabold text-zinc-400 mt-1">$0.00</p>
+            <span id="pendingCountSub" class="text-[10px] text-zinc-500 block mt-0.5">0 open jobs (excluded)</span>
           </div>
         </div>
 
@@ -743,7 +743,7 @@
                 <h3 class="text-xs font-bold text-white uppercase tracking-wider">Completed Monthly Revenue Trend</h3>
                 <p class="text-[11px] text-zinc-500">Finalized revenue from completed jobs per month</p>
               </div>
-              <span class="bg-amber-950/60 border border-amber-600/50 text-amber-400 text-[10px] px-2.5 py-0.5 rounded font-bold uppercase tracking-wider">Completed Revenue</span>
+              <span class="bg-amber-950/60 border border-amber-600/50 text-amber-400 text-[10px] px-2.5 py-0.5 rounded font-bold uppercase tracking-wider">Completed Only</span>
             </div>
             <div class="h-64 relative w-full">
               <canvas id="monthlyRevenueChart"></canvas>
@@ -766,7 +766,7 @@
           <div class="lg:col-span-1 bg-zinc-950 p-4 rounded-xl border border-zinc-800 shadow-xl flex flex-col justify-between">
             <div class="mb-4">
               <h3 class="text-xs font-bold text-white uppercase tracking-wider">Completed Add-On Revenue</h3>
-              <p class="text-[11px] text-zinc-500">Earnings from add-ons on finished jobs</p>
+              <p class="text-[11px] text-zinc-500">Finalized earnings per add-on on completed jobs</p>
             </div>
             <div class="h-64 relative w-full flex items-center justify-center">
               <canvas id="addOnsChart"></canvas>
@@ -777,7 +777,7 @@
             <div class="flex justify-between items-center mb-3">
               <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Completed Add-Ons Breakdown</h3>
               <span id="totalAddOnRevBadge" class="bg-amber-950/60 border border-amber-600/50 text-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider">
-                Add-On Total: $0.00
+                Completed Add-On Total: $0.00
               </span>
             </div>
             <div class="overflow-x-auto ios-scroll">
@@ -786,8 +786,8 @@
                   <tr>
                     <th class="p-3">Add-On Service</th>
                     <th class="p-3">Avg / Booked Price</th>
-                    <th class="p-3">Completed Count</th>
-                    <th class="p-3">Completed Add-On Revenue</th>
+                    <th class="p-3">Completed Jobs</th>
+                    <th class="p-3">Finalized Add-On Revenue</th>
                   </tr>
                 </thead>
                 <tbody id="addOnsReportTableBody" class="divide-y divide-zinc-900 text-zinc-300">
@@ -801,24 +801,24 @@
         </div>
 
         <div class="bg-zinc-950 rounded-xl border border-zinc-800 p-4">
-          <h3 class="text-xs font-bold text-zinc-300 uppercase tracking-wider mb-3">Completed Revenue Breakdown by Booking Type</h3>
+          <h3 class="text-xs font-bold text-zinc-300 uppercase tracking-wider mb-3">Finalized Revenue Breakdown by Booking Type (Completed Jobs Only)</h3>
           <div class="overflow-x-auto ios-scroll">
             <table class="w-full text-left text-xs">
               <thead class="bg-zinc-900 border-b border-zinc-800 text-zinc-400 uppercase font-semibold">
                 <tr>
                   <th class="p-3">Category</th>
-                  <th class="p-3">Completed Jobs</th>
-                  <th class="p-3">Completed Revenue</th>
+                  <th class="p-3">Completed Orders</th>
+                  <th class="p-3">Finalized Revenue</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-zinc-900 text-zinc-300">
                 <tr>
-                  <td class="p-3 font-semibold text-amber-400">Completed Subscription Washes</td>
+                  <td class="p-3 font-semibold text-amber-400">Monthly Subscriptions (Completed)</td>
                   <td id="reportSubOrders" class="p-3">0</td>
                   <td id="reportSubRev" class="p-3 font-bold text-white">$0.00</td>
                 </tr>
                 <tr>
-                  <td class="p-3 font-semibold text-zinc-300">Completed One-Time Details</td>
+                  <td class="p-3 font-semibold text-zinc-300">One-Time Details (Completed)</td>
                   <td id="reportOneTimeOrders" class="p-3">0</td>
                   <td id="reportOneTimeRev" class="p-3 font-bold text-white">$0.00</td>
                 </tr>
@@ -871,11 +871,10 @@
     let initialLoadComplete = false;
     
     let activeOrderModalId = null;
+    let pendingCancelSubBookingId = null;
     let signaturePad = null;
     let pendingCompletionBookingId = null;
     let pendingSignatureDataUrl = null;
-    let pendingCancelSubBookingId = null;
-    let pendingCancelSubMode = 'immediate';
 
     let calendarCurrentDate = new Date();
     let calendarViewMode = 'week';
@@ -899,15 +898,6 @@
       return b.status || b.payment_status || 'Pending';
     }
 
-    function isBookingCompleted(b) {
-      return getNormalizedBookingStatus(b) === 'Completed';
-    }
-
-    function isBookingCancelled(b) {
-      const st = getNormalizedBookingStatus(b);
-      return st === 'Cancelled' || st === 'Canceled';
-    }
-
     async function syncBookingRecordToSupabase(bookingId, patchFields) {
       let { error } = await supabaseClient
         .from('bookings')
@@ -915,11 +905,14 @@
         .eq('id', bookingId);
 
       if (error) {
+        console.warn('Primary update issue, retrying with minimal schema fields:', error.message);
+
         if (patchFields.status) {
           const primaryMinimal = { status: patchFields.status };
           if (patchFields.started_at !== undefined) primaryMinimal.started_at = patchFields.started_at;
           if (patchFields.completed_at !== undefined) primaryMinimal.completed_at = patchFields.completed_at;
           if (patchFields.client_signature !== undefined) primaryMinimal.client_signature = patchFields.client_signature;
+          if (patchFields.cancel_at_period_end !== undefined) primaryMinimal.cancel_at_period_end = patchFields.cancel_at_period_end;
 
           const retry1 = await supabaseClient
             .from('bookings')
@@ -956,112 +949,137 @@
     }
 
     /* ----------------------------------------------------
-       SUBSCRIPTION CANCELLATION WORKFLOW
+       CANCEL SUBSCRIPTION AT PERIOD END ONLY
     ---------------------------------------------------- */
-    function openCancelSubscriptionModal(bookingId, mode = 'immediate') {
-      const booking = allBookings.find(b => b.id === bookingId);
-      if (!booking) return;
+    function isSubscriptionScheduledToCancel(b) {
+      if (!b) return false;
+      return b.cancel_at_period_end === true || String(b.cancel_at_period_end).toLowerCase() === 'true';
+    }
 
-      pendingCancelSubBookingId = bookingId;
-      pendingCancelSubMode = mode;
-
-      document.getElementById('cancelSubClientName').textContent = booking.client_name || 'Client';
-      document.getElementById('cancelSubPlanName').textContent = booking.service_type || 'Monthly Subscription';
-
-      if (mode === 'period_end') {
-        document.getElementById('cancelSubModeLabel').textContent = 'End of Billing Period';
-        document.getElementById('cancelSubDescription').textContent =
-          'Stripe will let the client finish their current paid month and automatically cancel before the next renewal date.';
-      } else {
-        document.getElementById('cancelSubModeLabel').textContent = 'Immediate Cancellation';
-        document.getElementById('cancelSubDescription').textContent =
-          'Stripe will cancel the subscription immediately so no future charges occur, and uncompleted appointments for this subscription will be marked Cancelled.';
+    function openCancelSubscriptionModal(bookingId) {
+      const b = allBookings.find(item => item.id === bookingId);
+      if (!b) return;
+      if (isSubscriptionScheduledToCancel(b)) {
+        showToast('Already Scheduled', `Subscription #${b.id} is already set to cancel at the end of its billing period.`);
+        return;
       }
 
-      document.getElementById('cancelSubscriptionModal').classList.remove('hidden');
+      pendingCancelSubBookingId = bookingId;
+      const subTitleEl = document.getElementById('cancelSubModalSubtitle');
+      if (subTitleEl) {
+        subTitleEl.textContent = `Order #${b.id} | ${b.client_name || 'Client'}`;
+      }
+      document.getElementById('cancelSubModal').classList.remove('hidden');
       refreshIcons();
     }
 
     function closeCancelSubscriptionModal() {
-      document.getElementById('cancelSubscriptionModal').classList.add('hidden');
+      document.getElementById('cancelSubModal').classList.add('hidden');
       pendingCancelSubBookingId = null;
     }
 
-    async function executeSubscriptionCancellation() {
+    async function confirmCancelSubscriptionAtPeriodEnd() {
+      if (!pendingCancelSubBookingId) return;
       const booking = allBookings.find(b => b.id === pendingCancelSubBookingId);
       if (!booking) return;
 
-      const confirmBtn = document.getElementById('confirmCancelSubBtn');
-      const originalText = confirmBtn.textContent;
-      confirmBtn.disabled = true;
-      confirmBtn.textContent = 'Cancelling...';
+      const confirmBtn = document.getElementById('confirmCancelPeriodEndBtn');
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Scheduling...';
+      }
 
       try {
-        // 1. Call Supabase Edge Function to cancel recurring billing in Stripe
-        let stripeNote = '';
-        try {
-          const res = await fetch(`${SUPABASE_URL}/functions/v1/cancel-subscription`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-            },
-            body: JSON.stringify({
-              bookingId: booking.id,
-              clientEmail: booking.email,
-              stripeSubscriptionId: booking.stripe_subscription_id || null,
-              stripePaymentId: booking.stripe_payment_id || null,
-              cancelMode: pendingCancelSubMode
-            })
-          });
-          const data = await res.json();
-          if (data?.stripeCancelled) {
-            stripeNote = ' & Stripe billing stopped';
-          }
-        } catch (edgeErr) {
-          console.warn('Edge function call warning:', edgeErr);
-        }
-
-        // 2. Update local & Supabase status for this subscription (and any future uncompleted orders for same client/plan)
-        const targetStatus = pendingCancelSubMode === 'period_end' ? 'Cancelling at Period End' : 'Cancelled';
-        const clientEmail = (booking.email || '').toLowerCase().trim();
-
-        const relatedBookings = allBookings.filter(item => {
-          if (item.id === booking.id) return true;
-          if (!getIsSubscription(item)) return false;
-          if (isBookingCompleted(item) || isBookingCancelled(item)) return false;
-          const sameEmail = clientEmail && (item.email || '').toLowerCase().trim() === clientEmail;
-          const sameSubId = booking.stripe_subscription_id && item.stripe_subscription_id === booking.stripe_subscription_id;
-          return sameEmail || sameSubId;
+        // Call Supabase Edge Function to set Stripe cancel_at_period_end = true (never immediate)
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/cancel-subscription`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({
+            bookingId: booking.id,
+            subscriptionId: booking.stripe_subscription_id || null,
+            clientEmail: booking.email || null
+          })
         });
 
-        for (const rel of relatedBookings) {
-          await syncBookingRecordToSupabase(rel.id, {
-            status: targetStatus,
-            payment_status: targetStatus
+        let periodEndIso = null;
+        if (res.ok) {
+          const data = await res.json();
+          periodEndIso = data.current_period_end || null;
+          if (data.stripe_subscription_id) {
+            booking.stripe_subscription_id = data.stripe_subscription_id;
+          }
+        } else {
+          // Direct Supabase fallback if Edge Function isn't deployed yet
+          await syncBookingRecordToSupabase(booking.id, {
+            cancel_at_period_end: true
           });
-          rel.status = targetStatus;
-          rel.payment_status = targetStatus;
+        }
+
+        booking.cancel_at_period_end = true;
+        if (periodEndIso) {
+          booking.current_period_end = periodEndIso;
         }
 
         closeCancelSubscriptionModal();
+
         if (activeOrderModalId === booking.id) {
-          closeOrderDetailsModal();
+          updateModalSubscriptionBox(booking);
         }
 
-        buildClientUsageMap();
         calculateAnalytics();
         renderTable();
+        refreshIcons();
 
         showToast(
-          'Subscription Cancelled',
-          `${booking.client_name || 'Client'}'s subscription updated (${targetStatus}${stripeNote}).`
+          'Subscription Cancels at Period End',
+          `Order #${booking.id} remains active until the end of the billing cycle and will not auto-renew.`
         );
       } catch (err) {
-        alert('Failed to cancel subscription: ' + err.message);
+        alert('Could not schedule end-of-period cancellation: ' + err.message);
       } finally {
-        confirmBtn.disabled = false;
-        confirmBtn.textContent = originalText;
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.innerHTML = `<i data-lucide="calendar-check" class="w-3.5 h-3.5"></i><span>Cancel at Period End</span>`;
+          refreshIcons();
+        }
+      }
+    }
+
+    function updateModalSubscriptionBox(b) {
+      const box = document.getElementById('detailSubscriptionActionBox');
+      if (!box) return;
+
+      const isSub = getIsSubscription(b);
+      if (!isSub) {
+        box.classList.add('hidden');
+        return;
+      }
+
+      box.classList.remove('hidden');
+      const badge = document.getElementById('detailSubCancelStatusBadge');
+      const desc = document.getElementById('detailSubCancelDescription');
+      const btn = document.getElementById('btnCancelSubscriptionPeriodEnd');
+
+      if (isSubscriptionScheduledToCancel(b)) {
+        const endDateLabel = b.current_period_end
+          ? new Date(b.current_period_end).toLocaleDateString()
+          : 'the end of the current billing period';
+        badge.textContent = 'Cancels at Period End';
+        badge.className = 'bg-amber-950/70 border border-amber-500/50 text-amber-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider';
+        desc.textContent = `Scheduled to cancel at ${endDateLabel}. Client keeps service access until the cycle ends; auto-renewal is disabled.`;
+        btn.disabled = true;
+        btn.className = 'w-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 opacity-60 cursor-not-allowed';
+        btn.innerHTML = `<i data-lucide="calendar-check" class="w-4 h-4 text-amber-400"></i><span>Scheduled to Cancel at Period End</span>`;
+      } else {
+        badge.textContent = 'Active Auto-Renew';
+        badge.className = 'bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider';
+        desc.textContent = 'Client keeps full wash access through the end of their current paid billing period. No future renewals will be billed.';
+        btn.disabled = false;
+        btn.className = 'w-full bg-zinc-900 hover:bg-red-950/40 border border-red-500/50 text-red-300 hover:text-red-200 font-extrabold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer';
+        btn.innerHTML = `<i data-lucide="calendar-x" class="w-4 h-4 text-red-400"></i><span>Cancel Subscription at Period End</span>`;
       }
     }
 
@@ -1538,18 +1556,6 @@
       return null;
     }
 
-    function getCompletedDateObject(b) {
-      if (b.completed_at) {
-        const d = new Date(b.completed_at);
-        if (!isNaN(d.getTime())) return d;
-      }
-      const parsed = parseSafeDateParts(b);
-      if (parsed) {
-        return new Date(parsed.year, parsed.month, parsed.day, 12, 0, 0);
-      }
-      return new Date(b.created_at || Date.now());
-    }
-
     /* ----------------------------------------------------
        FULL-WINDOW ORDER DETAILS & 3-BUTTON STATUS WORKFLOW
     ---------------------------------------------------- */
@@ -1567,7 +1573,7 @@
       const labelInProgress = document.getElementById('labelInProgress');
 
       if (actionBox) {
-        if (status === 'Completed' || status === 'Cancelled') {
+        if (status === 'Completed') {
           actionBox.classList.add('hidden');
           return;
         } else {
@@ -1687,21 +1693,7 @@
       const currentStatus = getNormalizedBookingStatus(b);
 
       updateModalDurationBanner(b);
-
-      // Show or hide Subscription Cancellation Box
-      const isSub = getIsSubscription(b);
-      const subManageBox = document.getElementById('detailSubscriptionManageBox');
-      if (subManageBox) {
-        if (isSub && !isBookingCancelled(b)) {
-          subManageBox.classList.remove('hidden');
-          const statusBadge = document.getElementById('detailSubStatusBadge');
-          if (statusBadge) {
-            statusBadge.textContent = currentStatus === 'Cancelling at Period End' ? 'Cancelling at Period End' : 'Active Recurring';
-          }
-        } else {
-          subManageBox.classList.add('hidden');
-        }
-      }
+      updateModalSubscriptionBox(b);
 
       const clientKey = (b.email || b.phone || b.client_name || '').toLowerCase().trim();
       const clientStats = clientUsageMap[clientKey];
@@ -1745,6 +1737,7 @@
       document.getElementById('detailVehicleCategory').textContent = (b.vehicle_category || 'Vehicle').toUpperCase();
       document.getElementById('detailServiceType').textContent = b.service_type || 'Detailing Package';
 
+      const isSub = getIsSubscription(b);
       const subBadge = document.getElementById('detailOrderTypeBadge');
       subBadge.textContent = isSub ? 'Subscription Plan' : 'One-Time Service';
       subBadge.className = isSub 
@@ -1918,7 +1911,7 @@
         await sendJobCompletedEmail(booking, pendingSignatureDataUrl);
 
         document.getElementById('confirmationModal').classList.add('hidden');
-        showToast('Completed & Logged to Report', `Order #${booking.id} is finalized and added to Completed Revenue.`);
+        showToast('Moved to Completed & Recorded in Report', `Order #${booking.id} signed and separated into your Completed Report.`);
         
         pendingCompletionBookingId = null;
         pendingSignatureDataUrl = null;
@@ -2211,7 +2204,7 @@
       const sortedChronological = [...allBookings].reverse();
 
       sortedChronological.forEach(b => {
-        if (isBookingCancelled(b)) return;
+        if (getNormalizedBookingStatus(b) === 'Cancelled') return;
         
         const key = (b.email || b.phone || b.client_name || '').toLowerCase().trim();
         if (!key) return;
@@ -2229,14 +2222,16 @@
     }
 
     /* ----------------------------------------------------
-       COMPLETED-ONLY REVENUE & END-OF-DAY ANALYTICS
+       COMPLETED-ONLY END REPORT ANALYTICS
+       (ONLY JOBS WITH STATUS === 'Completed' ENTER REPORT)
     ---------------------------------------------------- */
+    function getCompletedReportDate(b) {
+      return new Date(b.completed_at || b.updated_at || b.created_at || b.service_date);
+    }
+
     function calculateAnalytics() {
       const now = new Date();
       
-      const startOfToday = new Date(now);
-      startOfToday.setHours(0, 0, 0, 0);
-
       const startOfWeek = new Date(now);
       startOfWeek.setDate(now.getDate() - now.getDay());
       startOfWeek.setHours(0, 0, 0, 0);
@@ -2244,12 +2239,13 @@
       const currentMonth = now.getMonth();
       const currentYear = now.getFullYear();
 
-      let revToday = 0;
       let revWeek = 0;
       let revMonth = 0;
+      let revYear = 0;
       let revTotal = 0;
       let activeSubscriptionsCount = 0;
-      let unfinishedQueueCount = 0;
+      let pendingCount = 0;
+      let pendingPipelineRev = 0;
 
       let completedSubOrdersCount = 0;
       let completedSubOrdersRev = 0;
@@ -2258,33 +2254,34 @@
 
       allBookings.forEach(b => {
         const status = getNormalizedBookingStatus(b);
+        if (status === 'Cancelled') return;
+
+        const amount = parseFloat(b.amount_paid) || 0;
         const isSub = getIsSubscription(b);
 
-        if (isBookingCancelled(b)) return;
-
-        // Track active subscriptions & unfinished queue separately
-        if (isSub && status !== 'Completed' && status !== 'Cancelling at Period End') {
+        if (isSub && status !== 'Completed' && !isSubscriptionScheduledToCancel(b)) {
           activeSubscriptionsCount++;
         }
+
+        // Separate incomplete/open bookings from the finalized Completed Report
         if (status !== 'Completed') {
-          unfinishedQueueCount++;
-          return; // Exclude non-completed orders from financial totals
+          pendingCount++;
+          pendingPipelineRev += amount;
+          return;
         }
 
-        // Only Completed orders enter the revenue report
-        const amount = parseFloat(b.amount_paid) || 0;
-        const completedDate = getCompletedDateObject(b);
-
+        // Strictly Completed orders enter the End-of-Service Report
+        const completedDate = getCompletedReportDate(b);
         revTotal += amount;
 
-        if (completedDate >= startOfToday) {
-          revToday += amount;
-        }
         if (completedDate >= startOfWeek) {
           revWeek += amount;
         }
         if (completedDate.getMonth() === currentMonth && completedDate.getFullYear() === currentYear) {
           revMonth += amount;
+        }
+        if (completedDate.getFullYear() === currentYear) {
+          revYear += amount;
         }
 
         if (isSub) {
@@ -2296,12 +2293,13 @@
         }
       });
 
-      document.getElementById('revToday').textContent = `$${revToday.toFixed(2)}`;
       document.getElementById('revWeek').textContent = `$${revWeek.toFixed(2)}`;
       document.getElementById('revMonth').textContent = `$${revMonth.toFixed(2)}`;
+      document.getElementById('revYear').textContent = `$${revYear.toFixed(2)}`;
       document.getElementById('revTotal').textContent = `$${revTotal.toFixed(2)}`;
       document.getElementById('subCount').textContent = activeSubscriptionsCount;
-      document.getElementById('pendingCount').textContent = unfinishedQueueCount;
+      document.getElementById('pendingPipelineRev').textContent = `$${pendingPipelineRev.toFixed(2)}`;
+      document.getElementById('pendingCountSub').textContent = `${pendingCount} open job(s) (excluded)`;
 
       document.getElementById('reportSubOrders').textContent = completedSubOrdersCount;
       document.getElementById('reportSubRev').textContent = `$${completedSubOrdersRev.toFixed(2)}`;
@@ -2317,8 +2315,8 @@
       const stats = {};
 
       allBookings.forEach(b => {
-        // Only count add-ons from Completed bookings
-        if (!isBookingCompleted(b)) return;
+        // Strictly Completed orders only
+        if (getNormalizedBookingStatus(b) !== 'Completed') return;
         const selectedItems = parseBookingAddOns(b);
 
         selectedItems.forEach(item => {
@@ -2360,8 +2358,8 @@
 
         let monthlyTotal = 0;
         allBookings.forEach(b => {
-          if (!isBookingCompleted(b)) return;
-          const bDate = getCompletedDateObject(b);
+          if (getNormalizedBookingStatus(b) !== 'Completed') return;
+          const bDate = getCompletedReportDate(b);
           if (bDate.getMonth() === d.getMonth() && bDate.getFullYear() === d.getFullYear()) {
             monthlyTotal += parseFloat(b.amount_paid) || 0;
           }
@@ -2419,7 +2417,7 @@
       let subTotal = 0;
       let oneTimeTotal = 0;
       allBookings.forEach(b => {
-        if (!isBookingCompleted(b)) return;
+        if (getNormalizedBookingStatus(b) !== 'Completed') return;
         const amt = parseFloat(b.amount_paid) || 0;
         const isSub = getIsSubscription(b);
         if (isSub) subTotal += amt;
@@ -2472,7 +2470,7 @@
 
       addOnList.forEach(item => totalAddOnRevenue += item.revenue);
 
-      document.getElementById('totalAddOnRevBadge').textContent = `Add-On Total: $${totalAddOnRevenue.toFixed(2)}`;
+      document.getElementById('totalAddOnRevBadge').textContent = `Completed Add-On Total: $${totalAddOnRevenue.toFixed(2)}`;
 
       if (addOnList.length === 0) {
         tbody.innerHTML = `
@@ -2521,7 +2519,7 @@
           data: {
             labels: chartLabels,
             datasets: [{
-              label: hasPricedAddOns ? 'Completed Add-On Revenue ($)' : 'Completed Count',
+              label: hasPricedAddOns ? 'Completed Add-On Revenue ($)' : 'Completed Jobs',
               data: chartValues,
               backgroundColor: 'rgba(217, 119, 6, 0.75)',
               borderColor: 'rgba(245, 158, 11, 1)',
@@ -2538,7 +2536,7 @@
               tooltip: {
                 callbacks: {
                   label: (ctx) => hasPricedAddOns
-                    ? ` Completed Revenue: $${ctx.raw.toFixed(2)}`
+                    ? ` Finalized Revenue: $${ctx.raw.toFixed(2)}`
                     : ` Completed: ${ctx.raw} job(s)`
                 }
               }
@@ -2632,7 +2630,7 @@
 
     function getBookingsForExactDate(targetYear, targetMonth, targetDay) {
       return allBookings.filter(b => {
-        if (isBookingCancelled(b)) return false;
+        if (getNormalizedBookingStatus(b) === 'Cancelled') return false;
         const parsed = parseSafeDateParts(b);
         return parsed && parsed.year === targetYear && parsed.month === targetMonth && parsed.day === targetDay;
       }).sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
@@ -2831,7 +2829,7 @@
 
         const bookingsByDay = {};
         allBookings.forEach(b => {
-          if (isBookingCancelled(b)) return;
+          if (getNormalizedBookingStatus(b) === 'Cancelled') return;
           const parsed = parseSafeDateParts(b);
           if (parsed && parsed.year === year && parsed.month === month) {
             if (!bookingsByDay[parsed.day]) bookingsByDay[parsed.day] = [];
@@ -3000,7 +2998,7 @@
           };
         }
 
-        if (!isBookingCancelled(b)) {
+        if (getNormalizedBookingStatus(b) !== 'Cancelled') {
           contactMap[key].serviceCount += 1;
         }
         if (b.service_address && contactMap[key].address === 'N/A') {
@@ -3087,6 +3085,7 @@
 
     /* ----------------------------------------------------
        STREAMLINED 3-COLUMN DISPATCH TABLE RENDERER
+       (ORDER | SCHEDULE | STATUS + SUB CANCEL AT PERIOD END)
     ---------------------------------------------------- */
     function renderTable() {
       const tbody = document.getElementById('dispatchTableBody');
@@ -3108,7 +3107,7 @@
         contactsSection.classList.add('hidden');
         calendarSection.classList.add('hidden');
         reportsSection.classList.remove('hidden');
-        document.getElementById('orderCount').textContent = `Completed Revenue Report`;
+        document.getElementById('orderCount').textContent = `Completed Jobs End Report`;
         renderCharts();
         return;
       } else if (currentFilter === 'Contacts') {
@@ -3128,16 +3127,19 @@
       let filtered = allBookings;
 
       if (currentFilter === 'Upcoming') {
-        filtered = allBookings.filter(b => !isBookingCompleted(b) && !isBookingCancelled(b));
+        filtered = allBookings.filter(b => {
+          const st = getNormalizedBookingStatus(b);
+          return st !== 'Completed' && st !== 'Cancelled';
+        });
       } else if (currentFilter === 'Pending') {
         filtered = allBookings.filter(b => {
           const st = getNormalizedBookingStatus(b);
           return st === 'Pending' || st === 'Paid & Confirmed';
         });
       } else if (currentFilter === 'Completed') {
-        filtered = allBookings.filter(b => isBookingCompleted(b));
+        filtered = allBookings.filter(b => getNormalizedBookingStatus(b) === 'Completed');
       } else if (currentFilter === 'Subscription') {
-        filtered = allBookings.filter(b => getIsSubscription(b) && !isBookingCompleted(b) && !isBookingCancelled(b));
+        filtered = allBookings.filter(b => getIsSubscription(b) && getNormalizedBookingStatus(b) !== 'Cancelled');
       }
 
       document.getElementById('orderCount').textContent = `Total Displayed: ${filtered.length}`;
@@ -3153,19 +3155,21 @@
       tbody.innerHTML = filtered.map(b => {
         const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(b.service_address || '')}`;
         const isSub = getIsSubscription(b);
+        const subCancelsAtPeriodEnd = isSubscriptionScheduledToCancel(b);
         const hasSignature = !!b.client_signature;
         const status = getNormalizedBookingStatus(b);
-        const isCashZelleDue = getPaymentMethodLabel(b) === 'Cash / Zelle' && !isBookingCompleted(b) && !isBookingCancelled(b);
+        const isCashZelleDue = getPaymentMethodLabel(b) === 'Cash / Zelle' && status !== 'Completed' && status !== 'Cancelled';
         const durationInfo = getBookingDurationDisplay(b);
 
         return `
           <tr onclick="openOrderDetailsModal(${b.id})" class="cursor-pointer hover:bg-zinc-900/80 active:bg-zinc-900 transition group">
             
-            <!-- COLUMN 1: ORDER -->
+            <!-- COLUMN 1: ORDER (ID, Subscription Tag, Client & Phone) -->
             <td class="p-3.5 align-top">
-              <div class="flex items-center gap-1.5 mb-0.5">
+              <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
                 <span class="font-black text-white group-hover:text-amber-400 transition text-sm">#${b.id}</span>
                 ${isSub ? `<span class="bg-amber-950/70 text-amber-300 border border-amber-500/50 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Sub</span>` : ''}
+                ${isSub && subCancelsAtPeriodEnd ? `<span class="bg-red-950/60 text-red-300 border border-red-500/40 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Ends at Period End</span>` : ''}
               </div>
               <div class="font-extrabold text-white text-xs leading-snug">${escapeHtml(b.client_name)}</div>
               ${b.phone ? `
@@ -3175,7 +3179,7 @@
               ` : ''}
             </td>
 
-            <!-- COLUMN 2: SCHEDULE -->
+            <!-- COLUMN 2: SCHEDULE (Date, Time Window & Truncated Address + Maps) -->
             <td class="p-3.5 align-top">
               <div class="text-amber-400 font-bold text-xs leading-snug">
                 ${b.service_date || 'N/A'} <span class="text-zinc-300 font-normal">· ${escapeHtml(b.time_slot || 'Standard')}</span>
@@ -3189,7 +3193,7 @@
               ` : ''}
             </td>
 
-            <!-- COLUMN 3: STATUS -->
+            <!-- COLUMN 3: STATUS (Dropdown, Live Duration Timer, Sub Cancel at Period End, & Modal Chevron) -->
             <td class="p-3.5 align-top">
               <div class="flex items-center justify-between gap-2">
                 <div class="space-y-1.5" onclick="event.stopPropagation()">
@@ -3199,8 +3203,7 @@
                     <option value="On My Way" ${(status === 'On My Way' || status === 'Dispatched') ? 'selected' : ''}>On My Way</option>
                     <option value="In Progress" ${status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                     <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
-                    <option value="Cancelling at Period End" ${status === 'Cancelling at Period End' ? 'selected' : ''}>Cancelling at Period End</option>
-                    <option value="Cancelled" ${(status === 'Cancelled' || status === 'Canceled') ? 'selected' : ''}>Cancelled</option>
+                    <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                   </select>
 
                   <div class="flex flex-wrap items-center gap-1.5">
@@ -3227,14 +3230,16 @@
                         <span>Signed</span>
                       </span>
                     ` : ''}
-                    ${isSub && currentFilter === 'Subscription' ? `
-                      <button onclick="openCancelSubscriptionModal(${b.id}, 'immediate')" class="bg-red-950/70 hover:bg-red-900/80 border border-red-500/50 text-red-300 text-[9px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider transition">
-                        Cancel Sub
+                    ${isSub && !subCancelsAtPeriodEnd ? `
+                      <button onclick="openCancelSubscriptionModal(${b.id})" class="bg-zinc-900 hover:bg-red-950/50 border border-red-500/40 text-red-300 text-[10px] font-bold px-2 py-0.5 rounded inline-flex items-center gap-1 transition cursor-pointer">
+                        <i data-lucide="calendar-x" class="w-3 h-3 text-red-400"></i>
+                        <span>Cancel at Period End</span>
                       </button>
                     ` : ''}
                   </div>
                 </div>
 
+                <!-- Right-edge tap/click affordance for modal -->
                 <span aria-hidden="true" class="text-zinc-500 group-hover:text-amber-400 group-hover:translate-x-0.5 transition shrink-0">
                   <i data-lucide="chevron-right" class="w-4 h-4"></i>
                 </span>
@@ -3254,10 +3259,8 @@
         case 'On My Way':
         case 'Dispatched': return 'text-amber-300 font-bold';
         case 'In Progress': return 'text-amber-200 font-bold';
-        case 'Completed': return 'text-emerald-400 font-bold';
-        case 'Cancelling at Period End': return 'text-orange-400 font-bold';
-        case 'Cancelled':
-        case 'Canceled': return 'text-red-400';
+        case 'Completed': return 'text-zinc-400';
+        case 'Cancelled': return 'text-zinc-500';
         default: return 'text-amber-400';
       }
     }
