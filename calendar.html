@@ -96,6 +96,118 @@
     </div>
   </div>
 
+  <!-- Black Label 365 Add/Edit Vehicle Care Profile Modal -->
+  <div id="vehicleProfileModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-zinc-950 border border-[#C59B27] rounded-xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative my-auto">
+      <button type="button" onclick="closeVehicleProfileModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-[#C59B27] text-lg font-bold transition">
+        &times;
+      </button>
+
+      <div class="mb-4 border-b border-zinc-800 pb-3">
+        <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Black Label 365 Concierge Garage</span>
+        <h3 id="vpModalTitle" class="text-base sm:text-lg font-bold text-white mt-0.5">Add Vehicle Care Profile</h3>
+        <p class="text-[11px] text-zinc-400 mt-0.5">Saved to your phone number (up to 4 vehicles max) for tailored detailing.</p>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <input type="hidden" id="vpEditId">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-semibold text-zinc-300 mb-1">Year, Make &amp; Model *</label>
+            <input type="text" id="vpYearMakeModel" placeholder="e.g. 2025 Porsche 911 GT3" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-300 mb-1">Exterior Color *</label>
+            <input type="text" id="vpColor" placeholder="e.g. Jet Black Metallic" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-semibold text-zinc-300 mb-1">License Plate / Tag (Optional)</label>
+            <input type="text" id="vpPlate" placeholder="e.g. FL-KW365" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-300 mb-1">Paint &amp; Wrap Finish</label>
+            <select id="vpPaintFinish" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+              <option value="Gloss Clearcoat">Gloss Clearcoat</option>
+              <option value="Matte / Satin Paint">Matte / Satin Paint (No Wax)</option>
+              <option value="Full Gloss PPF Wrap">Full Gloss PPF Wrap</option>
+              <option value="Stealth / Satin PPF Wrap">Stealth / Satin PPF Wrap</option>
+              <option value="Vinyl Color Wrap">Vinyl Color Wrap</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-semibold text-zinc-300 mb-1">Ceramic Coating Status</label>
+            <select id="vpCeramicStatus" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+              <option value="None">None</option>
+              <option value="KW 1-2 Year Ceramic">KW 1–2 Year Ceramic</option>
+              <option value="KW 4-5 Year Ultimate Ceramic">KW 4–5 Year Ultimate Ceramic</option>
+              <option value="Third-Party Ceramic Coated">Third-Party Ceramic Coated</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-300 mb-1">Wheel &amp; Brake Spec</label>
+            <select id="vpWheelType" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+              <option value="Standard Alloy / Painted">Standard Alloy / Painted</option>
+              <option value="Gloss Black / Powdercoated">Gloss Black / Powdercoated</option>
+              <option value="Chrome / Polished Forged">Chrome / Polished Forged</option>
+              <option value="Carbon Ceramic Brakes (pH-Neutral Only)">Carbon Ceramic Brakes (pH-Neutral Only)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div>
+            <label class="block font-semibold text-zinc-300 mb-1">Interior Material</label>
+            <select id="vpInterior" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+              <option value="Leather">Leather</option>
+              <option value="Nappa / Full-Grain Leather">Nappa / Full-Grain</option>
+              <option value="Alcantara / Suede">Alcantara / Suede</option>
+              <option value="Vegan Leather / Cloth">Vegan / Cloth</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-300 mb-1">Tire Dressing</label>
+            <select id="vpTireShine" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+              <option value="Satin / OEM Matte">Satin / OEM Matte</option>
+              <option value="High Gloss Wet Look">High Gloss Wet Look</option>
+              <option value="No Tire Dressing">No Tire Dressing</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-zinc-300 mb-1">Cabin Scent</label>
+            <select id="vpScent" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+              <option value="Unscented (Neutral)">Unscented</option>
+              <option value="New Car Crisp">New Car</option>
+              <option value="Rich Leather">Rich Leather</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-zinc-300 mb-1">Special Technician Care Notes</label>
+          <textarea id="vpNotes" rows="2" placeholder="e.g. Touchless air-dry only, do not move seat memory, gate code #4412..." class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]"></textarea>
+        </div>
+
+        <p id="vpModalError" class="hidden text-red-500 font-semibold"></p>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeVehicleProfileModal()" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg border border-zinc-800 transition">
+            Cancel
+          </button>
+          <button type="button" id="vpSaveBtn" onclick="saveVehicleCareProfile()" class="bg-[#C59B27] hover:bg-[#d8ad32] text-black font-bold py-2.5 px-5 rounded-lg transition shadow-lg">
+            Save Vehicle Profile
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Compact Logo Header (Fits Cleanly Above Fold on Desktop) -->
   <header class="mb-3.5 max-w-2xl w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2.5 sm:gap-3.5 px-1">
     <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Washing & Mobile Detailing LLC Logo" class="h-11 sm:h-12 w-auto flex-shrink-0 object-contain filter drop-shadow-[0_0_10px_rgba(197,155,39,0.25)]">
@@ -275,7 +387,7 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             <div>
-              <label class="block text-xs font-medium mb-1 text-zinc-300">Phone Number <span class="text-[10px] text-[#C59B27]">(Tracks 5th-Service Loyalty)</span></label>
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Phone Number <span class="text-[10px] text-[#C59B27]">(Tracks Loyalty &amp; Garage)</span></label>
               <input type="tel" id="phone" required placeholder="(555) 123-4567" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
             </div>
             <div>
@@ -298,7 +410,7 @@
             <!-- Single Unified Dropdown: Subscription Plan - Vehicle Category -->
             <div>
               <label class="block text-xs font-medium mb-1 text-zinc-300">Select Subscription Plan & Vehicle Category</label>
-              <select id="servicePackageCombined" onchange="calculateTotalPrice()" class="w-full bg-black border border-[#8A6814]/50 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] font-semibold transition">
+              <select id="servicePackageCombined" onchange="onPlanSelectionChanged()" class="w-full bg-black border border-[#8A6814]/50 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] font-semibold transition">
                 
                 <!-- KW Signature Wash 365 Plans ($220 - $300) -->
                 <optgroup label="KW Signature Wash 365">
@@ -357,6 +469,56 @@
             <p class="leading-relaxed text-[11px] text-zinc-400">
               No plan fee or $50 setup fee will be charged. Select the add-on services below to attach to your scheduled visit.
             </p>
+          </div>
+
+          <!-- ======================================================== -->
+          <!-- BLACK LABEL 365 EXCLUSIVE: PERSONALIZED VEHICLE CARE GARAGE -->
+          <!-- ======================================================== -->
+          <!-- Locked Preview Banner (Shown when non-Black Label plan is active) -->
+          <div id="blackLabelLockedBanner" class="p-3 bg-black border border-zinc-800/90 rounded-lg flex items-center justify-between gap-3">
+            <div class="flex items-start gap-2.5">
+              <span class="px-2 py-0.5 rounded bg-zinc-900 border border-[#C59B27]/40 text-[10px] font-bold uppercase tracking-wider text-[#C59B27] flex-shrink-0 mt-0.5">
+                Black Label 365
+              </span>
+              <p class="text-[11px] text-zinc-400 leading-snug">
+                <strong class="text-zinc-200">Personalized Vehicle Care Profile (Up to 4 Vehicles)</strong> is included exclusively with <span class="text-[#C59B27] font-semibold">Black Label 365</span> memberships.
+              </p>
+            </div>
+          </div>
+
+          <!-- Active Black Label 365 Garage Card (Max 4 Vehicles per Phone Number) -->
+          <div id="blackLabelGarageSection" class="hidden p-3.5 bg-black border border-[#C59B27] rounded-lg space-y-3 shadow-lg">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2.5">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-[#C59B27] animate-pulse"></span>
+                  <h4 class="text-xs font-bold text-[#C59B27] uppercase tracking-wider">Black Label 365 — Personalized Vehicle Care Profile</h4>
+                </div>
+                <p class="text-[10px] text-zinc-400 mt-0.5">Save up to <strong class="text-white">4 vehicles per phone number</strong> with exact paint, wheel &amp; interior specs.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="garageCountBadge" class="px-2 py-0.5 rounded bg-[#C59B27]/15 border border-[#C59B27]/50 text-[10px] font-bold text-[#C59B27]">
+                  0 / 4 Cars
+                </span>
+                <button type="button" id="addVehicleBtn" onclick="openVehicleProfileModal()" class="bg-[#C59B27] hover:bg-[#d8ad32] disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-black font-bold px-2.5 py-1 rounded text-[11px] transition">
+                  + Add Car
+                </button>
+              </div>
+            </div>
+
+            <!-- Phone Prompt if 10 digits not entered yet -->
+            <div id="garagePhoneHint" class="p-2.5 bg-zinc-950 border border-zinc-800 rounded text-[11px] text-zinc-400">
+              Enter your 10-digit phone number above to load or save up to 4 Black Label 365 vehicle profiles.
+            </div>
+
+            <!-- Saved 4-Car Grid -->
+            <div id="garageVehiclesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+
+            <!-- Active Selected Vehicle Indicator -->
+            <div id="selectedVehicleStrip" class="hidden p-2 bg-zinc-950 border border-emerald-500/40 rounded text-[11px] text-emerald-400 flex items-center justify-between gap-2">
+              <span id="selectedVehicleText" class="font-semibold truncate"></span>
+              <span class="text-[10px] uppercase font-bold tracking-wider flex-shrink-0">Attached to Order</span>
+            </div>
           </div>
 
           <!-- Standard Add-ons Selection Section -->
@@ -737,6 +899,7 @@
 
     const DAILY_MAX_LIMIT = 4;
     const TIME_SLOT_MAX = 4;
+    const MAX_BLACK_LABEL_VEHICLES = 4;
 
     const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
@@ -753,10 +916,37 @@
     let selectedTimeSlotStr = '';
     let currentMonthBookings = [];
 
-    // Booking Mode ('subscription' | 'addons_only') & Loyalty State
+    // Booking Mode ('subscription' | 'addons_only'), Loyalty & Black Label 365 Garage State
     let bookingMode = 'subscription';
     let completedServiceCount = 0;
-    let hasLoyaltyDiscount = false; // True when completedServiceCount >= 5
+    let hasLoyaltyDiscount = false;
+    let hasExistingBlackLabelSub = false;
+    let savedGarageVehicles = [];
+    let selectedVehicleProfileId = null;
+
+    function isBlackLabelEligible() {
+      if (bookingMode === 'subscription') {
+        const packageSelect = document.getElementById('servicePackageCombined');
+        const val = packageSelect ? packageSelect.value : '';
+        return val.startsWith('Black Label 365') || hasExistingBlackLabelSub;
+      }
+      return hasExistingBlackLabelSub;
+    }
+
+    function syncBlackLabelGarageVisibility() {
+      const eligible = isBlackLabelEligible();
+      const lockedBanner = document.getElementById('blackLabelLockedBanner');
+      const garageSection = document.getElementById('blackLabelGarageSection');
+
+      lockedBanner.classList.toggle('hidden', eligible);
+      garageSection.classList.toggle('hidden', !eligible);
+      renderGarageVehicles();
+    }
+
+    function onPlanSelectionChanged() {
+      calculateTotalPrice();
+      syncBlackLabelGarageVisibility();
+    }
 
     function setBookingMode(mode) {
       bookingMode = mode;
@@ -778,6 +968,7 @@
       }
 
       calculateTotalPrice();
+      syncBlackLabelGarageVisibility();
     }
 
     // Normalize phone number to last 10 digits for reliable matching
@@ -786,7 +977,288 @@
       return digits.length >= 10 ? digits.slice(-10) : digits;
     }
 
-    // Check completed services count in Supabase by phone number
+    // Fetch saved Black Label 365 Vehicle Care Profiles (Max 4 per phone number)
+    async function loadBlackLabelGarageByPhone(digits) {
+      if (!digits || digits.length < 10) {
+        savedGarageVehicles = [];
+        selectedVehicleProfileId = null;
+        renderGarageVehicles();
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from('black_label_vehicles')
+        .select('*')
+        .eq('phone_normalized', digits)
+        .order('created_at', { ascending: true })
+        .limit(MAX_BLACK_LABEL_VEHICLES);
+
+      if (error) {
+        console.error('Error loading Black Label vehicle profiles:', error);
+        return;
+      }
+
+      savedGarageVehicles = data || [];
+      if (savedGarageVehicles.length > 0 && !savedGarageVehicles.some(v => v.id === selectedVehicleProfileId)) {
+        selectedVehicleProfileId = savedGarageVehicles[0].id;
+      } else if (savedGarageVehicles.length === 0) {
+        selectedVehicleProfileId = null;
+      }
+
+      renderGarageVehicles();
+    }
+
+    function renderGarageVehicles() {
+      const digits = normalizePhoneDigits(document.getElementById('phone').value);
+      const countBadge = document.getElementById('garageCountBadge');
+      const addBtn = document.getElementById('addVehicleBtn');
+      const phoneHint = document.getElementById('garagePhoneHint');
+      const grid = document.getElementById('garageVehiclesGrid');
+      const selectedStrip = document.getElementById('selectedVehicleStrip');
+      const selectedText = document.getElementById('selectedVehicleText');
+
+      const count = savedGarageVehicles.length;
+      countBadge.textContent = `${count} / ${MAX_BLACK_LABEL_VEHICLES} Cars`;
+
+      if (digits.length < 10) {
+        phoneHint.classList.remove('hidden');
+        addBtn.disabled = true;
+        grid.innerHTML = '';
+        selectedStrip.classList.add('hidden');
+        return;
+      }
+
+      phoneHint.classList.add('hidden');
+      addBtn.disabled = count >= MAX_BLACK_LABEL_VEHICLES;
+      addBtn.textContent = count >= MAX_BLACK_LABEL_VEHICLES ? 'Max 4 Cars Reached' : '+ Add Car';
+
+      grid.innerHTML = '';
+
+      if (count === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full p-3 bg-zinc-950 border border-dashed border-zinc-800 rounded-lg text-center text-[11px] text-zinc-400">
+            No vehicles saved yet for this number. Click <strong class="text-[#C59B27]">+ Add Car</strong> to create your first Black Label 365 care profile.
+          </div>
+        `;
+        selectedStrip.classList.add('hidden');
+        return;
+      }
+
+      savedGarageVehicles.forEach((v, idx) => {
+        const isSelected = v.id === selectedVehicleProfileId;
+        const card = document.createElement('div');
+        card.className = isSelected
+          ? 'p-3 rounded-lg bg-zinc-950 border-2 border-[#C59B27] cursor-pointer transition space-y-1.5 shadow-md'
+          : 'p-3 rounded-lg bg-zinc-950 border border-zinc-800 hover:border-[#C59B27]/60 cursor-pointer transition space-y-1.5';
+
+        card.onclick = () => {
+          selectedVehicleProfileId = v.id;
+          renderGarageVehicles();
+        };
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${isSelected ? 'bg-[#C59B27] text-black' : 'bg-zinc-900 text-zinc-400'}">
+                Car ${idx + 1} of 4 ${isSelected ? '• Selected' : ''}
+              </span>
+              <h5 class="text-xs font-bold text-white truncate mt-1">${escapeHtml(v.year_make_model)}</h5>
+              <p class="text-[10px] text-zinc-400 truncate">${escapeHtml(v.color || 'Color N/A')}${v.license_plate ? ' • ' + escapeHtml(v.license_plate) : ''}</p>
+            </div>
+            <div class="flex items-center gap-1 flex-shrink-0" onclick="event.stopPropagation()">
+              <button type="button" onclick="openVehicleProfileModal('${v.id}')" class="text-[10px] px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-[#C59B27] border border-zinc-700 font-semibold">
+                Edit
+              </button>
+              <button type="button" onclick="deleteVehicleCareProfile('${v.id}')" class="text-[10px] px-1.5 py-0.5 rounded bg-zinc-900 hover:bg-red-950 text-red-400 border border-zinc-800 font-bold" title="Remove Vehicle">
+                &times;
+              </button>
+            </div>
+          </div>
+          <div class="pt-1.5 border-t border-zinc-900 text-[10px] text-zinc-300 space-y-0.5">
+            <p><span class="text-zinc-500">Finish:</span> ${escapeHtml(v.paint_finish || 'Gloss')} &bull; <span class="text-zinc-500">Ceramic:</span> ${escapeHtml(v.ceramic_status || 'None')}</p>
+            <p><span class="text-zinc-500">Interior:</span> ${escapeHtml(v.interior_material || 'Leather')} &bull; <span class="text-zinc-500">Tires:</span> ${escapeHtml(v.tire_shine_pref || 'Satin')}</p>
+            ${v.care_notes ? `<p class="text-[#C59B27] italic truncate">"${escapeHtml(v.care_notes)}"</p>` : ''}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      const activeCar = savedGarageVehicles.find(v => v.id === selectedVehicleProfileId);
+      if (activeCar) {
+        selectedStrip.classList.remove('hidden');
+        selectedText.textContent = `Active Vehicle: ${activeCar.year_make_model} (${activeCar.paint_finish})`;
+      } else {
+        selectedStrip.classList.add('hidden');
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function openVehicleProfileModal(editId = null) {
+      const digits = normalizePhoneDigits(document.getElementById('phone').value);
+      if (digits.length < 10) {
+        alert('Please enter your 10-digit phone number first.');
+        return;
+      }
+
+      if (!editId && savedGarageVehicles.length >= MAX_BLACK_LABEL_VEHICLES) {
+        alert('Maximum of 4 vehicles per phone number reached. Edit or remove an existing vehicle first.');
+        return;
+      }
+
+      document.getElementById('vpModalError').classList.add('hidden');
+      document.getElementById('vpEditId').value = editId || '';
+
+      if (editId) {
+        const v = savedGarageVehicles.find(item => item.id === editId);
+        if (!v) return;
+        document.getElementById('vpModalTitle').textContent = 'Edit Vehicle Care Profile';
+        document.getElementById('vpYearMakeModel').value = v.year_make_model || '';
+        document.getElementById('vpColor').value = v.color || '';
+        document.getElementById('vpPlate').value = v.license_plate || '';
+        document.getElementById('vpPaintFinish').value = v.paint_finish || 'Gloss Clearcoat';
+        document.getElementById('vpCeramicStatus').value = v.ceramic_status || 'None';
+        document.getElementById('vpWheelType').value = v.wheel_type || 'Standard Alloy / Painted';
+        document.getElementById('vpInterior').value = v.interior_material || 'Leather';
+        document.getElementById('vpTireShine').value = v.tire_shine_pref || 'Satin / OEM Matte';
+        document.getElementById('vpScent').value = v.scent_pref || 'Unscented (Neutral)';
+        document.getElementById('vpNotes').value = v.care_notes || '';
+      } else {
+        document.getElementById('vpModalTitle').textContent = `Add Vehicle Care Profile (${savedGarageVehicles.length + 1} of 4)`;
+        document.getElementById('vpYearMakeModel').value = '';
+        document.getElementById('vpColor').value = '';
+        document.getElementById('vpPlate').value = '';
+        document.getElementById('vpPaintFinish').value = 'Gloss Clearcoat';
+        document.getElementById('vpCeramicStatus').value = 'None';
+        document.getElementById('vpWheelType').value = 'Standard Alloy / Painted';
+        document.getElementById('vpInterior').value = 'Leather';
+        document.getElementById('vpTireShine').value = 'Satin / OEM Matte';
+        document.getElementById('vpScent').value = 'Unscented (Neutral)';
+        document.getElementById('vpNotes').value = '';
+      }
+
+      document.getElementById('vehicleProfileModal').classList.remove('hidden');
+    }
+
+    function closeVehicleProfileModal() {
+      document.getElementById('vehicleProfileModal').classList.add('hidden');
+    }
+
+    async function saveVehicleCareProfile() {
+      const digits = normalizePhoneDigits(document.getElementById('phone').value);
+      const editId = document.getElementById('vpEditId').value.trim();
+      const yearMakeModel = document.getElementById('vpYearMakeModel').value.trim();
+      const color = document.getElementById('vpColor').value.trim();
+      const errEl = document.getElementById('vpModalError');
+      const saveBtn = document.getElementById('vpSaveBtn');
+
+      if (!yearMakeModel || !color) {
+        errEl.textContent = 'Please enter the Year, Make & Model and Exterior Color.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      if (!editId && savedGarageVehicles.length >= MAX_BLACK_LABEL_VEHICLES) {
+        errEl.textContent = 'Maximum of 4 vehicles allowed per Black Label 365 phone number.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+      errEl.classList.add('hidden');
+
+      const payload = {
+        phone_normalized: digits,
+        client_email: document.getElementById('email').value.trim() || null,
+        client_name: document.getElementById('clientName').value.trim() || null,
+        vehicle_nickname: `${yearMakeModel} - ${color}`,
+        year_make_model: yearMakeModel,
+        color: color,
+        license_plate: document.getElementById('vpPlate').value.trim() || null,
+        paint_finish: document.getElementById('vpPaintFinish').value,
+        ceramic_status: document.getElementById('vpCeramicStatus').value,
+        wheel_type: document.getElementById('vpWheelType').value,
+        interior_material: document.getElementById('vpInterior').value,
+        tire_shine_pref: document.getElementById('vpTireShine').value,
+        scent_pref: document.getElementById('vpScent').value,
+        care_notes: document.getElementById('vpNotes').value.trim() || null,
+        updated_at: new Date().toISOString()
+      };
+
+      let result;
+      if (editId) {
+        result = await supabaseClient
+          .from('black_label_vehicles')
+          .update(payload)
+          .eq('id', editId)
+          .select();
+      } else {
+        result = await supabaseClient
+          .from('black_label_vehicles')
+          .insert([payload])
+          .select();
+      }
+
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Vehicle Profile';
+
+      if (result.error) {
+        errEl.textContent = result.error.message || 'Unable to save vehicle profile.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      if (result.data && result.data[0]) {
+        selectedVehicleProfileId = result.data[0].id;
+      }
+
+      closeVehicleProfileModal();
+      await loadBlackLabelGarageByPhone(digits);
+    }
+
+    async function deleteVehicleCareProfile(id) {
+      const digits = normalizePhoneDigits(document.getElementById('phone').value);
+      const { error } = await supabaseClient
+        .from('black_label_vehicles')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        alert('Error removing vehicle: ' + error.message);
+        return;
+      }
+
+      await loadBlackLabelGarageByPhone(digits);
+    }
+
+    function getSelectedBlackLabelVehicleSummary() {
+      if (!isBlackLabelEligible() || !selectedVehicleProfileId) return '';
+      const v = savedGarageVehicles.find(item => item.id === selectedVehicleProfileId);
+      if (!v) return '';
+
+      const parts = [
+        `${v.year_make_model} (${v.color || 'N/A'})`,
+        v.license_plate ? `Plate: ${v.license_plate}` : '',
+        `Finish: ${v.paint_finish}`,
+        `Ceramic: ${v.ceramic_status}`,
+        `Wheels: ${v.wheel_type}`,
+        `Interior: ${v.interior_material}`,
+        `Tires: ${v.tire_shine_pref}`,
+        `Scent: ${v.scent_pref}`,
+        v.care_notes ? `Notes: ${v.care_notes}` : ''
+      ].filter(Boolean);
+
+      return parts.join(' | ');
+    }
+
+    // Check completed services count & Black Label 365 membership in Supabase by phone number
     let loyaltyLookupTimer = null;
     async function checkClientLoyaltyByPhone() {
       const phoneInput = document.getElementById('phone');
@@ -799,6 +1271,7 @@
       if (digits.length < 10) {
         completedServiceCount = 0;
         hasLoyaltyDiscount = false;
+        hasExistingBlackLabelSub = false;
         statusDot.className = 'w-2 h-2 rounded-full bg-zinc-600 flex-shrink-0';
         statusText.textContent = 'Enter your 10-digit phone number to check your 5-service loyalty status (25% OFF add-ons).';
         statusText.className = 'text-zinc-400';
@@ -806,19 +1279,19 @@
         progressBadge.className = 'px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-[10px] font-bold text-zinc-300 flex-shrink-0';
         discountPill.classList.add('hidden');
         calculateTotalPrice();
+        syncBlackLabelGarageVisibility();
         return;
       }
 
-      statusText.textContent = 'Checking completed service history...';
+      statusText.textContent = 'Checking service history & Black Label 365 status...';
 
-      // Match phone formats containing the area code, prefix, and line digits
       const area = digits.slice(0, 3);
       const prefix = digits.slice(3, 6);
       const line = digits.slice(6, 10);
 
       const { data, error } = await supabaseClient
         .from('bookings')
-        .select('id, phone, status')
+        .select('id, phone, status, service_type, is_subscription')
         .ilike('phone', `%${area}%${prefix}%${line}%`);
 
       if (error || !data) {
@@ -826,11 +1299,18 @@
         return;
       }
 
-      // Filter strictly to exact 10-digit phone match and Completed status
-      const completedRows = data.filter(row => {
-        const rowDigits = normalizePhoneDigits(row.phone);
+      const matchingClientRows = data.filter(row => normalizePhoneDigits(row.phone) === digits);
+
+      // Detect if phone number holds an active/existing Black Label 365 subscription
+      hasExistingBlackLabelSub = matchingClientRows.some(row => {
+        const svc = (row.service_type || '').toLowerCase();
+        const st = (row.status || '').toLowerCase();
+        return svc.includes('black label 365') && !st.includes('cancel');
+      });
+
+      const completedRows = matchingClientRows.filter(row => {
         const st = (row.status || '').trim().toLowerCase();
-        return rowDigits === digits && (st === 'completed' || st.includes('complete'));
+        return st === 'completed' || st.includes('complete');
       });
 
       completedServiceCount = completedRows.length;
@@ -854,6 +1334,8 @@
       }
 
       calculateTotalPrice();
+      syncBlackLabelGarageVisibility();
+      await loadBlackLabelGarageByPhone(digits);
     }
 
     document.getElementById('phone').addEventListener('input', () => {
@@ -905,6 +1387,7 @@
 
       if (step === 3) {
         document.getElementById('summaryDateTimeText').textContent = `${formattedDisplayDateStr}  •  ${selectedTimeSlotStr}`;
+        syncBlackLabelGarageVisibility();
       }
     }
 
@@ -1103,7 +1586,6 @@
         return finalTotal;
       }
 
-      // Subscription + Setup Fee + Add-Ons mode
       const selectedOpt = packageSelect ? packageSelect.options[packageSelect.selectedIndex] : null;
       const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
       finalTotal = basePrice + SETUP_FEE + finalAddonsTotal;
@@ -1505,9 +1987,12 @@
         : 'Existing Member Add-Ons Only';
 
       const formattedAddOns = getFormattedAddOns();
+      const vehicleProfileSummary = getSelectedBlackLabelVehicleSummary();
+      const vehicleTag = vehicleProfileSummary ? ` | Vehicle Care Profile: [${vehicleProfileSummary}]` : '';
+
       const fullServiceDescription = isSubscription
-        ? (`${packageSelected} + $50 Setup Fee` + (formattedAddOns ? ` + Addons: [${formattedAddOns}]` : ''))
-        : (`Existing Member Add-Ons Only: [${formattedAddOns || ''}]`);
+        ? (`${packageSelected} + $50 Setup Fee` + (formattedAddOns ? ` + Addons: [${formattedAddOns}]` : '') + vehicleTag)
+        : (`Existing Member Add-Ons Only: [${formattedAddOns || ''}]` + vehicleTag);
 
       const { data, error: dbError } = await supabaseClient
         .from('bookings')
