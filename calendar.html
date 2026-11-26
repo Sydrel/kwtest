@@ -61,82 +61,6 @@
     </div>
   </div>
 
-  <!-- Authenticated Client Live Order Portal Modal -->
-  <div id="orderLookupModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300">
-    <div class="bg-zinc-950 border border-[#C59B27]/60 rounded-xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button type="button" onclick="closeOrderLookupModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-[#C59B27] text-lg font-bold transition">
-        &times;
-      </button>
-
-      <div class="mb-4">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Private Member Portal</span>
-        <h3 class="text-base sm:text-lg font-bold text-white mt-0.5">Live Order View</h3>
-        <p id="modalAuthSubtitle" class="text-xs text-zinc-400 mt-1">Sign in to your KW Client Account to access your live order tracker, vehicle care profile, and VIP status.</p>
-      </div>
-
-      <!-- Modal Sign-In / Sign-Up Form (Shown when logged out) -->
-      <div id="modalAuthBox" class="space-y-3">
-        <div class="p-1 bg-black border border-zinc-800 rounded-lg grid grid-cols-2 gap-1">
-          <button type="button" id="modalTabSignIn" onclick="switchModalAuthMode('signin')" class="py-1.5 rounded text-xs font-bold bg-[#C59B27] text-black transition">Sign In</button>
-          <button type="button" id="modalTabSignUp" onclick="switchModalAuthMode('signup')" class="py-1.5 rounded text-xs font-bold text-zinc-400 hover:text-white transition">Create Account</button>
-        </div>
-
-        <form id="modalAuthForm" onsubmit="handleModalAuthSubmit(event)" class="space-y-2.5">
-          <div id="modalSignUpFields" class="hidden space-y-2.5">
-            <div>
-              <label class="block text-xs font-medium mb-1 text-zinc-300">Full Name</label>
-              <input type="text" id="modalFullName" placeholder="e.g. Jordan Rivera" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C59B27]">
-            </div>
-            <div>
-              <label class="block text-xs font-medium mb-1 text-zinc-300">Mobile Phone Number</label>
-              <input type="tel" id="modalPhone" placeholder="(555) 123-4567" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C59B27]">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium mb-1 text-zinc-300">Email Address</label>
-            <input type="email" id="modalEmail" required placeholder="you@email.com" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C59B27]">
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium mb-1 text-zinc-300">Password</label>
-            <input type="password" id="modalPassword" required minlength="6" placeholder="Minimum 6 characters" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C59B27]">
-          </div>
-
-          <p id="modalAuthError" class="hidden text-xs text-red-500 font-medium"></p>
-
-          <button type="submit" id="modalAuthSubmitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs sm:text-sm transition shadow-lg shadow-red-950/50">
-            Sign In to Live Order View
-          </button>
-        </form>
-      </div>
-
-      <!-- Modal Member Orders List (Shown when logged in) -->
-      <div id="modalOrdersBox" class="hidden space-y-3">
-        <div class="p-2.5 bg-black border border-[#C59B27]/40 rounded-lg flex items-center justify-between gap-2">
-          <div class="min-w-0">
-            <p id="modalMemberName" class="text-xs font-bold text-white truncate"></p>
-            <p id="modalMemberEmail" class="text-[11px] text-zinc-400 truncate"></p>
-          </div>
-          <span id="modalVipBadge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-700 text-zinc-300 flex-shrink-0">
-            Member
-          </span>
-        </div>
-
-        <div id="modalOrdersList" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
-
-        <div class="pt-2 border-t border-zinc-800 flex items-center justify-between gap-2">
-          <button type="button" onclick="signOutClientAccount()" class="text-xs text-zinc-400 hover:text-red-400 font-semibold transition">
-            Sign Out
-          </button>
-          <button type="button" onclick="closeOrderLookupModal()" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-200 px-3 py-1.5 rounded-lg text-xs font-bold border border-zinc-700 transition">
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Compact Logo Header -->
   <header class="mb-3.5 max-w-2xl w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2.5 sm:gap-3.5 px-1">
     <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Washing & Mobile Detailing LLC Logo" class="h-11 sm:h-12 w-auto flex-shrink-0 object-contain filter drop-shadow-[0_0_10px_rgba(197,155,39,0.25)]">
@@ -153,7 +77,7 @@
   <!-- Main 3-Step Wizard & Order View Container -->
   <div class="max-w-2xl w-full bg-zinc-950 p-4 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl shadow-2xl border border-[#8A6814]/40">
     
-    <!-- System Notification Banner + Live Order View & Services Alert Buttons -->
+    <!-- System Notification Banner (Services Alert Only — Live Order View is Inside Logged-In Account) -->
     <div id="topBannerBar" class="mb-4 p-2.5 bg-black border border-emerald-500/30 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-md">
       <div class="flex items-start gap-2.5 flex-1 min-w-[200px]">
         <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
@@ -168,9 +92,6 @@
         </div>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0">
-        <button type="button" onclick="openOrderLookupModal()" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-[11px] font-bold border border-red-500 transition shadow-sm">
-          Live Order View
-        </button>
         <button type="button" onclick="openServicesAlert()" class="bg-[#C59B27]/10 hover:bg-[#C59B27]/20 text-[#C59B27] px-2.5 py-1 rounded text-[11px] font-bold border border-[#C59B27]/40 transition">
           Services Alert
         </button>
@@ -297,7 +218,7 @@
           <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Step 3 &bull; Client Membership Access</span>
           <h2 class="text-base sm:text-lg font-bold text-white mt-0.5">Sign In or Create Your KW Client Account</h2>
           <p class="text-xs text-zinc-400 mt-1">
-            Access your <strong class="text-white">Personalized Vehicle Care Profile</strong> (up to 4 vehicles), track your <strong class="text-[#C59B27]">Black Label VIP Status</strong>, and unlock your private <strong class="text-white">Live Order View</strong>.
+            Access your <strong class="text-white">Personalized Vehicle Care Profile</strong> (up to 4 vehicles), track your <strong class="text-[#C59B27]">Black Label VIP Status</strong>, and view your private <strong class="text-white">Live Order View</strong> inside your account.
           </p>
         </div>
 
@@ -334,7 +255,7 @@
             </div>
           </div>
 
-          <p id="step3AuthMessage" class="hidden text-xs font-medium"></p>
+          <div id="step3AuthMessage" class="hidden p-2.5 rounded-lg border text-xs font-medium"></div>
 
           <div class="pt-1 flex flex-col sm:flex-row gap-2.5">
             <button type="button" onclick="goToStep(2)" class="sm:w-1/3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg text-xs border border-zinc-800 transition">
@@ -352,7 +273,7 @@
       <!-- ======================================================== -->
       <div id="bookingFormWrapper" class="hidden space-y-4">
 
-        <!-- Member Profile & Black Label VIP Status Card -->
+        <!-- Member Profile, Black Label VIP Status & Account Live Order View -->
         <div class="p-3.5 sm:p-4 bg-black border border-[#C59B27]/60 rounded-xl space-y-3 shadow-lg">
           <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
@@ -364,9 +285,26 @@
               </div>
               <p id="memberProfileSubtext" class="text-[11px] text-zinc-400 mt-0.5"></p>
             </div>
-            <button type="button" onclick="signOutClientAccount()" class="text-[11px] text-zinc-400 hover:text-red-400 bg-zinc-950 px-2.5 py-1 rounded border border-zinc-800 font-semibold transition">
-              Sign Out
-            </button>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="toggleAccountOrdersDrawer()" class="text-[11px] bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded font-bold transition shadow-sm">
+                Live Order View (<span id="accountOrdersCountBadge">0</span>)
+              </button>
+              <button type="button" onclick="signOutClientAccount()" class="text-[11px] text-zinc-400 hover:text-red-400 bg-zinc-950 px-2.5 py-1 rounded border border-zinc-800 font-semibold transition">
+                Sign Out
+              </button>
+            </div>
+          </div>
+
+          <!-- Inline Account Live Order View Drawer (Only visible when logged in) -->
+          <div id="accountOrdersDrawer" class="hidden p-3 bg-zinc-950 border border-[#C59B27]/50 rounded-lg space-y-2.5">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-[#C59B27]">Account Service History &amp; Live Tracker</span>
+                <p class="text-[11px] text-zinc-400">Select an order below to watch real-time arrival &amp; detailing duration.</p>
+              </div>
+              <button type="button" onclick="toggleAccountOrdersDrawer(false)" class="text-xs text-zinc-400 hover:text-white font-bold px-1.5">&times;</button>
+            </div>
+            <div id="accountOrdersList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
           </div>
 
           <!-- VIP Tier & 5th-Service Loyalty Strip -->
@@ -531,7 +469,7 @@
                 Recurring Monthly Membership Agreement:
               </p>
               <p class="leading-relaxed text-[11px] text-zinc-400">
-                By booking a monthly plan, you authorize <strong class="text-white">KW Commercial Fleet Washing & Mobile Detailing LLC</strong> to bill your card today for month 1 + a $50 setup fee, which is included in your monthly plan. Any selected add-ons are a separate one-time charge. Your subscription will automatically renew every 30 days. Cancel anytime.
+                By booking a monthly plan, you authorize <strong class="text-white">KW Commercial Fleet Washing &amp; Mobile Detailing LLC</strong> to bill your card today for month 1 + a $50 setup fee, which is included in your monthly plan. Any selected add-ons are a separate one-time charge. Your subscription will automatically renew every 30 days. Cancel anytime.
               </p>
             </div>
           </div>
@@ -855,8 +793,8 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-2">
-          <button type="button" onclick="openOrderLookupModal()" class="sm:w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition shadow-lg shadow-red-950/40">
-            All My Member Orders
+          <button type="button" onclick="returnToMemberAccountView()" class="sm:w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition shadow-lg shadow-red-950/40">
+            &larr; Back to Member Profile &amp; Orders
           </button>
           <button type="button" onclick="window.location.href = window.location.pathname" class="sm:w-1/2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg text-xs border border-zinc-800 transition">
             New Booking
@@ -920,9 +858,9 @@
     let bookingMode = 'subscription';
     let completedServiceCount = 0;
     let hasLoyaltyDiscount = false;
+    let cachedMemberOrders = [];
 
     let stepAuthMode = 'signin';
-    let modalAuthMode = 'signin';
 
     function switchStepAuthMode(mode) {
       stepAuthMode = mode;
@@ -950,42 +888,25 @@
       }
     }
 
-    function switchModalAuthMode(mode) {
-      modalAuthMode = mode;
-      const signInTab = document.getElementById('modalTabSignIn');
-      const signUpTab = document.getElementById('modalTabSignUp');
-      const extraFields = document.getElementById('modalSignUpFields');
-      const submitBtn = document.getElementById('modalAuthSubmitBtn');
-      document.getElementById('modalAuthError').classList.add('hidden');
-
-      if (mode === 'signin') {
-        signInTab.className = 'py-1.5 rounded text-xs font-bold bg-[#C59B27] text-black transition';
-        signUpTab.className = 'py-1.5 rounded text-xs font-bold text-zinc-400 hover:text-white transition';
-        extraFields.classList.add('hidden');
-        document.getElementById('modalFullName').required = false;
-        document.getElementById('modalPhone').required = false;
-        submitBtn.textContent = 'Sign In to Live Order View';
-      } else {
-        signUpTab.className = 'py-1.5 rounded text-xs font-bold bg-[#C59B27] text-black transition';
-        signInTab.className = 'py-1.5 rounded text-xs font-bold text-zinc-400 hover:text-white transition';
-        extraFields.classList.remove('hidden');
-        document.getElementById('modalFullName').required = true;
-        document.getElementById('modalPhone').required = true;
-        submitBtn.textContent = 'Create Account & View Orders';
-      }
+    function showAuthBanner(text, isError) {
+      const msgEl = document.getElementById('step3AuthMessage');
+      msgEl.textContent = text;
+      msgEl.className = isError
+        ? 'p-2.5 rounded-lg border border-red-600/50 bg-red-950/30 text-xs font-semibold text-red-400'
+        : 'p-2.5 rounded-lg border border-emerald-500/40 bg-emerald-950/30 text-xs font-semibold text-emerald-400';
+      msgEl.classList.remove('hidden');
     }
 
     async function handleStep3AuthSubmit(e) {
       e.preventDefault();
-      const email = document.getElementById('authEmail').value.trim();
+      const email = document.getElementById('authEmail').value.trim().toLowerCase();
       const password = document.getElementById('authPassword').value;
       const fullName = document.getElementById('authFullName').value.trim();
       const phone = document.getElementById('authPhone').value.trim();
       const btn = document.getElementById('step3AuthSubmitBtn');
-      const msgEl = document.getElementById('step3AuthMessage');
 
       btn.disabled = true;
-      msgEl.classList.add('hidden');
+      document.getElementById('step3AuthMessage').classList.add('hidden');
 
       try {
         if (stepAuthMode === 'signup') {
@@ -997,80 +918,55 @@
               data: { full_name: fullName, phone: phone }
             }
           });
-          if (error) throw error;
 
-          if (data.user && !data.session) {
-            msgEl.textContent = 'Account created! Please check your email to confirm, then sign in above.';
-            msgEl.className = 'text-xs font-semibold text-emerald-400';
-            msgEl.classList.remove('hidden');
-            switchStepAuthMode('signin');
-          } else if (data.user) {
-            await onClientAuthenticated(data.user);
+          if (error) {
+            // If user already exists, automatically try signing them in
+            if (String(error.message || '').toLowerCase().includes('already registered')) {
+              const signInFallback = await supabaseClient.auth.signInWithPassword({ email, password });
+              if (!signInFallback.error && signInFallback.data.user) {
+                await onClientAuthenticated(signInFallback.data.user);
+                return;
+              }
+            }
+            throw error;
           }
+
+          if (data.session && data.user) {
+            await onClientAuthenticated(data.user);
+            return;
+          }
+
+          // Attempt immediate sign-in in case session wasn't attached automatically
+          const { data: loginData, error: loginErr } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (!loginErr && loginData && loginData.user) {
+            await onClientAuthenticated(loginData.user);
+            return;
+          }
+
+          // Supabase "Confirm email" is still enabled on the project
+          showAuthBanner(
+            'Account created! Check your email for the confirmation link — or disable "Confirm email" in Supabase Dashboard → Authentication → Providers → Email for instant sign-in.',
+            false
+          );
+          switchStepAuthMode('signin');
         } else {
           btn.textContent = 'Signing In...';
           const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if (error) throw error;
-          if (data.user) {
+          if (error) {
+            if (String(error.message || '').toLowerCase().includes('email not confirmed')) {
+              throw new Error('Your email is waiting for confirmation. Check your inbox or turn OFF "Confirm email" in Supabase Authentication → Providers → Email.');
+            }
+            throw error;
+          }
+          if (data && data.user) {
             await onClientAuthenticated(data.user);
           }
         }
       } catch (err) {
-        msgEl.textContent = err.message || 'Authentication failed. Please try again.';
-        msgEl.className = 'text-xs font-semibold text-red-500';
-        msgEl.classList.remove('hidden');
+        showAuthBanner(err.message || 'Authentication failed. Please check your email and password.', true);
       } finally {
         btn.disabled = false;
         switchStepAuthMode(stepAuthMode);
-      }
-    }
-
-    async function handleModalAuthSubmit(e) {
-      e.preventDefault();
-      const email = document.getElementById('modalEmail').value.trim();
-      const password = document.getElementById('modalPassword').value;
-      const fullName = document.getElementById('modalFullName').value.trim();
-      const phone = document.getElementById('modalPhone').value.trim();
-      const btn = document.getElementById('modalAuthSubmitBtn');
-      const errEl = document.getElementById('modalAuthError');
-
-      btn.disabled = true;
-      errEl.classList.add('hidden');
-
-      try {
-        if (modalAuthMode === 'signup') {
-          btn.textContent = 'Creating Account...';
-          const { data, error } = await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: { data: { full_name: fullName, phone: phone } }
-          });
-          if (error) throw error;
-          if (data.user && !data.session) {
-            errEl.textContent = 'Account created! Please confirm your email, then sign in.';
-            errEl.className = 'text-xs text-emerald-400 font-medium';
-            errEl.classList.remove('hidden');
-            switchModalAuthMode('signin');
-          } else if (data.user) {
-            await onClientAuthenticated(data.user);
-            await renderModalMemberOrders();
-          }
-        } else {
-          btn.textContent = 'Signing In...';
-          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if (error) throw error;
-          if (data.user) {
-            await onClientAuthenticated(data.user);
-            await renderModalMemberOrders();
-          }
-        }
-      } catch (err) {
-        errEl.textContent = err.message || 'Invalid login credentials.';
-        errEl.className = 'text-xs text-red-500 font-medium';
-        errEl.classList.remove('hidden');
-      } finally {
-        btn.disabled = false;
-        switchModalAuthMode(modalAuthMode);
       }
     }
 
@@ -1082,6 +978,7 @@
       isBlackLabelVIP = false;
       completedServiceCount = 0;
       hasLoyaltyDiscount = false;
+      cachedMemberOrders = [];
 
       document.getElementById('bannerMemberStatus').textContent =
         'Instant scheduling, personalized vehicle care profiles & VIP tracking active.';
@@ -1089,10 +986,6 @@
       document.getElementById('bookingFormWrapper').classList.add('hidden');
       document.getElementById('orderViewContainer').classList.add('hidden');
       document.getElementById('stepProgressWrapper').classList.remove('hidden');
-
-      // Reset modal state if open
-      document.getElementById('modalAuthBox').classList.remove('hidden');
-      document.getElementById('modalOrdersBox').classList.add('hidden');
     }
 
     async function onClientAuthenticated(user) {
@@ -1104,7 +997,6 @@
       document.getElementById('bannerMemberStatus').innerHTML =
         `Signed in as <strong class="text-[#C59B27]">${escapeHtml(displayName)}</strong> &bull; Personalized Vehicle Care &amp; VIP Active`;
 
-      // Unlock Step 3 member workspace
       document.getElementById('step3AuthGate').classList.add('hidden');
       document.getElementById('bookingFormWrapper').classList.remove('hidden');
 
@@ -1136,7 +1028,7 @@
       return digits.length >= 10 ? digits.slice(-10) : digits;
     }
 
-    // Load client's Black Label VIP Status & 5-Service Loyalty Count
+    // Load client's Black Label VIP Status, Loyalty Count, and Orders inside Account
     async function loadMemberVipAndLoyalty(user) {
       const phoneInputVal = document.getElementById('phone').value || (user.user_metadata && user.user_metadata.phone) || '';
       const digits = normalizePhoneDigits(phoneInputVal);
@@ -1144,7 +1036,7 @@
       const { data: userBookings } = await supabaseClient
         .from('bookings')
         .select('*')
-        .eq('email', user.email)
+        .ilike('email', user.email)
         .order('created_at', { ascending: false });
 
       let allClientRows = Array.isArray(userBookings) ? [...userBookings] : [];
@@ -1167,6 +1059,10 @@
           });
         }
       }
+
+      cachedMemberOrders = allClientRows;
+      document.getElementById('accountOrdersCountBadge').textContent = String(allClientRows.length);
+      renderAccountOrdersList();
 
       // Check Black Label VIP Status
       isBlackLabelVIP = allClientRows.some(r => {
@@ -1229,6 +1125,61 @@
 
       calculateTotalPrice();
       return allClientRows;
+    }
+
+    function toggleAccountOrdersDrawer(forceState) {
+      const drawer = document.getElementById('accountOrdersDrawer');
+      if (typeof forceState === 'boolean') {
+        drawer.classList.toggle('hidden', !forceState);
+        return;
+      }
+      drawer.classList.toggle('hidden');
+      if (!drawer.classList.contains('hidden') && currentUser) {
+        loadMemberVipAndLoyalty(currentUser);
+      }
+    }
+
+    function renderAccountOrdersList() {
+      const listEl = document.getElementById('accountOrdersList');
+      if (!listEl) return;
+
+      if (!cachedMemberOrders || cachedMemberOrders.length === 0) {
+        listEl.innerHTML = `
+          <div class="p-3 bg-black border border-zinc-800 rounded-lg text-center text-xs text-zinc-400">
+            No bookings on your account yet. Complete your booking below to track your service live!
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = cachedMemberOrders
+        .map((ord, idx) => `
+          <div onclick="openAccountOrderTracker(${idx})" class="p-2.5 bg-black border border-zinc-800 hover:border-[#C59B27] rounded-lg cursor-pointer transition space-y-1">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-[#C59B27]">${escapeHtml(ord.service_date)} &bull; ${escapeHtml(ord.time_slot)}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-zinc-900 text-white border border-zinc-700">${escapeHtml(ord.status || 'Confirmed')}</span>
+            </div>
+            <p class="text-[11px] text-zinc-200 font-semibold truncate">${escapeHtml(ord.service_type)}</p>
+            <div class="flex items-center justify-between text-[11px] text-zinc-400">
+              <span>Total: $${ord.amount_paid || 0}</span>
+              <span class="text-[#C59B27] font-bold">Open Live Order View &rarr;</span>
+            </div>
+          </div>
+        `)
+        .join('');
+    }
+
+    function openAccountOrderTracker(index) {
+      const booking = cachedMemberOrders[index];
+      if (!booking) return;
+      openOrderView(booking);
+    }
+
+    function returnToMemberAccountView() {
+      document.getElementById('orderViewContainer').classList.add('hidden');
+      document.getElementById('stepProgressWrapper').classList.remove('hidden');
+      document.getElementById('bookingFormWrapper').classList.remove('hidden');
+      toggleAccountOrdersDrawer(true);
     }
 
     let phoneReloadTimer = null;
@@ -1325,15 +1276,12 @@
         if (!error && data && data[0]) {
           newVeh.id = data[0].id;
         }
-      } catch (_) {
-        // Fallback to localStorage cache seamlessly
-      }
+      } catch (_) {}
 
       clientVehicles.push(newVeh);
       localStorage.setItem(getLocalGarageKey(currentUser.id), JSON.stringify(clientVehicles));
       selectedVehicleId = newVeh.id;
 
-      // Clear form & close
       document.getElementById('vehYear').value = '';
       document.getElementById('vehMake').value = '';
       document.getElementById('vehModel').value = '';
@@ -1382,7 +1330,6 @@
       const packageSelect = document.getElementById('servicePackageCombined');
       if (!packageSelect) return;
 
-      // Match current plan family with the selected vehicle's category
       const currentOpt = packageSelect.options[packageSelect.selectedIndex];
       const currentPlan = currentOpt ? currentOpt.getAttribute('data-plan') : 'KW Signature Wash 365';
       const planPrefix = currentPlan.split(' (')[0];
@@ -1461,87 +1408,6 @@
       const name = [v.year, v.make, v.model].filter(Boolean).join(' ');
       const extras = [v.color, v.plate ? `#${v.plate}` : '', v.care_notes ? `Notes: ${v.care_notes}` : ''].filter(Boolean).join(' | ');
       return extras ? `${name} (${extras})` : name;
-    }
-
-    // ========================================================
-    // AUTHENTICATED LIVE ORDER VIEW MODAL
-    // ========================================================
-    async function openOrderLookupModal() {
-      document.getElementById('orderLookupError').classList.add('hidden');
-      document.getElementById('orderLookupModal').classList.remove('hidden');
-
-      if (currentUser) {
-        document.getElementById('modalAuthBox').classList.add('hidden');
-        document.getElementById('modalOrdersBox').classList.remove('hidden');
-        await renderModalMemberOrders();
-      } else {
-        document.getElementById('modalAuthBox').classList.remove('hidden');
-        document.getElementById('modalOrdersBox').classList.add('hidden');
-      }
-    }
-
-    function closeOrderLookupModal() {
-      document.getElementById('orderLookupModal').classList.add('hidden');
-    }
-
-    async function renderModalMemberOrders() {
-      if (!currentUser) return;
-      const meta = currentUser.user_metadata || {};
-      const displayName = meta.full_name || currentUser.email.split('@')[0];
-
-      document.getElementById('modalMemberName').textContent = displayName;
-      document.getElementById('modalMemberEmail').textContent = currentUser.email;
-
-      const allOrders = await loadMemberVipAndLoyalty(currentUser);
-      const modalVipBadge = document.getElementById('modalVipBadge');
-      if (isBlackLabelVIP) {
-        modalVipBadge.textContent = '★ Black Label VIP';
-        modalVipBadge.className = 'px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-[#C59B27] text-black flex-shrink-0';
-      } else {
-        modalVipBadge.textContent = 'Member';
-        modalVipBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-700 text-zinc-300 flex-shrink-0';
-      }
-
-      const listEl = document.getElementById('modalOrdersList');
-      if (!allOrders || allOrders.length === 0) {
-        listEl.innerHTML = `
-          <div class="p-4 bg-black border border-zinc-800 rounded-lg text-center text-xs text-zinc-400">
-            No bookings found on your account yet. Select a date and time to schedule your first service!
-          </div>
-        `;
-        return;
-      }
-
-      listEl.innerHTML = allOrders
-        .map((ord, idx) => `
-          <div onclick="openMemberOrderFromModal(${idx})" class="p-3 bg-black border border-zinc-800 hover:border-[#C59B27] rounded-lg cursor-pointer transition space-y-1">
-            <div class="flex items-center justify-between gap-2">
-              <span class="text-xs font-bold text-[#C59B27]">${escapeHtml(ord.service_date)} &bull; ${escapeHtml(ord.time_slot)}</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-zinc-900 text-white border border-zinc-700">${escapeHtml(ord.status || 'Confirmed')}</span>
-            </div>
-            <p class="text-xs text-zinc-200 font-semibold truncate">${escapeHtml(ord.service_type)}</p>
-            <div class="flex items-center justify-between text-[11px] text-zinc-400">
-              <span>Total: $${ord.amount_paid || 0}</span>
-              <span class="text-[#C59B27] font-semibold">Open Live Tracker &rarr;</span>
-            </div>
-          </div>
-        `)
-        .join('');
-
-      window._cachedMemberOrders = allOrders;
-    }
-
-    function openMemberOrderFromModal(index) {
-      const booking = (window._cachedMemberOrders || [])[index];
-      if (!booking) return;
-      closeOrderLookupModal();
-      closeServicesAlert();
-
-      selectedDateStr = booking.service_date;
-      selectedTimeSlotStr = booking.time_slot;
-      formattedDisplayDateStr = booking.service_date;
-      goToStep(3);
-      openOrderView(booking);
     }
 
     // Booking Mode Switch ('subscription' | 'addons_only')
@@ -2270,10 +2136,7 @@
     let detailingStartTime = null;
 
     function openOrderView(booking) {
-      if (!currentUser) {
-        openOrderLookupModal();
-        return;
-      }
+      if (!currentUser) return;
 
       document.getElementById('stepProgressWrapper').classList.add('hidden');
       document.getElementById('step3AuthGate').classList.add('hidden');
