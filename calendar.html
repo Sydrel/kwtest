@@ -98,18 +98,27 @@
           <button type="button" onclick="toggleAddVehicleForm(false)" class="text-xs text-zinc-400 hover:text-white">&times; Close</button>
         </div>
 
+        <!-- Car Brand Logo Selector Grid -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label class="block text-[11px] font-semibold text-zinc-300">Select Vehicle Brand Logo *</label>
+            <span id="selectedBrandPreviewLabel" class="text-[10px] font-bold text-[#C59B27]">Tap a brand icon</span>
+          </div>
+          <div id="brandLogoPickerGrid" class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 max-h-44 overflow-y-auto pr-1"></div>
+        </div>
+
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
           <div>
             <label class="block text-[11px] text-zinc-400 mb-1">Year</label>
             <input type="text" id="vehYear" placeholder="2024" maxlength="4" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
           </div>
           <div>
-            <label class="block text-[11px] text-zinc-400 mb-1">Make *</label>
-            <input type="text" id="vehMake" placeholder="e.g. BMW" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+            <label class="block text-[11px] text-zinc-400 mb-1">Make / Brand *</label>
+            <input type="text" id="vehMake" oninput="handleCustomBrandInput(this.value)" placeholder="e.g. Toyota" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
           </div>
           <div class="col-span-2 sm:col-span-1">
             <label class="block text-[11px] text-zinc-400 mb-1">Model *</label>
-            <input type="text" id="vehModel" placeholder="e.g. X5 M" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+            <input type="text" id="vehModel" placeholder="e.g. Camry / F-150" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
           </div>
         </div>
 
@@ -343,7 +352,7 @@
         <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1.5 text-center"></div>
       </div>
 
-      <!-- Inline Arrival Time Window Picker (Unlocks once Date is selected) -->
+      <!-- Inline Arrival Time Window Picker -->
       <div id="inlineTimeSlotSection" class="pt-3 border-t border-zinc-900 space-y-2.5">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-white flex items-center gap-1.5">
@@ -379,18 +388,18 @@
     </div>
 
     <!-- ========================================================== -->
-    <!-- STEP 2: CLIENT ACCOUNT, MODAL TRIGGERS & CHECKOUT          -->
+    <!-- STEP 2: CLEAN, STREAMLINED ACCOUNT & CHECKOUT              -->
     <!-- ========================================================== -->
     <div id="step2Container" class="hidden w-full">
 
       <!-- Selected Date & Time Summary Strip -->
-      <div class="mb-4 p-3 bg-black border border-[#8A6814]/50 rounded-lg flex flex-wrap items-center justify-between gap-2">
-        <div class="text-xs text-zinc-300">
-          <span class="text-zinc-500 uppercase font-bold text-[10px] tracking-wider block">Appointment Schedule</span>
-          <span id="summaryDateTimeText" class="text-[#C59B27] font-bold"></span>
+      <div class="mb-3.5 px-3 py-2 bg-black border border-[#8A6814]/50 rounded-lg flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 text-xs min-w-0">
+          <span class="w-2 h-2 rounded-full bg-[#C59B27] flex-shrink-0"></span>
+          <span id="summaryDateTimeText" class="text-[#C59B27] font-bold truncate"></span>
         </div>
-        <button type="button" onclick="goToStep(1)" class="text-[11px] bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-2.5 py-1 rounded border border-zinc-700 font-semibold transition">
-          Edit Date / Time
+        <button type="button" onclick="goToStep(1)" class="text-[11px] text-zinc-300 hover:text-white underline font-semibold flex-shrink-0">
+          Change
         </button>
       </div>
 
@@ -402,11 +411,10 @@
           <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Step 2 &bull; Client Membership Access</span>
           <h2 class="text-base sm:text-lg font-bold text-white mt-0.5">Sign In or Create Your KW Client Account</h2>
           <p class="text-xs text-zinc-400 mt-1">
-            Unlock your <strong class="text-white">Personalized Vehicle Care Profile</strong> modal (up to 4 vehicles), <strong class="text-[#C59B27]">Black Label VIP Status</strong>, and <strong class="text-white">Live Order View</strong> modal.
+            Access your <strong class="text-white">Vehicle Care Profile</strong> modal (up to 4 cars), <strong class="text-[#C59B27]">Black Label VIP Status</strong>, and <strong class="text-white">Live Order View</strong> modal.
           </p>
         </div>
 
-        <!-- Auth Mode Toggle -->
         <div class="p-1 bg-zinc-950 border border-zinc-800 rounded-lg grid grid-cols-2 gap-1.5">
           <button type="button" id="stepAuthSignInTab" onclick="switchStepAuthMode('signin')" class="py-2 px-3 rounded-md text-xs font-bold bg-[#C59B27] text-black transition">
             Sign In
@@ -443,7 +451,7 @@
 
           <div class="pt-1 flex flex-col sm:flex-row gap-2.5">
             <button type="button" onclick="goToStep(1)" class="sm:w-1/3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg text-xs border border-zinc-800 transition">
-              &larr; Back to Date &amp; Time
+              &larr; Back
             </button>
             <button type="submit" id="step2AuthSubmitBtn" class="sm:w-2/3 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs sm:text-sm transition shadow-lg shadow-red-950/50">
               Sign In &amp; Continue to Checkout
@@ -453,369 +461,366 @@
       </div>
 
       <!-- ======================================================== -->
-      <!-- STEP 2B: AUTHENTICATED ACCOUNT BAR + CHECKOUT FORM       -->
+      <!-- STEP 2B: STREAMLINED CHECKOUT (CLEAN & SCANNABLE)        -->
       <!-- ======================================================== -->
-      <div id="bookingFormWrapper" class="hidden space-y-4">
+      <div id="bookingFormWrapper" class="hidden space-y-3">
 
-        <!-- Member Profile Card + Modal Launchers -->
-        <div class="p-3.5 sm:p-4 bg-black border border-[#C59B27]/60 rounded-xl space-y-3 shadow-lg">
-          <div class="flex flex-wrap items-start justify-between gap-2">
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <h3 id="memberProfileName" class="text-sm sm:text-base font-bold text-white">Member Profile</h3>
-                <span id="vipStatusBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-700">
-                  Standard Member
-                </span>
-              </div>
-              <p id="memberProfileSubtext" class="text-[11px] text-zinc-400 mt-0.5"></p>
+        <!-- Compact Member Header + 2 Modal Buttons -->
+        <div class="p-3 bg-black border border-[#C59B27]/50 rounded-xl space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0 flex-wrap">
+              <span id="memberProfileName" class="text-xs sm:text-sm font-bold text-white truncate">Member</span>
+              <span id="vipStatusBadge" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-700">
+                Standard
+              </span>
+              <span id="loyaltyProgressBadge" class="px-2 py-0.5 rounded-full bg-zinc-950 border border-[#8A6814]/50 text-[9px] font-bold text-[#C59B27]">
+                0 / 5 Reward
+              </span>
             </div>
-            <button type="button" onclick="signOutClientAccount()" class="text-[11px] text-zinc-400 hover:text-red-400 bg-zinc-950 px-2.5 py-1 rounded border border-zinc-800 font-semibold transition">
+            <button type="button" onclick="signOutClientAccount()" class="text-[11px] text-zinc-400 hover:text-red-400 font-semibold flex-shrink-0">
               Sign Out
             </button>
           </div>
 
-          <!-- Two Dedicated Modal Buttons: Vehicle Care Profile & Live Order View -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-            <button type="button" onclick="openVehicleProfileModal()" class="p-3 rounded-xl bg-zinc-950 hover:bg-zinc-900 border border-[#C59B27]/60 text-left transition flex items-center justify-between gap-2 group">
-              <div class="min-w-0">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-[#C59B27] block">Personalized Vehicle Care Profile</span>
-                <span id="selectedVehiclePillText" class="text-xs font-bold text-white truncate block mt-0.5">Manage Garage (0 / 4 Cars)</span>
+          <!-- Two Modal Buttons -->
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="openVehicleProfileModal()" class="p-2.5 rounded-lg bg-zinc-950 hover:bg-zinc-900 border border-[#C59B27]/60 text-left transition flex items-center justify-between gap-1.5">
+              <div class="min-w-0 flex-1">
+                <span class="text-[9px] font-bold uppercase tracking-wider text-[#C59B27] block">Vehicle Profile</span>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span id="selectedVehiclePillIcon" class="hidden flex-shrink-0"></span>
+                  <span id="selectedVehiclePillText" class="text-[11px] font-bold text-white truncate block">Garage (0/4)</span>
+                </div>
               </div>
-              <span class="px-2 py-1 rounded bg-[#C59B27] text-black text-[10px] font-black uppercase flex-shrink-0 group-hover:scale-105 transition">
-                Open
-              </span>
+              <span class="text-[10px] font-black text-[#C59B27] flex-shrink-0">&rarr;</span>
             </button>
 
-            <button type="button" onclick="openLiveOrderModal()" class="p-3 rounded-xl bg-zinc-950 hover:bg-zinc-900 border border-red-600/60 text-left transition flex items-center justify-between gap-2 group">
-              <div class="min-w-0">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-red-400 block">Live View Order &amp; Timer</span>
-                <span id="liveOrderPillText" class="text-xs font-bold text-white truncate block mt-0.5">Track Orders (0)</span>
+            <button type="button" onclick="openLiveOrderModal()" class="p-2.5 rounded-lg bg-zinc-950 hover:bg-zinc-900 border border-red-600/60 text-left transition flex items-center justify-between gap-1.5">
+              <div class="min-w-0 flex-1">
+                <span class="text-[9px] font-bold uppercase tracking-wider text-red-400 block">Live View Order</span>
+                <span id="liveOrderPillText" class="text-[11px] font-bold text-white truncate block mt-0.5">Orders (0)</span>
               </div>
-              <span class="px-2 py-1 rounded bg-red-600 text-white text-[10px] font-black uppercase flex-shrink-0 group-hover:scale-105 transition">
-                View
-              </span>
+              <span class="text-[10px] font-black text-red-400 flex-shrink-0">&rarr;</span>
             </button>
           </div>
+        </div>
 
-          <!-- VIP Tier & 5th-Service Loyalty Strip -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-zinc-900 text-xs">
-            <div class="p-2.5 bg-zinc-950 border border-zinc-800/90 rounded-lg">
-              <span class="text-[10px] uppercase tracking-wider font-bold text-zinc-500 block">Membership Tier</span>
-              <span id="vipTierDetailText" class="text-xs font-bold text-[#C59B27]">Enroll in Black Label 365 for VIP Status</span>
+        <form id="bookingForm" class="space-y-3">
+
+          <!-- 1. Service & Location Card -->
+          <div class="p-3.5 bg-black border border-zinc-800 rounded-xl space-y-3">
+            <!-- Booking Type Toggle -->
+            <div class="p-1 bg-zinc-950 border border-zinc-800 rounded-lg grid grid-cols-2 gap-1">
+              <button type="button" id="modeSubscriptionBtn" onclick="setBookingMode('subscription')" class="py-1.5 px-2 rounded-md text-xs font-bold bg-[#C59B27] text-black transition">
+                Monthly Plan
+              </button>
+              <button type="button" id="modeAddonsOnlyBtn" onclick="setBookingMode('addons_only')" class="py-1.5 px-2 rounded-md text-xs font-bold text-zinc-400 hover:text-white transition">
+                Add-Ons Only
+              </button>
             </div>
-            <div class="p-2.5 bg-zinc-950 border border-zinc-800/90 rounded-lg flex items-center justify-between gap-2">
+
+            <!-- Plan Dropdown (Subscription Mode) -->
+            <div id="subscriptionPlanSection" class="space-y-2">
               <div>
-                <span class="text-[10px] uppercase tracking-wider font-bold text-zinc-500 block">5th-Service Add-On Reward</span>
-                <span id="loyaltyStatusText" class="text-xs font-semibold text-zinc-300">0 / 5 Completed Services</span>
+                <label class="block text-xs font-semibold mb-1 text-zinc-300">Membership Plan &amp; Vehicle Size</label>
+                <select id="servicePackageCombined" onchange="calculateTotalPrice()" class="w-full bg-zinc-950 border border-[#8A6814]/50 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] font-semibold transition">
+                  <optgroup label="KW Signature Wash 365">
+                    <option value="KW Signature Wash 365 - Coupe" data-plan="KW Signature Wash 365" data-vehicle="Coupe" data-price="220" data-is-subscription="true" selected>KW Signature Wash 365 - Coupe ($220/mo)</option>
+                    <option value="KW Signature Wash 365 - Sedan" data-plan="KW Signature Wash 365" data-vehicle="Sedan" data-price="240" data-is-subscription="true">KW Signature Wash 365 - Sedan ($240/mo)</option>
+                    <option value="KW Signature Wash 365 - Midsize SUV / Crossover" data-plan="KW Signature Wash 365" data-vehicle="Midsize SUV / Crossover" data-price="260" data-is-subscription="true">KW Signature Wash 365 - Midsize SUV / Crossover ($260/mo)</option>
+                    <option value="KW Signature Wash 365 - Pickup Truck" data-plan="KW Signature Wash 365" data-vehicle="Pickup Truck" data-price="280" data-is-subscription="true">KW Signature Wash 365 - Pickup Truck ($280/mo)</option>
+                    <option value="KW Signature Wash 365 - Large SUV" data-plan="KW Signature Wash 365" data-vehicle="Large SUV" data-price="300" data-is-subscription="true">KW Signature Wash 365 - Large SUV ($300/mo)</option>
+                  </optgroup>
+
+                  <optgroup label="365 AutoCare">
+                    <option value="365 AutoCare - Coupe" data-plan="365 AutoCare" data-vehicle="Coupe" data-price="280" data-is-subscription="true">365 AutoCare - Coupe ($280/mo)</option>
+                    <option value="365 AutoCare - Sedan" data-plan="365 AutoCare" data-vehicle="Sedan" data-price="310" data-is-subscription="true">365 AutoCare - Sedan ($310/mo)</option>
+                    <option value="365 AutoCare - Midsize SUV / Crossover" data-plan="365 AutoCare" data-vehicle="Midsize SUV / Crossover" data-price="340" data-is-subscription="true">365 AutoCare - Midsize SUV / Crossover ($340/mo)</option>
+                    <option value="365 AutoCare - Pickup Truck" data-plan="365 AutoCare" data-vehicle="Pickup Truck" data-price="370" data-is-subscription="true">365 AutoCare - Pickup Truck ($370/mo)</option>
+                    <option value="365 AutoCare - Large SUV" data-plan="365 AutoCare" data-vehicle="Large SUV" data-price="400" data-is-subscription="true">365 AutoCare - Large SUV ($400/mo)</option>
+                  </optgroup>
+
+                  <optgroup label="Black Label 365 (Unlocks Black Label VIP Status)">
+                    <option value="Black Label 365 ($449) - Coupe" data-plan="Black Label 365 ($449)" data-vehicle="Coupe" data-price="449" data-is-subscription="true">Black Label 365 - Coupe ($449/mo)</option>
+                    <option value="Black Label 365 ($499) - Sedan" data-plan="Black Label 365 ($499)" data-vehicle="Sedan" data-price="499" data-is-subscription="true">Black Label 365 - Sedan ($499/mo)</option>
+                    <option value="Black Label 365 ($549) - Midsize SUV" data-plan="Black Label 365 ($549)" data-vehicle="Midsize SUV / Crossover" data-price="549" data-is-subscription="true">Black Label 365 - Midsize SUV / Crossover ($549/mo)</option>
+                    <option value="Black Label 365 ($599) - Pickup Truck" data-plan="Black Label 365 ($599)" data-vehicle="Pickup Truck" data-price="599" data-is-subscription="true">Black Label 365 - Pickup Truck ($599/mo)</option>
+                    <option value="Black Label 365 ($649) - Large SUV" data-plan="Black Label 365 ($649)" data-vehicle="Large SUV" data-price="649" data-is-subscription="true">Black Label 365 - Large SUV ($649/mo)</option>
+                    <option value="Black Label 365 ($700) - Premium Fleet / Executive" data-plan="Black Label 365 ($700)" data-vehicle="Executive Vehicle" data-price="700" data-is-subscription="true">Black Label 365 - Premium Fleet / Executive ($700/mo)</option>
+                  </optgroup>
+                </select>
               </div>
-              <span id="loyaltyProgressBadge" class="px-2 py-0.5 rounded bg-black border border-[#8A6814]/50 text-[10px] font-bold text-[#C59B27] flex-shrink-0">0 / 5</span>
-            </div>
-          </div>
-        </div>
 
-        <!-- Booking Mode Switch: New Monthly Plan vs Existing Member Add-Ons Only -->
-        <div class="p-1 bg-black border border-zinc-800 rounded-lg grid grid-cols-2 gap-1.5">
-          <button type="button" id="modeSubscriptionBtn" onclick="setBookingMode('subscription')" class="py-2 px-2.5 rounded-md text-xs font-bold bg-[#C59B27] text-black transition">
-            New Monthly Plan
-          </button>
-          <button type="button" id="modeAddonsOnlyBtn" onclick="setBookingMode('addons_only')" class="py-2 px-2.5 rounded-md text-xs font-bold text-zinc-400 hover:text-white transition">
-            Existing Member (Add-Ons Only)
-          </button>
-        </div>
+              <!-- Compact Setup Fee & Expandable Terms Line -->
+              <div class="flex items-center justify-between text-[11px] text-zinc-400 px-0.5">
+                <span>Includes <strong class="text-[#C59B27]">$50 setup fee</strong> (non-refundable) &bull; Renews every 30 days</span>
+                <button type="button" onclick="document.getElementById('subscriptionDisclaimer').classList.toggle('hidden')" class="text-[#C59B27] underline font-semibold flex-shrink-0 ml-2">
+                  Terms
+                </button>
+              </div>
 
-        <form id="bookingForm" class="space-y-3 sm:space-y-3.5">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5">
-            <div>
-              <label class="block text-xs font-medium mb-1 text-zinc-300">Full Name</label>
-              <input type="text" id="clientName" required class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
-            </div>
-            <div>
-              <label class="block text-xs font-medium mb-1 text-zinc-300">Phone Number</label>
-              <input type="tel" id="phone" required placeholder="(555) 123-4567" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
-            </div>
-            <div>
-              <label class="block text-xs font-medium mb-1 text-zinc-300">Account Email</label>
-              <input type="email" id="email" required readonly class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-zinc-400 cursor-not-allowed">
-            </div>
-          </div>
-
-          <!-- Subscription Plan Section (Hidden in Add-Ons Only Mode) -->
-          <div id="subscriptionPlanSection" class="space-y-3">
-            <div>
-              <label class="block text-xs font-medium mb-1 text-zinc-300">Select Subscription Plan &amp; Vehicle Category</label>
-              <select id="servicePackageCombined" onchange="calculateTotalPrice()" class="w-full bg-black border border-[#8A6814]/50 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] font-semibold transition">
-                <optgroup label="KW Signature Wash 365">
-                  <option value="KW Signature Wash 365 - Coupe" data-plan="KW Signature Wash 365" data-vehicle="Coupe" data-price="220" data-is-subscription="true" selected>KW Signature Wash 365 - Coupe ($220/mo)</option>
-                  <option value="KW Signature Wash 365 - Sedan" data-plan="KW Signature Wash 365" data-vehicle="Sedan" data-price="240" data-is-subscription="true">KW Signature Wash 365 - Sedan ($240/mo)</option>
-                  <option value="KW Signature Wash 365 - Midsize SUV / Crossover" data-plan="KW Signature Wash 365" data-vehicle="Midsize SUV / Crossover" data-price="260" data-is-subscription="true">KW Signature Wash 365 - Midsize SUV / Crossover ($260/mo)</option>
-                  <option value="KW Signature Wash 365 - Pickup Truck" data-plan="KW Signature Wash 365" data-vehicle="Pickup Truck" data-price="280" data-is-subscription="true">KW Signature Wash 365 - Pickup Truck ($280/mo)</option>
-                  <option value="KW Signature Wash 365 - Large SUV" data-plan="KW Signature Wash 365" data-vehicle="Large SUV" data-price="300" data-is-subscription="true">KW Signature Wash 365 - Large SUV ($300/mo)</option>
-                </optgroup>
-
-                <optgroup label="365 AutoCare">
-                  <option value="365 AutoCare - Coupe" data-plan="365 AutoCare" data-vehicle="Coupe" data-price="280" data-is-subscription="true">365 AutoCare - Coupe ($280/mo)</option>
-                  <option value="365 AutoCare - Sedan" data-plan="365 AutoCare" data-vehicle="Sedan" data-price="310" data-is-subscription="true">365 AutoCare - Sedan ($310/mo)</option>
-                  <option value="365 AutoCare - Midsize SUV / Crossover" data-plan="365 AutoCare" data-vehicle="Midsize SUV / Crossover" data-price="340" data-is-subscription="true">365 AutoCare - Midsize SUV / Crossover ($340/mo)</option>
-                  <option value="365 AutoCare - Pickup Truck" data-plan="365 AutoCare" data-vehicle="Pickup Truck" data-price="370" data-is-subscription="true">365 AutoCare - Pickup Truck ($370/mo)</option>
-                  <option value="365 AutoCare - Large SUV" data-plan="365 AutoCare" data-vehicle="Large SUV" data-price="400" data-is-subscription="true">365 AutoCare - Large SUV ($400/mo)</option>
-                </optgroup>
-
-                <optgroup label="Black Label 365 (Unlocks Black Label VIP Status)">
-                  <option value="Black Label 365 ($449) - Coupe" data-plan="Black Label 365 ($449)" data-vehicle="Coupe" data-price="449" data-is-subscription="true">Black Label 365 - Coupe ($449/mo)</option>
-                  <option value="Black Label 365 ($499) - Sedan" data-plan="Black Label 365 ($499)" data-vehicle="Sedan" data-price="499" data-is-subscription="true">Black Label 365 - Sedan ($499/mo)</option>
-                  <option value="Black Label 365 ($549) - Midsize SUV" data-plan="Black Label 365 ($549)" data-vehicle="Midsize SUV / Crossover" data-price="549" data-is-subscription="true">Black Label 365 - Midsize SUV / Crossover ($549/mo)</option>
-                  <option value="Black Label 365 ($599) - Pickup Truck" data-plan="Black Label 365 ($599)" data-vehicle="Pickup Truck" data-price="599" data-is-subscription="true">Black Label 365 - Pickup Truck ($599/mo)</option>
-                  <option value="Black Label 365 ($649) - Large SUV" data-plan="Black Label 365 ($649)" data-vehicle="Large SUV" data-price="649" data-is-subscription="true">Black Label 365 - Large SUV ($649/mo)</option>
-                  <option value="Black Label 365 ($700) - Premium Fleet / Executive" data-plan="Black Label 365 ($700)" data-vehicle="Executive Vehicle" data-price="700" data-is-subscription="true">Black Label 365 - Premium Fleet / Executive ($700/mo)</option>
-                </optgroup>
-              </select>
-            </div>
-
-            <div class="p-3 bg-black border border-zinc-800 rounded-lg flex items-center justify-between">
-              <span class="text-xs font-semibold text-zinc-200">Setup Fee <span class="text-red-500 font-bold">(Non-refundable)</span></span>
-              <span class="text-xs font-bold text-[#C59B27]">$50</span>
-            </div>
-
-            <div id="subscriptionDisclaimer" class="p-3 bg-black border border-[#8A6814]/40 rounded-lg text-xs text-zinc-300 space-y-1">
-              <p class="font-bold text-[#C59B27] flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-[#C59B27]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                Recurring Monthly Membership Agreement:
-              </p>
-              <p class="leading-relaxed text-[11px] text-zinc-400">
+              <div id="subscriptionDisclaimer" class="hidden p-2.5 bg-zinc-950 border border-[#8A6814]/40 rounded-lg text-[11px] text-zinc-400 leading-relaxed">
                 By booking a monthly plan, you authorize <strong class="text-white">KW Commercial Fleet Washing &amp; Mobile Detailing LLC</strong> to bill your card today for month 1 + a $50 setup fee, which is included in your monthly plan. Any selected add-ons are a separate one-time charge. Your subscription will automatically renew every 30 days. Cancel anytime.
-              </p>
+              </div>
             </div>
-          </div>
 
-          <!-- Existing Member Add-Ons Only Notice -->
-          <div id="addonsOnlyNotice" class="hidden p-3 bg-black border border-[#C59B27]/50 rounded-lg text-xs text-zinc-300 space-y-1">
-            <p class="font-bold text-[#C59B27] flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Active Subscriber Add-On Booking (One-Time Charge)
-            </p>
-            <p class="leading-relaxed text-[11px] text-zinc-400">
-              No plan fee or $50 setup fee will be charged. Select the add-on services below to attach to your selected vehicle's visit.
-            </p>
-          </div>
-
-          <!-- Standard Add-ons Selection Section -->
-          <div class="p-3 bg-black border border-zinc-800 rounded-lg space-y-2">
-            <div class="flex items-center justify-between">
-              <label class="block text-xs font-medium text-zinc-300">Select Add-On Services</label>
-              <span id="addonDiscountPill" class="hidden text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#C59B27]/15 text-[#C59B27] border border-[#C59B27]/50">
-                25% Loyalty Discount Active
-              </span>
+            <!-- Existing Member Add-Ons Only Notice -->
+            <div id="addonsOnlyNotice" class="hidden px-2.5 py-2 bg-zinc-950 border border-[#C59B27]/40 rounded-lg text-[11px] text-zinc-300">
+              <strong class="text-[#C59B27]">Active Subscriber Add-Ons:</strong> $0 plan fee &amp; $0 setup fee. Select your one-time add-ons below.
             </div>
-            <div class="space-y-3 text-xs text-zinc-300 max-h-56 overflow-y-auto pr-1">
-              <div>
-                <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Headlight Restoration</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
-                    <input type="checkbox" class="addon-checkbox accent-red-600" value="Headlight Restoration (Standard)" data-price="145" onchange="calculateTotalPrice()">
-                    <span>Standard ($145)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
-                    <input type="checkbox" class="addon-checkbox accent-red-600" value="Headlight Restoration (Premium UV)" data-price="210" onchange="calculateTotalPrice()">
-                    <span>Premium UV ($210)</span>
-                  </label>
-                </div>
-              </div>
 
-              <div>
-                <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Pet Hair Removal</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
-                    <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal (Standard)" data-price="50" onchange="calculateTotalPrice()">
-                    <span>Standard ($50)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
-                    <input type="checkbox" class="addon-checkbox accent-red-600" value="Pet Hair Removal (Heavy)" data-price="90" onchange="calculateTotalPrice()">
-                    <span>Heavy ($90)</span>
-                  </label>
-                </div>
-              </div>
+            <!-- Mobile Service Address -->
+            <div class="relative">
+              <label class="block text-xs font-semibold mb-1 text-zinc-300">Mobile Service Address</label>
+              <input type="text" id="serviceAddress" required placeholder="Start typing street address..." autocomplete="off" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
+              <ul id="addressSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-zinc-950 border border-[#8A6814]/50 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-50 hidden divide-y divide-zinc-800/60"></ul>
+            </div>
 
-              <div>
-                <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Seat Shampoo / Extraction</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
-                    <input type="checkbox" class="addon-checkbox accent-red-600" value="Seat Shampoo (Standard)" data-price="100" onchange="calculateTotalPrice()">
-                    <span>Standard ($100)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
-                    <input type="checkbox" class="addon-checkbox accent-red-600" value="Seat Shampoo (Deep Extraction)" data-price="140" onchange="calculateTotalPrice()">
-                    <span>Deep ($140)</span>
-                  </label>
-                </div>
+            <!-- Compact Pre-Filled Contact Summary + Toggleable Edit Fields -->
+            <div class="pt-1 border-t border-zinc-900">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-zinc-400 truncate">
+                  Contact: <strong id="compactContactSummary" class="text-zinc-200">Loading...</strong>
+                </span>
+                <button type="button" onclick="document.getElementById('contactFieldsDrawer').classList.toggle('hidden')" class="text-[11px] text-[#C59B27] hover:underline font-semibold flex-shrink-0 ml-2">
+                  Edit Info
+                </button>
               </div>
-
-              <div>
-                <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Engine Bay Cleaning</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
-                    <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay (Standard)" data-price="100" onchange="calculateTotalPrice()">
-                    <span>Standard ($100)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
-                    <input type="checkbox" class="addon-checkbox accent-red-600" value="Engine Bay (Showroom Detail)" data-price="150" onchange="calculateTotalPrice()">
-                    <span>Showroom ($150)</span>
-                  </label>
+              <div id="contactFieldsDrawer" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2.5">
+                <div>
+                  <label class="block text-[11px] text-zinc-400 mb-1">Full Name</label>
+                  <input type="text" id="clientName" required oninput="updateCompactContactSummary()" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
                 </div>
-              </div>
-
-              <div>
-                <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Excessive Soil Removal</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
-                    <input type="checkbox" class="addon-checkbox accent-red-600" value="Excessive Soil (Moderate)" data-price="70" onchange="calculateTotalPrice()">
-                    <span>Moderate ($70)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
-                    <input type="checkbox" class="addon-checkbox accent-red-600" value="Excessive Soil (Heavy)" data-price="100" onchange="calculateTotalPrice()">
-                    <span>Heavy ($100)</span>
-                  </label>
+                <div>
+                  <label class="block text-[11px] text-zinc-400 mb-1">Phone Number</label>
+                  <input type="tel" id="phone" required placeholder="(555) 123-4567" oninput="updateCompactContactSummary()" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+                </div>
+                <div>
+                  <label class="block text-[11px] text-zinc-400 mb-1">Email</label>
+                  <input type="email" id="email" required readonly class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-xs text-zinc-400 cursor-not-allowed">
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Dedicated Box: KW Elite Paint Restoration & Ceramic Protection -->
-          <div class="p-3.5 bg-black border border-[#C59B27]/50 rounded-lg space-y-3 shadow-lg">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-              <div>
-                <h4 class="text-xs font-bold text-[#C59B27] uppercase tracking-wider flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#C59B27]"></span> KW Elite Paint Restoration &amp; Ceramic Protection
-                </h4>
-                <p class="text-[10px] text-zinc-400 mt-0.5">Professional defect removal &amp; long-term hydrophobic shielding</p>
-              </div>
-              <span class="text-[10px] bg-[#C59B27]/10 text-[#C59B27] border border-[#C59B27]/40 px-2 py-0.5 rounded font-bold uppercase flex-shrink-0">Elite Tier</span>
-            </div>
+          <!-- 2. Collapsible Add-Ons Accordions (Keeps Step 2 Clean) -->
+          <div class="space-y-2">
+            <!-- Accordion A: Standard Add-On Services -->
+            <div class="bg-black border border-zinc-800 rounded-xl overflow-hidden">
+              <button type="button" onclick="toggleAccordion('standardAddonsBody', 'standardAddonsArrow')" class="w-full px-3.5 py-2.5 flex items-center justify-between text-left hover:bg-zinc-950 transition">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="text-xs font-bold text-white">+ Standard Add-On Services</span>
+                  <span id="addonDiscountPill" class="hidden text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-[#C59B27]/15 text-[#C59B27] border border-[#C59B27]/50">
+                    25% OFF
+                  </span>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <span id="standardAddonsBadge" class="text-[11px] font-semibold text-zinc-400">Optional</span>
+                  <span id="standardAddonsArrow" class="text-xs text-[#C59B27] font-bold transition-transform">+</span>
+                </div>
+              </button>
 
-            <div class="space-y-3 text-xs text-zinc-300 max-h-60 overflow-y-auto pr-1">
-              <div>
-                <p class="text-[11px] font-bold text-[#C59B27] uppercase tracking-wider mb-1">Paint Correction <span class="text-zinc-400 normal-case font-normal">(Luxury/Exotic: Custom Quote)</span></p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (1-Step - Sedan/Coupe)" data-price="399" onchange="calculateTotalPrice()">
-                    <span>1-Step Sedan/Coupe ($399)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (1-Step - Midsize SUV)" data-price="499" onchange="calculateTotalPrice()">
-                    <span>1-Step Midsize SUV ($499)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (1-Step - Large SUV/Pickup)" data-price="599" onchange="calculateTotalPrice()">
-                    <span>1-Step Large SUV/Pickup ($599)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (2-Step - Sedan/Coupe)" data-price="749" onchange="calculateTotalPrice()">
-                    <span>2-Step Sedan/Coupe ($749)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (2-Step - Midsize SUV)" data-price="899" onchange="calculateTotalPrice()">
-                    <span>2-Step Midsize SUV ($899)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Paint Correction (2-Step - Large SUV/Pickup)" data-price="1099" onchange="calculateTotalPrice()">
-                    <span>2-Step Large SUV/Pickup ($1,099)</span>
-                  </label>
+              <div id="standardAddonsBody" class="hidden px-3.5 pb-3.5 pt-1 border-t border-zinc-900 space-y-2.5 text-xs text-zinc-300 max-h-56 overflow-y-auto">
+                <div>
+                  <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-1">Headlight Restoration</p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                      <input type="checkbox" class="addon-checkbox standard-addon-cb accent-red-600" value="Headlight Restoration (Standard)" data-price="145" onchange="calculateTotalPrice()">
+                      <span>Standard ($145)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                      <input type="checkbox" class="addon-checkbox standard-addon-cb accent-red-600" value="Headlight Restoration (Premium UV)" data-price="210" onchange="calculateTotalPrice()">
+                      <span>Premium UV ($210)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-1">Pet Hair Removal</p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                      <input type="checkbox" class="addon-checkbox standard-addon-cb accent-red-600" value="Pet Hair Removal (Standard)" data-price="50" onchange="calculateTotalPrice()">
+                      <span>Standard ($50)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                      <input type="checkbox" class="addon-checkbox standard-addon-cb accent-red-600" value="Pet Hair Removal (Heavy)" data-price="90" onchange="calculateTotalPrice()">
+                      <span>Heavy ($90)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-1">Seat Shampoo / Extraction</p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                      <input type="checkbox" class="addon-checkbox standard-addon-cb accent-red-600" value="Seat Shampoo (Standard)" data-price="100" onchange="calculateTotalPrice()">
+                      <span>Standard ($100)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                      <input type="checkbox" class="addon-checkbox standard-addon-cb accent-red-600" value="Seat Shampoo (Deep Extraction)" data-price="140" onchange="calculateTotalPrice()">
+                      <span>Deep ($140)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-1">Engine Bay Cleaning</p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                      <input type="checkbox" class="addon-checkbox standard-addon-cb accent-red-600" value="Engine Bay (Standard)" data-price="100" onchange="calculateTotalPrice()">
+                      <span>Standard ($100)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                      <input type="checkbox" class="addon-checkbox standard-addon-cb accent-red-600" value="Engine Bay (Showroom Detail)" data-price="150" onchange="calculateTotalPrice()">
+                      <span>Showroom ($150)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-1">Excessive Soil Removal</p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                      <input type="checkbox" class="addon-checkbox standard-addon-cb accent-red-600" value="Excessive Soil (Moderate)" data-price="70" onchange="calculateTotalPrice()">
+                      <span>Moderate ($70)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-red-600/50 transition">
+                      <input type="checkbox" class="addon-checkbox standard-addon-cb accent-red-600" value="Excessive Soil (Heavy)" data-price="100" onchange="calculateTotalPrice()">
+                      <span>Heavy ($100)</span>
+                    </label>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div>
-                <p class="text-[11px] font-bold text-[#C59B27] uppercase tracking-wider mb-1">Ceramic Coating Protection <span class="text-zinc-400 normal-case font-normal">(Luxury/Exotic: $1,899+ / Custom)</span></p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Premium Ceramic Coating (1-2 Year Protection - Sedan/Coupe)" data-price="499" onchange="calculateTotalPrice()">
-                    <span>1-2Yr Sedan/Coupe ($499)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Premium Ceramic Coating (1-2 Year Protection - Midsize SUV)" data-price="599" onchange="calculateTotalPrice()">
-                    <span>1-2Yr Midsize SUV ($599)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Premium Ceramic Coating (1-2 Year Protection - Large SUV/Pickup)" data-price="699" onchange="calculateTotalPrice()">
-                    <span>1-2Yr Large SUV/Pickup ($699)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Ultimate Ceramic Coating (4-5 Year Protection - Sedan/Coupe)" data-price="1299" onchange="calculateTotalPrice()">
-                    <span>4-5Yr Sedan/Coupe ($1,299)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Ultimate Ceramic Coating (4-5 Year Protection - Midsize SUV)" data-price="1499" onchange="calculateTotalPrice()">
-                    <span>4-5Yr Midsize SUV ($1,499)</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
-                    <input type="checkbox" class="addon-checkbox accent-[#C59B27]" value="Ultimate Ceramic Coating (4-5 Year Protection - Large SUV/Pickup)" data-price="1699" onchange="calculateTotalPrice()">
-                    <span>4-5Yr Large SUV/Pickup ($1,699)</span>
-                  </label>
+            <!-- Accordion B: KW Elite Paint Restoration & Ceramic Protection -->
+            <div class="bg-black border border-[#C59B27]/45 rounded-xl overflow-hidden">
+              <button type="button" onclick="toggleAccordion('elitePaintBody', 'elitePaintArrow')" class="w-full px-3.5 py-2.5 flex items-center justify-between text-left hover:bg-zinc-950 transition">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="text-xs font-bold text-[#C59B27] truncate">+ KW Elite Paint Correction &amp; Ceramic</span>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <span id="elitePaintBadge" class="text-[11px] font-semibold text-zinc-400">Elite Tier</span>
+                  <span id="elitePaintArrow" class="text-xs text-[#C59B27] font-bold transition-transform">+</span>
+                </div>
+              </button>
+
+              <div id="elitePaintBody" class="hidden px-3.5 pb-3.5 pt-1 border-t border-zinc-900 space-y-2.5 text-xs text-zinc-300 max-h-56 overflow-y-auto">
+                <div>
+                  <p class="text-[10px] font-bold text-[#C59B27] uppercase tracking-wider mb-1">Paint Correction <span class="text-zinc-400 normal-case font-normal">(Luxury/Exotic: Custom Quote)</span></p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Paint Correction (1-Step - Sedan/Coupe)" data-price="399" onchange="calculateTotalPrice()">
+                      <span>1-Step Sedan/Coupe ($399)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Paint Correction (1-Step - Midsize SUV)" data-price="499" onchange="calculateTotalPrice()">
+                      <span>1-Step Midsize SUV ($499)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Paint Correction (1-Step - Large SUV/Pickup)" data-price="599" onchange="calculateTotalPrice()">
+                      <span>1-Step Large SUV/Pickup ($599)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Paint Correction (2-Step - Sedan/Coupe)" data-price="749" onchange="calculateTotalPrice()">
+                      <span>2-Step Sedan/Coupe ($749)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Paint Correction (2-Step - Midsize SUV)" data-price="899" onchange="calculateTotalPrice()">
+                      <span>2-Step Midsize SUV ($899)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Paint Correction (2-Step - Large SUV/Pickup)" data-price="1099" onchange="calculateTotalPrice()">
+                      <span>2-Step Large SUV/Pickup ($1,099)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <p class="text-[10px] font-bold text-[#C59B27] uppercase tracking-wider mb-1">Ceramic Coating Protection <span class="text-zinc-400 normal-case font-normal">(Luxury/Exotic: $1,899+ / Custom)</span></p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Premium Ceramic Coating (1-2 Year Protection - Sedan/Coupe)" data-price="499" onchange="calculateTotalPrice()">
+                      <span>1-2Yr Sedan/Coupe ($499)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Premium Ceramic Coating (1-2 Year Protection - Midsize SUV)" data-price="599" onchange="calculateTotalPrice()">
+                      <span>1-2Yr Midsize SUV ($599)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Premium Ceramic Coating (1-2 Year Protection - Large SUV/Pickup)" data-price="699" onchange="calculateTotalPrice()">
+                      <span>1-2Yr Large SUV/Pickup ($699)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Ultimate Ceramic Coating (4-5 Year Protection - Sedan/Coupe)" data-price="1299" onchange="calculateTotalPrice()">
+                      <span>4-5Yr Sedan/Coupe ($1,299)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Ultimate Ceramic Coating (4-5 Year Protection - Midsize SUV)" data-price="1499" onchange="calculateTotalPrice()">
+                      <span>4-5Yr Midsize SUV ($1,499)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-zinc-950 p-2 rounded border border-zinc-800 hover:border-[#C59B27]/60 transition">
+                      <input type="checkbox" class="addon-checkbox elite-addon-cb accent-[#C59B27]" value="Ultimate Ceramic Coating (4-5 Year Protection - Large SUV/Pickup)" data-price="1699" onchange="calculateTotalPrice()">
+                      <span>4-5Yr Large SUV/Pickup ($1,699)</span>
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Loyalty Savings Summary Row -->
-          <div id="loyaltySavingsSummary" class="hidden p-2.5 bg-black border border-[#C59B27]/60 rounded-lg flex items-center justify-between text-xs">
+          <div id="loyaltySavingsSummary" class="hidden px-3 py-2 bg-black border border-[#C59B27]/60 rounded-lg flex items-center justify-between text-xs">
             <span class="text-[#C59B27] font-semibold">5th-Service Loyalty Savings (25% OFF Add-Ons):</span>
             <span id="loyaltySavingsAmount" class="text-emerald-400 font-bold">-$0</span>
-          </div>
-
-          <!-- LocationIQ Address Autocomplete Section -->
-          <div class="relative">
-            <label class="block text-xs font-medium mb-1 text-zinc-300">Mobile Service Address</label>
-            <input type="text" id="serviceAddress" required placeholder="Start typing street address..." autocomplete="off" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
-            <ul id="addressSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-zinc-950 border border-[#8A6814]/50 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-50 hidden divide-y divide-zinc-800/60"></ul>
           </div>
 
           <input type="hidden" id="serviceDate">
           <input type="hidden" id="selectedTimeSlotValue">
 
-          <!-- Payment Method Choice Selector -->
-          <div class="mt-4">
-            <label class="block text-xs font-medium mb-1.5 text-zinc-300">Payment Option</label>
-            <div class="grid grid-cols-2 gap-2 mb-3">
+          <!-- 3. Payment Method & Total Card -->
+          <div class="p-3.5 bg-black border border-zinc-800 rounded-xl space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-semibold text-zinc-300">Payment Method</label>
+              <span id="checkoutTotalBreakdown" class="text-[11px] font-bold text-[#C59B27]">Plan $220 + $50 Setup = $270</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
               <button type="button" id="payOnlineTab" class="py-2 px-3 text-xs font-bold rounded-lg border border-red-600 bg-red-600 text-white transition">
                 Card / Mobile Wallet
               </button>
-              <button type="button" id="payInPersonTab" class="py-2 px-3 text-xs font-bold rounded-lg border border-zinc-800 bg-black text-zinc-400 hover:text-white hover:border-zinc-700 transition">
+              <button type="button" id="payInPersonTab" class="py-2 px-3 text-xs font-bold rounded-lg border border-zinc-800 bg-zinc-950 text-zinc-400 hover:text-white hover:border-zinc-700 transition">
                 Pay in Person / Zelle
               </button>
             </div>
 
-            <div id="cardPaymentSection" class="space-y-3">
+            <div id="cardPaymentSection" class="space-y-2.5">
+              <div id="express-checkout-element"></div>
+
+              <div class="relative flex py-0.5 items-center">
+                <div class="flex-grow border-t border-zinc-800"></div>
+                <span class="flex-shrink mx-3 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">or card</span>
+                <div class="flex-grow border-t border-zinc-800"></div>
+              </div>
+
               <div>
-                <label class="block text-xs font-medium mb-1.5 text-zinc-300">Express Instant Checkout</label>
-                <div id="express-checkout-element"></div>
-              </div>
-
-              <div class="relative flex py-1 items-center">
-                <div class="flex-grow border-t border-zinc-800"></div>
-                <span class="flex-shrink mx-3 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">or pay with card</span>
-                <div class="flex-grow border-t border-zinc-800"></div>
-              </div>
-
-              <div class="p-3 bg-black border border-zinc-800 rounded-lg">
-                <label class="block text-xs font-medium mb-2 text-zinc-300">Debit / Credit Card</label>
                 <div id="card-element" class="p-3 bg-zinc-950 border border-zinc-800 rounded-lg text-white"></div>
-                <div id="card-errors" class="text-xs text-red-500 mt-2 font-medium" role="alert"></div>
+                <div id="card-errors" class="text-xs text-red-500 mt-1.5 font-medium" role="alert"></div>
               </div>
             </div>
 
-            <div id="inPersonSection" class="hidden p-4 bg-black border border-zinc-800 rounded-lg space-y-2">
-              <div class="flex items-center gap-2 text-[#C59B27] font-bold text-xs">
-                <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Pay Upon Completion or via Zelle
-              </div>
-              <p class="text-xs text-zinc-300 leading-relaxed">
-                No payment is required right now. You can pay with <strong class="text-white">Cash</strong>, <strong class="text-white">Card</strong>, or <strong class="text-white">Zelle</strong> when our detailing unit finishes servicing your vehicle at your location.
+            <div id="inPersonSection" class="hidden p-3 bg-zinc-950 border border-zinc-800 rounded-lg space-y-1.5 text-xs">
+              <p class="text-[#C59B27] font-bold">Pay Upon Completion or via Zelle</p>
+              <p class="text-zinc-300 leading-relaxed text-[11px]">
+                Pay with <strong class="text-white">Cash</strong>, <strong class="text-white">Card</strong>, or <strong class="text-white">Zelle</strong> to <strong class="text-white">KW Commercial Fleet Washing &amp; Mobile Detailing LLC</strong> when service finishes.
               </p>
-              <div class="p-2.5 bg-zinc-950 border border-[#8A6814]/40 rounded text-xs text-zinc-400">
-                <span class="font-bold text-[#C59B27]">Zelle Info:</span> Send payment to <span class="text-white font-medium">KW Commercial Fleet Washing &amp; Mobile Detailing LLC</span> upon arrival.
-              </div>
             </div>
           </div>
 
-          <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-2">
             <button type="button" onclick="goToStep(1)" class="sm:w-1/3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-3 px-4 rounded-lg text-xs border border-zinc-800 transition">
-              &larr; Back to Date &amp; Time
+              &larr; Back
             </button>
             <button type="submit" id="submitBtn" class="sm:w-2/3 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg text-xs sm:text-sm transition duration-200 shadow-lg shadow-red-950/50">
               Confirm Subscription Booking (<span id="payBtnAmount">$270</span>)
@@ -843,6 +848,181 @@
       if (linkEl && CHANGELOG_URL) linkEl.href = CHANGELOG_URL;
     })();
 
+    function toggleAccordion(bodyId, arrowId) {
+      const body = document.getElementById(bodyId);
+      const arrow = document.getElementById(arrowId);
+      if (!body) return;
+      const isHidden = body.classList.toggle('hidden');
+      if (arrow) arrow.textContent = isHidden ? '+' : '−';
+    }
+
+    function updateCompactContactSummary() {
+      const nameVal = document.getElementById('clientName').value.trim();
+      const phoneVal = document.getElementById('phone').value.trim();
+      const emailVal = document.getElementById('email').value.trim();
+      const summaryEl = document.getElementById('compactContactSummary');
+      if (!summaryEl) return;
+
+      const parts = [nameVal, phoneVal, emailVal].filter(Boolean);
+      summaryEl.textContent = parts.length > 0 ? parts.join(' • ') : 'Tap Edit Info to add phone';
+    }
+
+    // ========================================================
+    // CAR BRAND LOGO EMBLEM LIBRARY (SELF-CONTAINED SVG ICONS)
+    // ========================================================
+    const CAR_BRAND_CATALOG = [
+      {
+        id: 'toyota',
+        name: 'Toyota',
+        svg: `<svg viewBox="0 0 40 28" class="w-7 h-5"><ellipse cx="20" cy="14" rx="17" ry="11" fill="none" stroke="currentColor" stroke-width="2.1"/><ellipse cx="20" cy="14" rx="5.5" ry="10.5" fill="none" stroke="currentColor" stroke-width="1.9"/><ellipse cx="20" cy="10" rx="11.5" ry="4.5" fill="none" stroke="currentColor" stroke-width="1.9"/></svg>`
+      },
+      {
+        id: 'ford',
+        name: 'Ford',
+        svg: `<svg viewBox="0 0 44 24" class="w-8 h-5"><ellipse cx="22" cy="12" rx="19.5" ry="9.5" fill="#1d4ed8" stroke="#C59B27" stroke-width="1.7"/><text x="22" y="15.5" text-anchor="middle" fill="#ffffff" font-family="Georgia, serif" font-style="italic" font-weight="bold" font-size="11">Ford</text></svg>`
+      },
+      {
+        id: 'bmw',
+        name: 'BMW',
+        svg: `<svg viewBox="0 0 32 32" class="w-6 h-6"><circle cx="16" cy="16" r="14" fill="#09090b" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="16" r="9.5" fill="#ffffff" stroke="currentColor" stroke-width="1.2"/><path d="M16 6.5 A9.5 9.5 0 0 1 25.5 16 L16 16 Z" fill="#2563eb"/><path d="M6.5 16 A9.5 9.5 0 0 1 16 6.5 L16 16 Z" fill="#ffffff"/><path d="M16 16 L25.5 16 A9.5 9.5 0 0 1 16 25.5 Z" fill="#ffffff"/><path d="M6.5 16 L16 16 L16 25.5 A9.5 9.5 0 0 1 6.5 16 Z" fill="#2563eb"/></svg>`
+      },
+      {
+        id: 'mercedes',
+        name: 'Mercedes',
+        svg: `<svg viewBox="0 0 32 32" class="w-6 h-6"><circle cx="16" cy="16" r="13.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 3 L16 16 L5.5 22.5 M16 16 L26.5 22.5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 'chevrolet',
+        name: 'Chevrolet',
+        svg: `<svg viewBox="0 0 44 22" class="w-8 h-5"><polygon points="3,8 13,8 15,4 29,4 31,8 41,8 39,14 29,14 27,18 13,18 11,14 1,14" fill="#C59B27" stroke="#ffffff" stroke-width="1.3"/></svg>`
+      },
+      {
+        id: 'honda',
+        name: 'Honda',
+        svg: `<svg viewBox="0 0 34 28" class="w-7 h-5"><rect x="3" y="3" width="28" height="22" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 8 L12.5 20 M23 8 L21.5 20 M12 14.5 L22 14.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 'nissan',
+        name: 'Nissan',
+        svg: `<svg viewBox="0 0 36 28" class="w-7 h-5"><circle cx="18" cy="14" r="11" fill="none" stroke="currentColor" stroke-width="2"/><rect x="2" y="10.5" width="32" height="7" rx="1.5" fill="#09090b" stroke="currentColor" stroke-width="1.5"/><text x="18" y="15.5" text-anchor="middle" fill="currentColor" font-family="sans-serif" font-weight="bold" font-size="5.5">NISSAN</text></svg>`
+      },
+      {
+        id: 'dodge',
+        name: 'Dodge',
+        svg: `<svg viewBox="0 0 40 24" class="w-8 h-5"><text x="15" y="16" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="900" font-size="8.5" letter-spacing="0.5">DODGE</text><path d="M31 6 L35 18 M35 6 L39 18" stroke="#dc2626" stroke-width="2.4" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 'jeep',
+        name: 'Jeep',
+        svg: `<svg viewBox="0 0 42 24" class="w-8 h-5"><rect x="3" y="4" width="36" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="12" r="2.2" fill="currentColor"/><circle cx="34" cy="12" r="2.2" fill="currentColor"/><path d="M13 8v8M16 8v8M19 8v8M22 8v8M25 8v8M28 8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 'gmc',
+        name: 'GMC',
+        svg: `<svg viewBox="0 0 44 22" class="w-8 h-5"><rect x="2" y="3" width="40" height="16" rx="2.5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/><text x="22" y="15" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="900" font-size="11" letter-spacing="1">GMC</text></svg>`
+      },
+      {
+        id: 'ram',
+        name: 'Ram',
+        svg: `<svg viewBox="0 0 32 30" class="w-6 h-6"><path d="M6 6 L16 26 L26 6 L20 6 L16 14 L12 6 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 11 C7 9, 7 15, 11 15 M22 11 C25 9, 25 15, 21 15" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>`
+      },
+      {
+        id: 'tesla',
+        name: 'Tesla',
+        svg: `<svg viewBox="0 0 32 30" class="w-6 h-6"><path d="M5 7 C12 4.5, 20 4.5, 27 7 M7 10.5 C13 8.5, 19 8.5, 25 10.5 L16 26 Z" fill="none" stroke="#dc2626" stroke-width="2.1" stroke-linejoin="round"/></svg>`
+      },
+      {
+        id: 'lexus',
+        name: 'Lexus',
+        svg: `<svg viewBox="0 0 40 28" class="w-7 h-5"><ellipse cx="20" cy="14" rx="17" ry="11" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 7 L13 19 L26 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+      },
+      {
+        id: 'audi',
+        name: 'Audi',
+        svg: `<svg viewBox="0 0 48 22" class="w-8 h-5"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="19.5" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="28" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="36.5" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.9"/></svg>`
+      },
+      {
+        id: 'porsche',
+        name: 'Porsche',
+        svg: `<svg viewBox="0 0 30 32" class="w-6 h-6"><path d="M6 4 L24 4 L24 17 C24 23, 15 28, 15 28 C15 28, 6 23, 6 17 Z" fill="#C59B27" stroke="#ffffff" stroke-width="1.4"/><line x1="15" y1="4" x2="15" y2="27" stroke="#09090b" stroke-width="1.5"/><line x1="6" y1="14" x2="24" y2="14" stroke="#09090b" stroke-width="1.5"/><rect x="7" y="5" width="7" height="8" fill="#dc2626"/><rect x="16" y="15" width="7" height="7" fill="#dc2626"/></svg>`
+      },
+      {
+        id: 'hyundai',
+        name: 'Hyundai',
+        svg: `<svg viewBox="0 0 40 28" class="w-7 h-5"><ellipse cx="20" cy="14" rx="17" ry="11" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 20 L16 8 M27 8 L24 20 M15 14.5 C18 12, 22 16, 25 13.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>`
+      },
+      {
+        id: 'kia',
+        name: 'Kia',
+        svg: `<svg viewBox="0 0 44 22" class="w-8 h-5"><path d="M5 17 V5 L14 14 V5 M19 5 V17 M25 17 L31 5 L37 17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+      },
+      {
+        id: 'other',
+        name: 'Other',
+        svg: `<svg viewBox="0 0 36 24" class="w-7 h-5"><path d="M5 15 L8 8 C9 6.5, 10.5 6, 12 6 H24 C25.5 6, 27 6.5, 28 8 L31 15 V19 H28 V17 H8 V19 H5 Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><circle cx="10" cy="15" r="1.5" fill="currentColor"/><circle cx="26" cy="15" r="1.5" fill="currentColor"/></svg>`
+      }
+    ];
+
+    let selectedBrandId = 'toyota';
+
+    function getBrandByMakeOrId(makeOrId) {
+      const normalized = String(makeOrId || '').trim().toLowerCase();
+      if (!normalized) return CAR_BRAND_CATALOG[CAR_BRAND_CATALOG.length - 1];
+      const exact = CAR_BRAND_CATALOG.find(
+        b => b.id === normalized || b.name.toLowerCase() === normalized || normalized.includes(b.id)
+      );
+      return exact || CAR_BRAND_CATALOG[CAR_BRAND_CATALOG.length - 1];
+    }
+
+    function renderBrandLogoPicker() {
+      const grid = document.getElementById('brandLogoPickerGrid');
+      if (!grid) return;
+      grid.innerHTML = CAR_BRAND_CATALOG.map((brand) => {
+        const isSelected = brand.id === selectedBrandId;
+        return `
+          <button
+            type="button"
+            onclick="selectVehicleBrandLogo('${brand.id}')"
+            class="p-2 rounded-lg border ${isSelected ? 'border-[#C59B27] bg-zinc-900 text-[#C59B27] shadow-md' : 'border-zinc-800 bg-zinc-950 text-zinc-300 hover:border-zinc-600 hover:text-white'} flex flex-col items-center justify-center gap-1 transition"
+          >
+            <div class="flex items-center justify-center h-6">${brand.svg}</div>
+            <span class="text-[10px] font-bold truncate w-full text-center">${brand.name}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectVehicleBrandLogo(brandId) {
+      selectedBrandId = brandId;
+      const brand = CAR_BRAND_CATALOG.find(b => b.id === brandId);
+      const makeInput = document.getElementById('vehMake');
+      const previewLabel = document.getElementById('selectedBrandPreviewLabel');
+
+      if (brand) {
+        if (brand.id !== 'other') {
+          makeInput.value = brand.name;
+        } else if (CAR_BRAND_CATALOG.some(b => b.id !== 'other' && b.name.toLowerCase() === makeInput.value.trim().toLowerCase())) {
+          makeInput.value = '';
+        }
+        if (previewLabel) previewLabel.textContent = `Selected: ${brand.name}`;
+      }
+      renderBrandLogoPicker();
+    }
+
+    function handleCustomBrandInput(typedMake) {
+      const matched = getBrandByMakeOrId(typedMake);
+      selectedBrandId = matched.id;
+      const previewLabel = document.getElementById('selectedBrandPreviewLabel');
+      if (previewLabel) {
+        previewLabel.textContent = typedMake.trim()
+          ? `Brand: ${typedMake.trim()}`
+          : 'Tap a brand icon';
+      }
+      renderBrandLogoPicker();
+    }
+
+    renderBrandLogoPicker();
+
     function closeServicesAlert() {
       const modal = document.getElementById('servicesAlertModal');
       if (modal) modal.classList.add('hidden');
@@ -853,9 +1033,9 @@
       if (modal) modal.classList.remove('hidden');
     }
 
-    // Modal 1: Personalized Vehicle Care Profile Controls
     function openVehicleProfileModal() {
       if (!currentUser) return;
+      renderBrandLogoPicker();
       renderSavedVehicles();
       document.getElementById('vehicleProfileModal').classList.remove('hidden');
     }
@@ -864,7 +1044,6 @@
       document.getElementById('vehicleProfileModal').classList.add('hidden');
     }
 
-    // Modal 2: Private Live Order View Controls
     async function openLiveOrderModal(specificBooking) {
       if (!currentUser) return;
       document.getElementById('liveOrderModal').classList.remove('hidden');
@@ -905,7 +1084,6 @@
     let selectedTimeSlotStr = '';
     let currentMonthBookings = [];
 
-    // Client Account, VIP Status, Garage (Max 4 Cars) & Loyalty State
     let currentUser = null;
     let clientVehicles = [];
     let selectedVehicleId = null;
@@ -1054,15 +1232,19 @@
       document.getElementById('bookingFormWrapper').classList.remove('hidden');
 
       document.getElementById('memberProfileName').textContent = displayName;
-      document.getElementById('memberProfileSubtext').textContent = user.email;
       document.getElementById('email').value = user.email;
 
-      if (!document.getElementById('clientName').value && meta.full_name) {
-        document.getElementById('clientName').value = meta.full_name;
+      if (!document.getElementById('clientName').value) {
+        document.getElementById('clientName').value = meta.full_name || displayName;
       }
       if (!document.getElementById('phone').value && savedPhone) {
         document.getElementById('phone').value = savedPhone;
       }
+
+      if (!document.getElementById('phone').value.trim()) {
+        document.getElementById('contactFieldsDrawer').classList.remove('hidden');
+      }
+      updateCompactContactSummary();
 
       await loadMemberVipAndLoyalty(user);
       await loadClientVehicles(user.id);
@@ -1115,8 +1297,8 @@
       cachedMemberOrders = allClientRows;
       document.getElementById('liveOrderPillText').textContent =
         allClientRows.length > 0
-          ? `Track Orders (${allClientRows.length})`
-          : 'No Active Orders Yet';
+          ? `Orders (${allClientRows.length})`
+          : 'No Orders Yet';
       renderAccountOrdersList();
 
       isBlackLabelVIP = allClientRows.some(r => {
@@ -1128,26 +1310,19 @@
       const hasAnySub = allClientRows.some(r => r.is_subscription === true);
 
       const vipBadge = document.getElementById('vipStatusBadge');
-      const vipTierText = document.getElementById('vipTierDetailText');
       const ovVipTag = document.getElementById('ovVipTag');
 
       if (isBlackLabelVIP) {
         vipBadge.textContent = '★ Black Label VIP';
-        vipBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#C59B27] text-black shadow-md';
-        vipTierText.textContent = 'Black Label 365 VIP Member — Priority Scheduling Active';
-        vipTierText.className = 'text-xs font-bold text-[#C59B27]';
+        vipBadge.className = 'px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#C59B27] text-black shadow-md';
         if (ovVipTag) ovVipTag.classList.remove('hidden');
       } else if (hasAnySub) {
         vipBadge.textContent = '365 Member';
-        vipBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-900 text-[#C59B27] border border-[#C59B27]/50';
-        vipTierText.textContent = 'Active 365 Subscriber (Upgrade to Black Label 365 for VIP)';
-        vipTierText.className = 'text-xs font-semibold text-zinc-200';
+        vipBadge.className = 'px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-zinc-900 text-[#C59B27] border border-[#C59B27]/50';
         if (ovVipTag) ovVipTag.classList.add('hidden');
       } else {
-        vipBadge.textContent = 'Standard Member';
-        vipBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-700';
-        vipTierText.textContent = 'Enroll in Black Label 365 to unlock Black Label VIP Status';
-        vipTierText.className = 'text-xs font-semibold text-zinc-400';
+        vipBadge.textContent = 'Standard';
+        vipBadge.className = 'px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-700';
         if (ovVipTag) ovVipTag.classList.add('hidden');
       }
 
@@ -1159,20 +1334,16 @@
       completedServiceCount = completedRows.length;
       hasLoyaltyDiscount = completedServiceCount >= 5;
 
-      const loyaltyText = document.getElementById('loyaltyStatusText');
       const loyaltyBadge = document.getElementById('loyaltyProgressBadge');
       const discountPill = document.getElementById('addonDiscountPill');
 
       if (hasLoyaltyDiscount) {
-        loyaltyText.textContent = '25% OFF Add-Ons Unlocked!';
-        loyaltyText.className = 'text-xs font-bold text-emerald-400';
-        loyaltyBadge.textContent = `${completedServiceCount} Done (25% OFF)`;
+        loyaltyBadge.textContent = `${completedServiceCount} Done • 25% OFF Add-Ons`;
+        loyaltyBadge.className = 'px-2 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/50 text-[9px] font-bold text-emerald-400';
         discountPill.classList.remove('hidden');
       } else {
-        const left = 5 - completedServiceCount;
-        loyaltyText.textContent = `${left} more service${left === 1 ? '' : 's'} until 25% OFF add-ons`;
-        loyaltyText.className = 'text-xs font-semibold text-zinc-300';
-        loyaltyBadge.textContent = `${completedServiceCount} / 5`;
+        loyaltyBadge.textContent = `${completedServiceCount} / 5 Reward`;
+        loyaltyBadge.className = 'px-2 py-0.5 rounded-full bg-zinc-950 border border-[#8A6814]/50 text-[9px] font-bold text-[#C59B27]';
         discountPill.classList.add('hidden');
       }
 
@@ -1268,6 +1439,9 @@
         return;
       }
       box.classList.toggle('hidden');
+      if (!box.classList.contains('hidden')) {
+        selectVehicleBrandLogo(selectedBrandId || 'toyota');
+      }
     }
 
     async function saveNewVehicleToProfile() {
@@ -1360,17 +1534,28 @@
     function syncSelectedVehicleToPackage() {
       const selectedVeh = clientVehicles.find(v => v.id === selectedVehicleId);
       const pillEl = document.getElementById('selectedVehiclePillText');
+      const pillIconEl = document.getElementById('selectedVehiclePillIcon');
 
       if (!selectedVeh) {
+        if (pillIconEl) {
+          pillIconEl.innerHTML = '';
+          pillIconEl.classList.add('hidden');
+        }
         if (pillEl) {
-          pillEl.textContent = `Manage Garage (${clientVehicles.length} / ${MAX_GARAGE_VEHICLES} Cars)`;
+          pillEl.textContent = `Garage (${clientVehicles.length}/${MAX_GARAGE_VEHICLES})`;
         }
         return;
       }
 
+      const brandObj = getBrandByMakeOrId(selectedVeh.make);
+      if (pillIconEl) {
+        pillIconEl.innerHTML = brandObj.svg;
+        pillIconEl.className = 'text-[#C59B27] flex items-center flex-shrink-0 scale-75 origin-left';
+      }
+
       if (pillEl) {
         const vehTitle = [selectedVeh.year, selectedVeh.make, selectedVeh.model].filter(Boolean).join(' ');
-        pillEl.textContent = `${vehTitle} (${clientVehicles.length}/${MAX_GARAGE_VEHICLES})`;
+        pillEl.textContent = vehTitle;
       }
 
       const packageSelect = document.getElementById('servicePackageCombined');
@@ -1397,10 +1582,15 @@
       const countBadge = document.getElementById('garageCountBadge');
       const addBtn = document.getElementById('toggleAddVehicleBtn');
       const pillEl = document.getElementById('selectedVehiclePillText');
+      const pillIconEl = document.getElementById('selectedVehiclePillIcon');
 
       countBadge.textContent = `${clientVehicles.length} / ${MAX_GARAGE_VEHICLES} Cars`;
       if (pillEl && clientVehicles.length === 0) {
-        pillEl.textContent = `Manage Garage (0 / ${MAX_GARAGE_VEHICLES} Cars)`;
+        if (pillIconEl) {
+          pillIconEl.innerHTML = '';
+          pillIconEl.classList.add('hidden');
+        }
+        pillEl.textContent = `Garage (0/${MAX_GARAGE_VEHICLES})`;
       }
 
       if (clientVehicles.length >= MAX_GARAGE_VEHICLES) {
@@ -1416,7 +1606,7 @@
       if (clientVehicles.length === 0) {
         listEl.innerHTML = `
           <div class="sm:col-span-2 p-4 bg-black border border-dashed border-zinc-800 rounded-xl text-center">
-            <p class="text-xs text-zinc-400">No vehicles saved in your profile yet. Click <strong class="text-[#C59B27]">+ Add Vehicle</strong> above to register up to 4 cars with custom care preferences.</p>
+            <p class="text-xs text-zinc-400">No vehicles saved in your profile yet. Click <strong class="text-[#C59B27]">+ Add Vehicle</strong> above to register up to 4 cars with brand logos and custom care preferences.</p>
           </div>
         `;
         return;
@@ -1425,17 +1615,20 @@
       listEl.innerHTML = clientVehicles
         .map((v) => {
           const isSelected = v.id === selectedVehicleId;
+          const brandObj = getBrandByMakeOrId(v.make);
           const title = [v.year, v.make, v.model].filter(Boolean).join(' ');
           const metaLine = [v.category, v.color, v.plate ? `Plate: ${v.plate}` : ''].filter(Boolean).join(' • ');
           return `
             <div onclick="selectVehicleForBooking('${v.id}')" class="p-3 rounded-xl border ${isSelected ? 'border-[#C59B27] bg-black shadow-md' : 'border-zinc-800 bg-black/60 hover:border-zinc-700'} cursor-pointer transition relative">
               <div class="flex items-start justify-between gap-2">
-                <div class="min-w-0">
-                  <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full ${isSelected ? 'bg-[#C59B27]' : 'bg-zinc-600'} flex-shrink-0"></span>
-                    <p class="text-xs font-bold text-white truncate">${escapeHtml(title)}</p>
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-10 h-9 rounded-lg bg-zinc-950 border ${isSelected ? 'border-[#C59B27]/60 text-[#C59B27]' : 'border-zinc-800 text-zinc-200'} flex items-center justify-center flex-shrink-0">
+                    ${brandObj.svg}
                   </div>
-                  <p class="text-[11px] text-zinc-400 mt-0.5 truncate">${escapeHtml(metaLine)}</p>
+                  <div class="min-w-0">
+                    <p class="text-xs font-bold text-white truncate">${escapeHtml(title)}</p>
+                    <p class="text-[11px] text-zinc-400 mt-0.5 truncate">${escapeHtml(metaLine)}</p>
+                  </div>
                 </div>
                 <button type="button" onclick="removeVehicleFromProfile('${v.id}', event)" title="Remove vehicle" class="text-zinc-500 hover:text-red-500 text-xs font-bold px-1">
                   &times;
@@ -1470,15 +1663,17 @@
       const addonsNotice = document.getElementById('addonsOnlyNotice');
 
       if (mode === 'subscription') {
-        subBtn.className = 'py-2 px-2.5 rounded-md text-xs font-bold bg-[#C59B27] text-black transition';
-        addonsBtn.className = 'py-2 px-2.5 rounded-md text-xs font-bold text-zinc-400 hover:text-white transition';
+        subBtn.className = 'py-1.5 px-2 rounded-md text-xs font-bold bg-[#C59B27] text-black transition';
+        addonsBtn.className = 'py-1.5 px-2 rounded-md text-xs font-bold text-zinc-400 hover:text-white transition';
         subSection.classList.remove('hidden');
         addonsNotice.classList.add('hidden');
       } else {
-        addonsBtn.className = 'py-2 px-2.5 rounded-md text-xs font-bold bg-[#C59B27] text-black transition';
-        subBtn.className = 'py-2 px-2.5 rounded-md text-xs font-bold text-zinc-400 hover:text-white transition';
+        addonsBtn.className = 'py-1.5 px-2 rounded-md text-xs font-bold bg-[#C59B27] text-black transition';
+        subBtn.className = 'py-1.5 px-2 rounded-md text-xs font-bold text-zinc-400 hover:text-white transition';
         subSection.classList.add('hidden');
         addonsNotice.classList.remove('hidden');
+        document.getElementById('standardAddonsBody').classList.remove('hidden');
+        document.getElementById('standardAddonsArrow').textContent = '−';
       }
 
       calculateTotalPrice();
@@ -1629,11 +1824,11 @@
 
     payOnlineTab.addEventListener('click', () => {
       currentPaymentMethod = 'online';
-      payOnlineTab.classList.replace('bg-black', 'bg-red-600');
+      payOnlineTab.classList.replace('bg-zinc-950', 'bg-red-600');
       payOnlineTab.classList.replace('text-zinc-400', 'text-white');
       payOnlineTab.classList.replace('border-zinc-800', 'border-red-600');
 
-      payInPersonTab.classList.replace('bg-red-600', 'bg-black');
+      payInPersonTab.classList.replace('bg-red-600', 'bg-zinc-950');
       payInPersonTab.classList.replace('text-white', 'text-zinc-400');
       payInPersonTab.classList.replace('border-red-600', 'border-zinc-800');
 
@@ -1644,11 +1839,11 @@
 
     payInPersonTab.addEventListener('click', () => {
       currentPaymentMethod = 'in_person';
-      payInPersonTab.classList.replace('bg-black', 'bg-red-600');
+      payInPersonTab.classList.replace('bg-zinc-950', 'bg-red-600');
       payInPersonTab.classList.replace('text-zinc-400', 'text-white');
       payInPersonTab.classList.replace('border-zinc-800', 'border-red-600');
 
-      payOnlineTab.classList.replace('bg-red-600', 'bg-black');
+      payOnlineTab.classList.replace('bg-red-600', 'bg-zinc-950');
       payOnlineTab.classList.replace('text-white', 'text-zinc-400');
       payOnlineTab.classList.replace('border-red-600', 'border-zinc-800');
 
@@ -1687,6 +1882,39 @@
       const packageSelect = document.getElementById('servicePackageCombined');
       const savingsSummaryEl = document.getElementById('loyaltySavingsSummary');
       const savingsAmountEl = document.getElementById('loyaltySavingsAmount');
+      const breakdownEl = document.getElementById('checkoutTotalBreakdown');
+
+      // Update live accordion badges
+      const stdChecked = document.querySelectorAll('.standard-addon-cb:checked');
+      const eliteChecked = document.querySelectorAll('.elite-addon-cb:checked');
+      const stdBadge = document.getElementById('standardAddonsBadge');
+      const eliteBadge = document.getElementById('elitePaintBadge');
+
+      if (stdBadge) {
+        if (stdChecked.length > 0) {
+          let stdSum = 0;
+          stdChecked.forEach(cb => { stdSum += parseInt(cb.getAttribute('data-price') || 0, 10); });
+          if (hasLoyaltyDiscount) stdSum = Math.round(stdSum * 0.75);
+          stdBadge.textContent = `${stdChecked.length} selected (+$${stdSum.toLocaleString()})`;
+          stdBadge.className = 'text-[11px] font-bold text-[#C59B27]';
+        } else {
+          stdBadge.textContent = 'Optional';
+          stdBadge.className = 'text-[11px] font-semibold text-zinc-400';
+        }
+      }
+
+      if (eliteBadge) {
+        if (eliteChecked.length > 0) {
+          let eliteSum = 0;
+          eliteChecked.forEach(cb => { eliteSum += parseInt(cb.getAttribute('data-price') || 0, 10); });
+          if (hasLoyaltyDiscount) eliteSum = Math.round(eliteSum * 0.75);
+          eliteBadge.textContent = `${eliteChecked.length} selected (+$${eliteSum.toLocaleString()})`;
+          eliteBadge.className = 'text-[11px] font-bold text-[#C59B27]';
+        } else {
+          eliteBadge.textContent = 'Elite Tier';
+          eliteBadge.className = 'text-[11px] font-semibold text-zinc-400';
+        }
+      }
 
       const { discountAmount, finalAddonsTotal } = getAddonsBreakdown();
 
@@ -1700,9 +1928,12 @@
       let finalTotal = 0;
       if (bookingMode === 'addons_only') {
         finalTotal = finalAddonsTotal;
+        if (breakdownEl) {
+          breakdownEl.textContent = `Add-Ons Total = $${finalTotal.toLocaleString()}`;
+        }
         if (submitBtn) {
           if (currentPaymentMethod === 'in_person') {
-            submitBtn.innerHTML = `Confirm Member Add-Ons (Pay $${finalTotal.toLocaleString()} in Person/Zelle)`;
+            submitBtn.innerHTML = `Confirm Member Add-Ons ($${finalTotal.toLocaleString()} in Person/Zelle)`;
           } else {
             submitBtn.innerHTML = `Confirm &amp; Pay Add-Ons (<span id="payBtnAmount">$${finalTotal.toLocaleString()}</span>)`;
           }
@@ -1714,9 +1945,15 @@
       const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
       finalTotal = basePrice + SETUP_FEE + finalAddonsTotal;
 
+      if (breakdownEl) {
+        breakdownEl.textContent = finalAddonsTotal > 0
+          ? `Plan $${basePrice} + $50 Setup + $${finalAddonsTotal.toLocaleString()} Add-Ons = $${finalTotal.toLocaleString()}`
+          : `Plan $${basePrice} + $50 Setup = $${finalTotal.toLocaleString()}`;
+      }
+
       if (submitBtn) {
         if (currentPaymentMethod === 'in_person') {
-          submitBtn.innerHTML = `Confirm Subscription (Pay $${finalTotal.toLocaleString()} in Person/Zelle)`;
+          submitBtn.innerHTML = `Confirm Subscription ($${finalTotal.toLocaleString()} in Person/Zelle)`;
         } else {
           submitBtn.innerHTML = `Confirm Subscription Booking (<span id="payBtnAmount">$${finalTotal.toLocaleString()}</span>)`;
         }
@@ -2023,6 +2260,14 @@
         return;
       }
 
+      const phoneVal = document.getElementById('phone').value.trim();
+      if (!phoneVal) {
+        document.getElementById('contactFieldsDrawer').classList.remove('hidden');
+        document.getElementById('phone').focus();
+        alert('Please enter your phone number in Contact Info before confirming.');
+        return;
+      }
+
       const { finalAddonsTotal } = getAddonsBreakdown();
       if (bookingMode === 'addons_only' && finalAddonsTotal <= 0) {
         alert('Please select at least one add-on service before confirming.');
@@ -2044,7 +2289,7 @@
         submitBtn.textContent = 'Saving Booking...';
         await saveBookingToSupabaseWithDetails({
           clientName: document.getElementById('clientName').value,
-          phone: document.getElementById('phone').value,
+          phone: phoneVal,
           email: currentUser.email,
           serviceAddress: document.getElementById('serviceAddress').value,
           amountPaid: totalAmount,
@@ -2076,7 +2321,7 @@
             packageName: isSub ? selectedOpt.value : 'Existing Member Add-Ons Only',
             clientName: document.getElementById('clientName').value,
             email: currentUser.email,
-            phone: document.getElementById('phone').value
+            phone: phoneVal
           })
         });
 
@@ -2089,7 +2334,7 @@
             billing_details: {
               name: document.getElementById('clientName').value,
               email: currentUser.email,
-              phone: document.getElementById('phone').value
+              phone: phoneVal
             }
           }
         });
@@ -2104,7 +2349,7 @@
         if (paymentResult.paymentIntent.status === 'succeeded') {
           await saveBookingToSupabaseWithDetails({
             clientName: document.getElementById('clientName').value,
-            phone: document.getElementById('phone').value,
+            phone: phoneVal,
             email: currentUser.email,
             serviceAddress: document.getElementById('serviceAddress').value,
             amountPaid: totalAmount,
@@ -2190,7 +2435,6 @@
         status: 'Confirmed'
       };
 
-      // Automatically open Live Order View Modal upon booking confirmation
       openLiveOrderModal(savedRecord);
     }
 
