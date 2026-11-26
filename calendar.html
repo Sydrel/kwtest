@@ -551,7 +551,7 @@
                 </select>
               </div>
 
-              <!-- Compact Setup Fee & Expandable Terms Line -->
+              <!-- Compact Executive Premium Membership & Expandable Terms Line -->
               <div class="flex items-center justify-between text-[11px] text-zinc-400 px-0.5">
                 <span><strong class="text-[#C59B27]">Executive Premium Membership &ndash; $50 Monthly</strong> &bull; Renews every 30 days</span>
                 <button type="button" onclick="document.getElementById('subscriptionDisclaimer').classList.toggle('hidden')" class="text-[#C59B27] underline font-semibold flex-shrink-0 ml-2">
@@ -570,7 +570,7 @@
 
             <!-- Existing Member Add-Ons Only Notice -->
             <div id="addonsOnlyNotice" class="hidden px-2.5 py-2 bg-zinc-950 border border-[#C59B27]/40 rounded-lg text-[11px] text-zinc-300">
-              <strong class="text-[#C59B27]">Active Subscriber Add-Ons:</strong> $0 plan fee &amp; $0 setup fee. Select your one-time add-ons below.
+              <strong class="text-[#C59B27]">Active Subscriber Add-Ons:</strong> $0 plan fee &amp; $0 membership fee. Select your one-time add-ons below.
             </div>
 
             <!-- Mobile Service Address -->
@@ -786,7 +786,7 @@
           <div class="p-3.5 bg-black border border-zinc-800 rounded-xl space-y-3">
             <div class="flex items-center justify-between">
               <label class="text-xs font-semibold text-zinc-300">Payment Method</label>
-              <span id="checkoutTotalBreakdown" class="text-[11px] font-bold text-[#C59B27]">Plan $220 + $50 Setup = $270</span>
+              <span id="checkoutTotalBreakdown" class="text-[11px] font-bold text-[#C59B27]">Plan $220 + $50/mo Membership = $270</span>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
@@ -1080,7 +1080,7 @@
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const SETUP_FEE = 50;
+    const EXECUTIVE_MEMBERSHIP_MONTHLY = 50;
 
     let currentStep = 1;
     let selectedDateStr = '';
@@ -1947,12 +1947,12 @@
 
       const selectedOpt = packageSelect ? packageSelect.options[packageSelect.selectedIndex] : null;
       const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
-      finalTotal = basePrice + SETUP_FEE + finalAddonsTotal;
+      finalTotal = basePrice + EXECUTIVE_MEMBERSHIP_MONTHLY + finalAddonsTotal;
 
       if (breakdownEl) {
         breakdownEl.textContent = finalAddonsTotal > 0
-          ? `Plan $${basePrice} + $50 Setup + $${finalAddonsTotal.toLocaleString()} Add-Ons = $${finalTotal.toLocaleString()}`
-          : `Plan $${basePrice} + $50 Setup = $${finalTotal.toLocaleString()}`;
+          ? `Plan $${basePrice} + $50/mo Membership + $${finalAddonsTotal.toLocaleString()} Add-Ons = $${finalTotal.toLocaleString()}`
+          : `Plan $${basePrice} + $50/mo Membership = $${finalTotal.toLocaleString()}`;
       }
 
       if (submitBtn) {
@@ -2098,7 +2098,7 @@
       const packageSelect = document.getElementById('servicePackageCombined');
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
       const basePrice = bookingMode === 'addons_only' ? 0 : parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
-      const setupFeeToCharge = bookingMode === 'addons_only' ? 0 : SETUP_FEE;
+      const membershipFeeToCharge = bookingMode === 'addons_only' ? 0 : EXECUTIVE_MEMBERSHIP_MONTHLY;
       const isSub = bookingMode === 'subscription';
       const formattedAddOns = getFormattedAddOns();
 
@@ -2123,7 +2123,7 @@
           },
           body: JSON.stringify({
             amount: basePrice * 100,
-            setupFee: setupFeeToCharge * 100,
+            setupFee: membershipFeeToCharge * 100,
             addonsAmount: finalAddonsTotal * 100,
             addOns: formattedAddOns || '',
             isSubscription: isSub,
@@ -2285,9 +2285,9 @@
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
       const isSub = bookingMode === 'subscription';
       const basePrice = isSub ? parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10) : 0;
-      const setupFeeToCharge = isSub ? SETUP_FEE : 0;
+      const membershipFeeToCharge = isSub ? EXECUTIVE_MEMBERSHIP_MONTHLY : 0;
       const formattedAddOns = getFormattedAddOns();
-      const totalAmount = basePrice + setupFeeToCharge + finalAddonsTotal;
+      const totalAmount = basePrice + membershipFeeToCharge + finalAddonsTotal;
 
       if (currentPaymentMethod === 'in_person') {
         submitBtn.textContent = 'Saving Booking...';
@@ -2318,7 +2318,7 @@
           },
           body: JSON.stringify({
             amount: basePrice * 100,
-            setupFee: setupFeeToCharge * 100,
+            setupFee: membershipFeeToCharge * 100,
             addonsAmount: finalAddonsTotal * 100,
             addOns: formattedAddOns || '',
             isSubscription: isSub,
@@ -2390,7 +2390,7 @@
       const formattedAddOns = getFormattedAddOns();
 
       const fullServiceDescription = isSubscription
-        ? (`${packageSelected} + $50 Setup Fee` + (formattedAddOns ? ` + Addons: [${formattedAddOns}]` : '') + vehicleTag)
+        ? (`${packageSelected} + $50/mo Executive Membership` + (formattedAddOns ? ` + Addons: [${formattedAddOns}]` : '') + vehicleTag)
         : (`Existing Member Add-Ons Only: [${formattedAddOns || ''}]` + vehicleTag);
 
       const { data, error: dbError } = await supabaseClient
@@ -2409,7 +2409,7 @@
           stripe_payment_id: stripePaymentId,
           amount_paid: amountPaid,
           is_subscription: isSubscription,
-          setup_fee_charged: isSubscription ? SETUP_FEE : 0,
+          setup_fee_charged: isSubscription ? EXECUTIVE_MEMBERSHIP_MONTHLY : 0,
           status: 'Confirmed'
         }])
         .select();
