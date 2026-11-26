@@ -61,6 +61,210 @@
     </div>
   </div>
 
+  <!-- ======================================================== -->
+  <!-- MODAL 1: PERSONALIZED VEHICLE CARE PROFILE (MAX 4 CARS)  -->
+  <!-- ======================================================== -->
+  <div id="vehicleProfileModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-zinc-950 border border-[#C59B27]/70 rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl relative my-auto max-h-[92vh] overflow-y-auto space-y-4">
+      <div class="flex items-start justify-between gap-3 border-b border-zinc-800 pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Member Garage &amp; Care Notes</span>
+          <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2 mt-0.5">
+            Personalized Vehicle Care Profile
+          </h3>
+          <p class="text-[11px] text-zinc-400 mt-0.5">Save up to <strong class="text-[#C59B27]">4 vehicles</strong> with custom care preferences and select the vehicle for this appointment.</p>
+        </div>
+        <button type="button" onclick="closeVehicleProfileModal()" class="text-zinc-400 hover:text-white bg-black border border-zinc-800 rounded-lg px-2.5 py-1 text-base font-bold transition">
+          &times;
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between gap-2">
+        <span id="garageCountBadge" class="px-2.5 py-1 rounded bg-black border border-[#C59B27]/40 text-xs font-bold text-[#C59B27]">
+          0 / 4 Cars
+        </span>
+        <button type="button" id="toggleAddVehicleBtn" onclick="toggleAddVehicleForm()" class="bg-[#C59B27] hover:bg-[#d8ad34] text-black font-bold px-3 py-1.5 rounded-lg text-xs transition">
+          + Add Vehicle
+        </button>
+      </div>
+
+      <!-- Saved Garage Vehicles Grid -->
+      <div id="savedVehiclesList" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+
+      <!-- Add New Vehicle Form -->
+      <div id="addVehicleFormBox" class="hidden p-3.5 bg-black border border-[#C59B27]/50 rounded-xl space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-[#C59B27] uppercase tracking-wider">Add Vehicle to Garage (Max 4)</span>
+          <button type="button" onclick="toggleAddVehicleForm(false)" class="text-xs text-zinc-400 hover:text-white">&times; Close</button>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">Year</label>
+            <input type="text" id="vehYear" placeholder="2024" maxlength="4" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+          </div>
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">Make *</label>
+            <input type="text" id="vehMake" placeholder="e.g. BMW" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <label class="block text-[11px] text-zinc-400 mb-1">Model *</label>
+            <input type="text" id="vehModel" placeholder="e.g. X5 M" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">Exterior Color</label>
+            <input type="text" id="vehColor" placeholder="e.g. Black Sapphire" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+          </div>
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">License Plate</label>
+            <input type="text" id="vehPlate" placeholder="Optional" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white uppercase focus:outline-none focus:border-[#C59B27]">
+          </div>
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">Vehicle Category *</label>
+            <select id="vehCategory" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+              <option value="Coupe">Coupe</option>
+              <option value="Sedan" selected>Sedan</option>
+              <option value="Midsize SUV / Crossover">Midsize SUV / Crossover</option>
+              <option value="Pickup Truck">Pickup Truck</option>
+              <option value="Large SUV">Large SUV</option>
+              <option value="Executive Vehicle">Premium Fleet / Executive</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] text-zinc-400 mb-1">Personalized Care Preferences &amp; Paint/Interior Notes</label>
+          <input type="text" id="vehCareNotes" placeholder="e.g. Ceramic coated, matte PPF on hood, leather conditioner, no tire shine..." class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+        </div>
+
+        <button type="button" onclick="saveNewVehicleToProfile()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs transition">
+          Save Vehicle to Care Profile
+        </button>
+      </div>
+
+      <div class="pt-2 border-t border-zinc-800 flex justify-end">
+        <button type="button" onclick="closeVehicleProfileModal()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg text-xs transition">
+          Done &amp; Return to Checkout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL 2: PRIVATE LIVE ORDER VIEW & ORDER HISTORY         -->
+  <!-- ======================================================== -->
+  <div id="liveOrderModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-zinc-950 border border-[#C59B27]/70 rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl relative my-auto max-h-[92vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Private Live Service Tracker</span>
+            <span id="ovVipTag" class="hidden px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-[#C59B27] text-black">
+              Black Label VIP
+            </span>
+          </div>
+          <h3 class="text-base sm:text-lg font-bold text-white">Live Order View <span id="ovOrderNumber" class="text-zinc-400 text-xs font-mono"></span></h3>
+        </div>
+        <button type="button" onclick="closeLiveOrderModal()" class="text-zinc-400 hover:text-white bg-black border border-zinc-800 rounded-lg px-2.5 py-1 text-base font-bold transition">
+          &times;
+        </button>
+      </div>
+
+      <!-- Account Order Switcher List -->
+      <div class="p-3 bg-black border border-zinc-800 rounded-xl space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-[#C59B27]">Your Account Orders</span>
+          <span class="text-[10px] text-zinc-400">Tap an order to track live</span>
+        </div>
+        <div id="accountOrdersList" class="space-y-1.5 max-h-36 overflow-y-auto pr-1"></div>
+      </div>
+
+      <!-- Active Order Live Detail Panel -->
+      <div id="activeOrderTrackerBody" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-zinc-400 font-semibold">Current Service Status</span>
+          <span id="ovStatusBadge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#C59B27]/15 text-[#C59B27] border border-[#C59B27]/50">
+            Confirmed
+          </span>
+        </div>
+
+        <!-- Live Service Duration Tracker Box -->
+        <div class="p-3.5 bg-black border border-zinc-800 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div>
+            <p class="text-[11px] uppercase tracking-wider font-bold text-zinc-400">Service Duration Tracker</p>
+            <p id="ovTimerSubtext" class="text-xs text-zinc-500 mt-0.5">Timer starts automatically once our crew begins detailing.</p>
+          </div>
+          <div id="ovTimerDisplay" class="text-2xl sm:text-3xl font-mono font-black text-[#C59B27] tracking-wider">
+            00:00:00
+          </div>
+        </div>
+
+        <!-- 4-Stage Visual Progress Stepper -->
+        <div class="space-y-2.5">
+          <div id="stage-confirmed" class="flex items-start gap-3 p-2.5 rounded-lg border border-[#C59B27]/50 bg-black transition">
+            <div class="w-6 h-6 rounded-full bg-[#C59B27] text-black flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">1</div>
+            <div>
+              <p class="text-xs sm:text-sm font-bold text-white">Appointment Confirmed</p>
+              <p class="text-[11px] text-zinc-400">Your booking is locked in for <span id="ovScheduleText" class="text-[#C59B27] font-semibold"></span>.</p>
+            </div>
+          </div>
+
+          <div id="stage-onway" class="flex items-start gap-3 p-2.5 rounded-lg border border-zinc-800 bg-black/50 opacity-50 transition">
+            <div class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">2</div>
+            <div>
+              <p class="text-xs sm:text-sm font-bold text-white">On My Way</p>
+              <p class="text-[11px] text-zinc-400">Our mobile detailing unit is en route to <span id="ovAddressText" class="text-zinc-200"></span>.</p>
+            </div>
+          </div>
+
+          <div id="stage-progress" class="flex items-start gap-3 p-2.5 rounded-lg border border-zinc-800 bg-black/50 opacity-50 transition">
+            <div class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">3</div>
+            <div>
+              <p class="text-xs sm:text-sm font-bold text-white">Detailing In Progress</p>
+              <p class="text-[11px] text-zinc-400">Our technicians are actively servicing your vehicle.</p>
+            </div>
+          </div>
+
+          <div id="stage-completed" class="flex items-start gap-3 p-2.5 rounded-lg border border-zinc-800 bg-black/50 opacity-50 transition">
+            <div class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">4</div>
+            <div>
+              <p class="text-xs sm:text-sm font-bold text-white">Completed</p>
+              <p class="text-[11px] text-zinc-400">Service finished! Thank you for choosing KW Commercial Fleet Washing &amp; Mobile Detailing LLC.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary Footer -->
+        <div class="p-3 bg-black border border-zinc-800 rounded-xl text-xs space-y-1.5">
+          <div class="flex justify-between gap-2">
+            <span class="text-zinc-400 flex-shrink-0">Service &amp; Vehicle:</span>
+            <span id="ovServiceSummary" class="text-white font-semibold text-right"></span>
+          </div>
+          <div id="ovAddonsRow" class="hidden flex justify-between gap-2">
+            <span class="text-zinc-400 flex-shrink-0">Add-Ons:</span>
+            <span id="ovAddonsSummary" class="text-zinc-200 text-right"></span>
+          </div>
+          <div class="flex justify-between gap-2 pt-1 border-t border-zinc-900">
+            <span class="text-zinc-400">Total Paid / Due:</span>
+            <span id="ovAmountSummary" class="text-[#C59B27] font-bold"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-zinc-800 flex flex-col sm:flex-row gap-2">
+        <button type="button" onclick="closeLiveOrderModal()" class="sm:w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition">
+          Close Live Order View
+        </button>
+        <button type="button" onclick="window.location.href = window.location.pathname" class="sm:w-1/2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg text-xs border border-zinc-800 transition">
+          Start New Booking
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Compact Logo Header -->
   <header class="mb-3.5 max-w-2xl w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2.5 sm:gap-3.5 px-1">
     <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Washing & Mobile Detailing LLC Logo" class="h-11 sm:h-12 w-auto flex-shrink-0 object-contain filter drop-shadow-[0_0_10px_rgba(197,155,39,0.25)]">
@@ -74,10 +278,10 @@
     </div>
   </header>
 
-  <!-- Main 3-Step Wizard & Order View Container -->
+  <!-- Main 2-Step Wizard Container -->
   <div class="max-w-2xl w-full bg-zinc-950 p-4 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl shadow-2xl border border-[#8A6814]/40">
     
-    <!-- System Notification Banner (Services Alert Only — Live Order View is Inside Logged-In Account) -->
+    <!-- System Notification Banner -->
     <div id="topBannerBar" class="mb-4 p-2.5 bg-black border border-emerald-500/30 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-md">
       <div class="flex items-start gap-2.5 flex-1 min-w-[200px]">
         <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
@@ -98,106 +302,86 @@
       </div>
     </div>
 
-    <!-- 3-Step Progress Indicator -->
+    <!-- 2-Step Progress Indicator -->
     <div id="stepProgressWrapper" class="mb-4">
-      <div class="grid grid-cols-3 gap-2">
-        <button type="button" id="stepIndicator1" onclick="goToStep(1)" class="flex flex-col items-center p-2 rounded-lg border border-[#C59B27] bg-black transition text-center">
+      <div class="grid grid-cols-2 gap-2.5">
+        <button type="button" id="stepIndicator1" onclick="goToStep(1)" class="flex flex-col items-center p-2.5 rounded-lg border border-[#C59B27] bg-black transition text-center shadow-md">
           <span class="text-[10px] font-bold uppercase tracking-wider text-[#C59B27]">Step 1</span>
-          <span class="text-xs font-bold text-white mt-0.5">Select Date</span>
+          <span class="text-xs font-bold text-white mt-0.5">Select Date &amp; Time</span>
         </button>
 
-        <button type="button" id="stepIndicator2" onclick="if(selectedDateStr) goToStep(2)" class="flex flex-col items-center p-2 rounded-lg border border-zinc-800 bg-black/60 opacity-50 transition text-center">
+        <button type="button" id="stepIndicator2" onclick="if(selectedDateStr && selectedTimeSlotStr) goToStep(2)" class="flex flex-col items-center p-2.5 rounded-lg border border-zinc-800 bg-black/60 opacity-50 transition text-center">
           <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Step 2</span>
-          <span class="text-xs font-bold text-zinc-300 mt-0.5">Select Time</span>
-        </button>
-
-        <button type="button" id="stepIndicator3" onclick="if(selectedDateStr && selectedTimeSlotStr) goToStep(3)" class="flex flex-col items-center p-2 rounded-lg border border-zinc-800 bg-black/60 opacity-50 transition text-center">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Step 3</span>
-          <span class="text-xs font-bold text-zinc-300 mt-0.5">Member &amp; Care</span>
+          <span class="text-xs font-bold text-zinc-300 mt-0.5">Account &amp; Checkout</span>
         </button>
       </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- STEP 1: BOOKING CALENDAR (UNCHANGED)       -->
+    <!-- STEP 1: COMBINED CALENDAR & TIME SLOTS     -->
     <!-- ========================================== -->
-    <div id="step1Container" class="bg-black p-4 sm:p-5 rounded-xl border border-zinc-800/90 space-y-3.5">
+    <div id="step1Container" class="bg-black p-4 sm:p-5 rounded-xl border border-zinc-800/90 space-y-4">
       <div class="border-b border-zinc-900 pb-2.5">
         <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Step 1: Choose Your Service Date
+          <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Step 1: Choose Service Date &amp; Arrival Window
         </h2>
-        <p class="text-xs text-zinc-400 mt-0.5">Tap an available date on the calendar below to continue.</p>
+        <p class="text-xs text-zinc-400 mt-0.5">Pick an available date on the calendar, then choose your 3-hour arrival window.</p>
       </div>
 
-      <div class="flex justify-between items-center mb-2">
-        <button type="button" id="prevMonth" class="bg-zinc-950 hover:bg-zinc-900 text-[#C59B27] px-3 py-1.5 rounded text-xs font-bold border border-[#8A6814]/40 transition">&larr; Prev</button>
-        <h3 id="monthYearDisplay" class="text-sm sm:text-base font-bold text-[#C59B27] tracking-wide"></h3>
-        <button type="button" id="nextMonth" class="bg-zinc-950 hover:bg-zinc-900 text-[#C59B27] px-3 py-1.5 rounded text-xs font-bold border border-[#8A6814]/40 transition">Next &rarr;</button>
+      <!-- Month Navigation & Calendar Grid -->
+      <div class="space-y-2.5">
+        <div class="flex justify-between items-center">
+          <button type="button" id="prevMonth" class="bg-zinc-950 hover:bg-zinc-900 text-[#C59B27] px-3 py-1.5 rounded text-xs font-bold border border-[#8A6814]/40 transition">&larr; Prev</button>
+          <h3 id="monthYearDisplay" class="text-sm sm:text-base font-bold text-[#C59B27] tracking-wide"></h3>
+          <button type="button" id="nextMonth" class="bg-zinc-950 hover:bg-zinc-900 text-[#C59B27] px-3 py-1.5 rounded text-xs font-bold border border-[#8A6814]/40 transition">Next &rarr;</button>
+        </div>
+
+        <div class="grid grid-cols-7 gap-1.5 text-center text-xs font-bold text-[#C59B27]/80">
+          <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+        </div>
+
+        <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1.5 text-center"></div>
       </div>
 
-      <div class="grid grid-cols-7 gap-1.5 text-center text-xs font-bold text-[#C59B27]/80 mb-1.5">
-        <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
-      </div>
+      <!-- Inline Arrival Time Window Picker (Unlocks once Date is selected) -->
+      <div id="inlineTimeSlotSection" class="pt-3 border-t border-zinc-900 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-white flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#C59B27]"></span> Arrival Time Window
+          </span>
+          <span id="step1DateBadge" class="text-[11px] text-zinc-400">Select a date above first</span>
+        </div>
 
-      <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1.5 text-center"></div>
+        <div id="timeSlotGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 opacity-45 pointer-events-none transition">
+          <button type="button" data-time="05:00 AM - 08:00 AM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3 rounded-lg border border-zinc-800 text-xs sm:text-sm font-semibold text-center transition">
+            05:00 AM - 08:00 AM
+          </button>
+          <button type="button" data-time="08:30 AM - 11:30 AM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3 rounded-lg border border-zinc-800 text-xs sm:text-sm font-semibold text-center transition">
+            08:30 AM - 11:30 AM
+          </button>
+          <button type="button" data-time="12:00 PM - 03:00 PM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3 rounded-lg border border-zinc-800 text-xs sm:text-sm font-semibold text-center transition">
+            12:00 PM - 03:00 PM
+          </button>
+          <button type="button" data-time="03:00 PM - 06:00 PM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3 rounded-lg border border-zinc-800 text-xs sm:text-sm font-semibold text-center transition">
+            03:00 PM - 06:00 PM
+          </button>
+        </div>
+      </div>
 
       <div class="pt-2.5 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-2.5">
         <div class="text-xs text-zinc-400">
-          Selected Date: <span id="selectedDateDisplay" class="text-[#C59B27] font-bold text-xs sm:text-sm">None selected</span>
+          Schedule: <span id="selectedDateDisplay" class="text-[#C59B27] font-bold">None selected</span>
         </div>
-        <button type="button" id="step1NextBtn" onclick="goToStep(2)" disabled class="w-full sm:w-auto bg-red-600 hover:bg-red-700 disabled:bg-zinc-900 disabled:text-zinc-600 disabled:cursor-not-allowed text-white font-bold py-2 px-5 rounded-lg text-xs transition shadow-lg">
-          Next: Select Time &rarr;
-        </button>
-      </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- STEP 2: TIME SLOT SELECTION (UNCHANGED)    -->
-    <!-- ========================================== -->
-    <div id="step2Container" class="hidden bg-black p-4 sm:p-5 rounded-xl border border-zinc-800/90 space-y-4">
-      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-900 pb-2.5">
-        <div>
-          <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Step 2: Select Arrival Window
-          </h2>
-          <p class="text-xs text-zinc-400 mt-0.5">Available time slots for <span id="step2DateBadge" class="text-[#C59B27] font-bold"></span></p>
-        </div>
-        <button type="button" onclick="goToStep(1)" class="text-xs text-[#C59B27] hover:underline font-semibold">
-          Change Date
-        </button>
-      </div>
-
-      <div id="timeSlotGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <button type="button" data-time="05:00 AM - 08:00 AM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3.5 rounded-lg border border-zinc-800 text-xs sm:text-sm font-semibold text-center transition">
-          05:00 AM - 08:00 AM
-        </button>
-        <button type="button" data-time="08:30 AM - 11:30 AM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3.5 rounded-lg border border-zinc-800 text-xs sm:text-sm font-semibold text-center transition">
-          08:30 AM - 11:30 AM
-        </button>
-        <button type="button" data-time="12:00 PM - 03:00 PM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3.5 rounded-lg border border-zinc-800 text-xs sm:text-sm font-semibold text-center transition">
-          12:00 PM - 03:00 PM
-        </button>
-        <button type="button" data-time="03:00 PM - 06:00 PM" class="time-slot-btn bg-zinc-950 hover:bg-zinc-900 hover:border-[#C59B27]/60 text-zinc-300 p-3.5 rounded-lg border border-zinc-800 text-xs sm:text-sm font-semibold text-center transition">
-          03:00 PM - 06:00 PM
-        </button>
-      </div>
-
-      <p id="timeSlotPrompt" class="text-[11px] text-[#C59B27] text-center">Tap an available time window above to continue.</p>
-
-      <div class="pt-2.5 border-t border-zinc-900 flex items-center justify-between gap-3">
-        <button type="button" onclick="goToStep(1)" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2 px-4 rounded-lg text-xs border border-zinc-800 transition">
-          &larr; Back
-        </button>
-        <button type="button" id="step2NextBtn" onclick="goToStep(3)" disabled class="bg-red-600 hover:bg-red-700 disabled:bg-zinc-900 disabled:text-zinc-600 disabled:cursor-not-allowed text-white font-bold py-2 px-5 rounded-lg text-xs transition shadow-lg">
-          Next: Member Portal &rarr;
+        <button type="button" id="step1NextBtn" onclick="goToStep(2)" disabled class="w-full sm:w-auto bg-red-600 hover:bg-red-700 disabled:bg-zinc-900 disabled:text-zinc-600 disabled:cursor-not-allowed text-white font-bold py-2.5 px-5 rounded-lg text-xs transition shadow-lg">
+          Next: Account &amp; Checkout &rarr;
         </button>
       </div>
     </div>
 
     <!-- ========================================================== -->
-    <!-- STEP 3: CLIENT ACCOUNT, VEHICLE CARE PROFILE & PAYMENT     -->
+    <!-- STEP 2: CLIENT ACCOUNT, MODAL TRIGGERS & CHECKOUT          -->
     <!-- ========================================================== -->
-    <div id="step3Container" class="hidden w-full">
+    <div id="step2Container" class="hidden w-full">
 
       <!-- Selected Date & Time Summary Strip -->
       <div class="mb-4 p-3 bg-black border border-[#8A6814]/50 rounded-lg flex flex-wrap items-center justify-between gap-2">
@@ -211,14 +395,14 @@
       </div>
 
       <!-- ======================================================== -->
-      <!-- STEP 3A: ACCOUNT GATE (CREATE ACCOUNT OR SIGN IN FIRST)  -->
+      <!-- STEP 2A: ACCOUNT GATE (CREATE ACCOUNT OR SIGN IN FIRST)  -->
       <!-- ======================================================== -->
-      <div id="step3AuthGate" class="bg-black border border-[#C59B27]/50 rounded-xl p-4 sm:p-5 space-y-4">
+      <div id="step2AuthGate" class="bg-black border border-[#C59B27]/50 rounded-xl p-4 sm:p-5 space-y-4">
         <div>
-          <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Step 3 &bull; Client Membership Access</span>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Step 2 &bull; Client Membership Access</span>
           <h2 class="text-base sm:text-lg font-bold text-white mt-0.5">Sign In or Create Your KW Client Account</h2>
           <p class="text-xs text-zinc-400 mt-1">
-            Access your <strong class="text-white">Personalized Vehicle Care Profile</strong> (up to 4 vehicles), track your <strong class="text-[#C59B27]">Black Label VIP Status</strong>, and view your private <strong class="text-white">Live Order View</strong> inside your account.
+            Unlock your <strong class="text-white">Personalized Vehicle Care Profile</strong> modal (up to 4 vehicles), <strong class="text-[#C59B27]">Black Label VIP Status</strong>, and <strong class="text-white">Live Order View</strong> modal.
           </p>
         </div>
 
@@ -232,8 +416,8 @@
           </button>
         </div>
 
-        <form id="step3AuthForm" onsubmit="handleStep3AuthSubmit(event)" class="space-y-3">
-          <div id="step3SignUpExtraFields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <form id="step2AuthForm" onsubmit="handleStep2AuthSubmit(event)" class="space-y-3">
+          <div id="step2SignUpExtraFields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div>
               <label class="block text-xs font-medium mb-1 text-zinc-300">Full Name</label>
               <input type="text" id="authFullName" placeholder="Full Name" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27]">
@@ -255,25 +439,25 @@
             </div>
           </div>
 
-          <div id="step3AuthMessage" class="hidden p-2.5 rounded-lg border text-xs font-medium"></div>
+          <div id="step2AuthMessage" class="hidden p-2.5 rounded-lg border text-xs font-medium"></div>
 
           <div class="pt-1 flex flex-col sm:flex-row gap-2.5">
-            <button type="button" onclick="goToStep(2)" class="sm:w-1/3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg text-xs border border-zinc-800 transition">
-              &larr; Back to Time
+            <button type="button" onclick="goToStep(1)" class="sm:w-1/3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg text-xs border border-zinc-800 transition">
+              &larr; Back to Date &amp; Time
             </button>
-            <button type="submit" id="step3AuthSubmitBtn" class="sm:w-2/3 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs sm:text-sm transition shadow-lg shadow-red-950/50">
-              Sign In &amp; Open Vehicle Profile
+            <button type="submit" id="step2AuthSubmitBtn" class="sm:w-2/3 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs sm:text-sm transition shadow-lg shadow-red-950/50">
+              Sign In &amp; Continue to Checkout
             </button>
           </div>
         </form>
       </div>
 
       <!-- ======================================================== -->
-      <!-- STEP 3B: AUTHENTICATED VEHICLE CARE PROFILE & CHECKOUT   -->
+      <!-- STEP 2B: AUTHENTICATED ACCOUNT BAR + CHECKOUT FORM       -->
       <!-- ======================================================== -->
       <div id="bookingFormWrapper" class="hidden space-y-4">
 
-        <!-- Member Profile, Black Label VIP Status & Account Live Order View -->
+        <!-- Member Profile Card + Modal Launchers -->
         <div class="p-3.5 sm:p-4 bg-black border border-[#C59B27]/60 rounded-xl space-y-3 shadow-lg">
           <div class="flex flex-wrap items-start justify-between gap-2">
             <div>
@@ -285,26 +469,32 @@
               </div>
               <p id="memberProfileSubtext" class="text-[11px] text-zinc-400 mt-0.5"></p>
             </div>
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="toggleAccountOrdersDrawer()" class="text-[11px] bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded font-bold transition shadow-sm">
-                Live Order View (<span id="accountOrdersCountBadge">0</span>)
-              </button>
-              <button type="button" onclick="signOutClientAccount()" class="text-[11px] text-zinc-400 hover:text-red-400 bg-zinc-950 px-2.5 py-1 rounded border border-zinc-800 font-semibold transition">
-                Sign Out
-              </button>
-            </div>
+            <button type="button" onclick="signOutClientAccount()" class="text-[11px] text-zinc-400 hover:text-red-400 bg-zinc-950 px-2.5 py-1 rounded border border-zinc-800 font-semibold transition">
+              Sign Out
+            </button>
           </div>
 
-          <!-- Inline Account Live Order View Drawer (Only visible when logged in) -->
-          <div id="accountOrdersDrawer" class="hidden p-3 bg-zinc-950 border border-[#C59B27]/50 rounded-lg space-y-2.5">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-[#C59B27]">Account Service History &amp; Live Tracker</span>
-                <p class="text-[11px] text-zinc-400">Select an order below to watch real-time arrival &amp; detailing duration.</p>
+          <!-- Two Dedicated Modal Buttons: Vehicle Care Profile & Live Order View -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+            <button type="button" onclick="openVehicleProfileModal()" class="p-3 rounded-xl bg-zinc-950 hover:bg-zinc-900 border border-[#C59B27]/60 text-left transition flex items-center justify-between gap-2 group">
+              <div class="min-w-0">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-[#C59B27] block">Personalized Vehicle Care Profile</span>
+                <span id="selectedVehiclePillText" class="text-xs font-bold text-white truncate block mt-0.5">Manage Garage (0 / 4 Cars)</span>
               </div>
-              <button type="button" onclick="toggleAccountOrdersDrawer(false)" class="text-xs text-zinc-400 hover:text-white font-bold px-1.5">&times;</button>
-            </div>
-            <div id="accountOrdersList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
+              <span class="px-2 py-1 rounded bg-[#C59B27] text-black text-[10px] font-black uppercase flex-shrink-0 group-hover:scale-105 transition">
+                Open
+              </span>
+            </button>
+
+            <button type="button" onclick="openLiveOrderModal()" class="p-3 rounded-xl bg-zinc-950 hover:bg-zinc-900 border border-red-600/60 text-left transition flex items-center justify-between gap-2 group">
+              <div class="min-w-0">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-red-400 block">Live View Order &amp; Timer</span>
+                <span id="liveOrderPillText" class="text-xs font-bold text-white truncate block mt-0.5">Track Orders (0)</span>
+              </div>
+              <span class="px-2 py-1 rounded bg-red-600 text-white text-[10px] font-black uppercase flex-shrink-0 group-hover:scale-105 transition">
+                View
+              </span>
+            </button>
           </div>
 
           <!-- VIP Tier & 5th-Service Loyalty Strip -->
@@ -320,83 +510,6 @@
               </div>
               <span id="loyaltyProgressBadge" class="px-2 py-0.5 rounded bg-black border border-[#8A6814]/50 text-[10px] font-bold text-[#C59B27] flex-shrink-0">0 / 5</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Personalized Vehicle Care Profile (Max 4 Vehicles) -->
-        <div class="p-3.5 sm:p-4 bg-black border border-zinc-800 rounded-xl space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-900 pb-2.5">
-            <div>
-              <h4 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Personalized Vehicle Care Profile
-              </h4>
-              <p class="text-[11px] text-zinc-400 mt-0.5">Save up to <strong class="text-[#C59B27]">4 vehicles</strong> with custom care notes and select the vehicle for this visit.</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <span id="garageCountBadge" class="px-2 py-0.5 rounded bg-zinc-950 border border-[#C59B27]/40 text-[10px] font-bold text-[#C59B27]">
-                0 / 4 Cars
-              </span>
-              <button type="button" id="toggleAddVehicleBtn" onclick="toggleAddVehicleForm()" class="bg-[#C59B27] hover:bg-[#d8ad34] text-black font-bold px-2.5 py-1 rounded text-[11px] transition">
-                + Add Vehicle
-              </button>
-            </div>
-          </div>
-
-          <!-- Saved Garage Vehicles Grid -->
-          <div id="savedVehiclesList" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
-
-          <!-- Add New Vehicle Form (Hidden when 4 cars reached or closed) -->
-          <div id="addVehicleFormBox" class="hidden p-3 bg-zinc-950 border border-[#C59B27]/50 rounded-lg space-y-2.5">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-[#C59B27] uppercase tracking-wider">Add Vehicle to Garage (Max 4)</span>
-              <button type="button" onclick="toggleAddVehicleForm(false)" class="text-xs text-zinc-400 hover:text-white">&times; Close</button>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <div>
-                <label class="block text-[11px] text-zinc-400 mb-1">Year</label>
-                <input type="text" id="vehYear" placeholder="2024" maxlength="4" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
-              </div>
-              <div>
-                <label class="block text-[11px] text-zinc-400 mb-1">Make *</label>
-                <input type="text" id="vehMake" placeholder="e.g. BMW" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
-              </div>
-              <div class="col-span-2 sm:col-span-1">
-                <label class="block text-[11px] text-zinc-400 mb-1">Model *</label>
-                <input type="text" id="vehModel" placeholder="e.g. X5 M" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <div>
-                <label class="block text-[11px] text-zinc-400 mb-1">Exterior Color</label>
-                <input type="text" id="vehColor" placeholder="e.g. Black Sapphire" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
-              </div>
-              <div>
-                <label class="block text-[11px] text-zinc-400 mb-1">License Plate</label>
-                <input type="text" id="vehPlate" placeholder="Optional" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white uppercase focus:outline-none focus:border-[#C59B27]">
-              </div>
-              <div>
-                <label class="block text-[11px] text-zinc-400 mb-1">Vehicle Category *</label>
-                <select id="vehCategory" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
-                  <option value="Coupe">Coupe</option>
-                  <option value="Sedan" selected>Sedan</option>
-                  <option value="Midsize SUV / Crossover">Midsize SUV / Crossover</option>
-                  <option value="Pickup Truck">Pickup Truck</option>
-                  <option value="Large SUV">Large SUV</option>
-                  <option value="Executive Vehicle">Premium Fleet / Executive</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[11px] text-zinc-400 mb-1">Personalized Care Preferences &amp; Paint/Interior Notes</label>
-              <input type="text" id="vehCareNotes" placeholder="e.g. Ceramic coated, matte PPF on hood, leather conditioner, no tire shine..." class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
-            </div>
-
-            <button type="button" onclick="saveNewVehicleToProfile()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-xs transition">
-              Save Vehicle to Care Profile
-            </button>
           </div>
         </div>
 
@@ -701,105 +814,14 @@
           </div>
 
           <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
-            <button type="button" onclick="goToStep(2)" class="sm:w-1/3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-3 px-4 rounded-lg text-xs border border-zinc-800 transition">
-              &larr; Back to Time
+            <button type="button" onclick="goToStep(1)" class="sm:w-1/3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-3 px-4 rounded-lg text-xs border border-zinc-800 transition">
+              &larr; Back to Date &amp; Time
             </button>
             <button type="submit" id="submitBtn" class="sm:w-2/3 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg text-xs sm:text-sm transition duration-200 shadow-lg shadow-red-950/50">
               Confirm Subscription Booking (<span id="payBtnAmount">$270</span>)
             </button>
           </div>
         </form>
-      </div>
-
-      <!-- ========================================== -->
-      <!-- PRIVATE LIVE ORDER VIEW (LOGGED-IN ONLY)   -->
-      <!-- ========================================== -->
-      <div id="orderViewContainer" class="hidden bg-black border border-[#C59B27]/60 rounded-xl p-4 sm:p-6 space-y-5 shadow-2xl">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Private Live Service Tracker</span>
-              <span id="ovVipTag" class="hidden px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-[#C59B27] text-black">
-                Black Label VIP
-              </span>
-            </div>
-            <h3 class="text-base sm:text-lg font-bold text-white">Order View <span id="ovOrderNumber" class="text-zinc-400 text-xs font-mono"></span></h3>
-          </div>
-          <span id="ovStatusBadge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#C59B27]/15 text-[#C59B27] border border-[#C59B27]/50">
-            Confirmed
-          </span>
-        </div>
-
-        <!-- Live Service Duration Tracker Box -->
-        <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div>
-            <p class="text-[11px] uppercase tracking-wider font-bold text-zinc-400">Service Duration Tracker</p>
-            <p id="ovTimerSubtext" class="text-xs text-zinc-500 mt-0.5">Timer starts automatically once our crew begins detailing.</p>
-          </div>
-          <div id="ovTimerDisplay" class="text-2xl sm:text-3xl font-mono font-black text-[#C59B27] tracking-wider">
-            00:00:00
-          </div>
-        </div>
-
-        <!-- 4-Stage Visual Progress Stepper -->
-        <div class="space-y-3 py-1">
-          <div id="stage-confirmed" class="flex items-start gap-3 p-3 rounded-lg border border-[#C59B27]/50 bg-zinc-950 transition">
-            <div class="w-6 h-6 rounded-full bg-[#C59B27] text-black flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">1</div>
-            <div>
-              <p class="text-xs sm:text-sm font-bold text-white">Appointment Confirmed</p>
-              <p class="text-[11px] text-zinc-400">Your booking is locked in for <span id="ovScheduleText" class="text-[#C59B27] font-semibold"></span>.</p>
-            </div>
-          </div>
-
-          <div id="stage-onway" class="flex items-start gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-950/50 opacity-50 transition">
-            <div class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">2</div>
-            <div>
-              <p class="text-xs sm:text-sm font-bold text-white">On My Way</p>
-              <p class="text-[11px] text-zinc-400">Our mobile detailing unit is en route to <span id="ovAddressText" class="text-zinc-200"></span>.</p>
-            </div>
-          </div>
-
-          <div id="stage-progress" class="flex items-start gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-950/50 opacity-50 transition">
-            <div class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">3</div>
-            <div>
-              <p class="text-xs sm:text-sm font-bold text-white">Detailing In Progress</p>
-              <p class="text-[11px] text-zinc-400">Our technicians are actively servicing your vehicle.</p>
-            </div>
-          </div>
-
-          <div id="stage-completed" class="flex items-start gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-950/50 opacity-50 transition">
-            <div class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">4</div>
-            <div>
-              <p class="text-xs sm:text-sm font-bold text-white">Completed</p>
-              <p class="text-[11px] text-zinc-400">Service finished! Thank you for choosing KW Commercial Fleet Washing &amp; Mobile Detailing LLC.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Order Summary Footer -->
-        <div class="p-3 bg-zinc-950 border border-zinc-800 rounded-lg text-xs space-y-1.5">
-          <div class="flex justify-between gap-2">
-            <span class="text-zinc-400 flex-shrink-0">Service &amp; Vehicle:</span>
-            <span id="ovServiceSummary" class="text-white font-semibold text-right"></span>
-          </div>
-          <div id="ovAddonsRow" class="hidden flex justify-between gap-2">
-            <span class="text-zinc-400 flex-shrink-0">Add-Ons:</span>
-            <span id="ovAddonsSummary" class="text-zinc-200 text-right"></span>
-          </div>
-          <div class="flex justify-between gap-2 pt-1 border-t border-zinc-900">
-            <span class="text-zinc-400">Total Paid / Due:</span>
-            <span id="ovAmountSummary" class="text-[#C59B27] font-bold"></span>
-          </div>
-        </div>
-
-        <div class="flex flex-col sm:flex-row gap-2">
-          <button type="button" onclick="returnToMemberAccountView()" class="sm:w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition shadow-lg shadow-red-950/40">
-            &larr; Back to Member Profile &amp; Orders
-          </button>
-          <button type="button" onclick="window.location.href = window.location.pathname" class="sm:w-1/2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg text-xs border border-zinc-800 transition">
-            New Booking
-          </button>
-        </div>
       </div>
     </div>
 
@@ -829,6 +851,39 @@
     function openServicesAlert() {
       const modal = document.getElementById('servicesAlertModal');
       if (modal) modal.classList.remove('hidden');
+    }
+
+    // Modal 1: Personalized Vehicle Care Profile Controls
+    function openVehicleProfileModal() {
+      if (!currentUser) return;
+      renderSavedVehicles();
+      document.getElementById('vehicleProfileModal').classList.remove('hidden');
+    }
+
+    function closeVehicleProfileModal() {
+      document.getElementById('vehicleProfileModal').classList.add('hidden');
+    }
+
+    // Modal 2: Private Live Order View Controls
+    async function openLiveOrderModal(specificBooking) {
+      if (!currentUser) return;
+      document.getElementById('liveOrderModal').classList.remove('hidden');
+
+      if (!specificBooking) {
+        await loadMemberVipAndLoyalty(currentUser);
+      }
+
+      const targetBooking = specificBooking || (cachedMemberOrders && cachedMemberOrders[0]);
+      if (targetBooking) {
+        loadOrderIntoTrackerModal(targetBooking);
+      } else {
+        document.getElementById('activeOrderTrackerBody').classList.add('hidden');
+        document.getElementById('ovOrderNumber').textContent = '';
+      }
+    }
+
+    function closeLiveOrderModal() {
+      document.getElementById('liveOrderModal').classList.add('hidden');
     }
 
     const DAILY_MAX_LIMIT = 4;
@@ -866,9 +921,9 @@
       stepAuthMode = mode;
       const signInTab = document.getElementById('stepAuthSignInTab');
       const signUpTab = document.getElementById('stepAuthSignUpTab');
-      const extraFields = document.getElementById('step3SignUpExtraFields');
-      const submitBtn = document.getElementById('step3AuthSubmitBtn');
-      const msgEl = document.getElementById('step3AuthMessage');
+      const extraFields = document.getElementById('step2SignUpExtraFields');
+      const submitBtn = document.getElementById('step2AuthSubmitBtn');
+      const msgEl = document.getElementById('step2AuthMessage');
       msgEl.classList.add('hidden');
 
       if (mode === 'signin') {
@@ -877,19 +932,19 @@
         extraFields.classList.add('hidden');
         document.getElementById('authFullName').required = false;
         document.getElementById('authPhone').required = false;
-        submitBtn.textContent = 'Sign In & Open Vehicle Profile';
+        submitBtn.textContent = 'Sign In & Continue to Checkout';
       } else {
         signUpTab.className = 'py-2 px-3 rounded-md text-xs font-bold bg-[#C59B27] text-black transition';
         signInTab.className = 'py-2 px-3 rounded-md text-xs font-bold text-zinc-400 hover:text-white transition';
         extraFields.classList.remove('hidden');
         document.getElementById('authFullName').required = true;
         document.getElementById('authPhone').required = true;
-        submitBtn.textContent = 'Create Account & Build Vehicle Profile';
+        submitBtn.textContent = 'Create Account & Continue to Checkout';
       }
     }
 
     function showAuthBanner(text, isError) {
-      const msgEl = document.getElementById('step3AuthMessage');
+      const msgEl = document.getElementById('step2AuthMessage');
       msgEl.textContent = text;
       msgEl.className = isError
         ? 'p-2.5 rounded-lg border border-red-600/50 bg-red-950/30 text-xs font-semibold text-red-400'
@@ -897,16 +952,16 @@
       msgEl.classList.remove('hidden');
     }
 
-    async function handleStep3AuthSubmit(e) {
+    async function handleStep2AuthSubmit(e) {
       e.preventDefault();
       const email = document.getElementById('authEmail').value.trim().toLowerCase();
       const password = document.getElementById('authPassword').value;
       const fullName = document.getElementById('authFullName').value.trim();
       const phone = document.getElementById('authPhone').value.trim();
-      const btn = document.getElementById('step3AuthSubmitBtn');
+      const btn = document.getElementById('step2AuthSubmitBtn');
 
       btn.disabled = true;
-      document.getElementById('step3AuthMessage').classList.add('hidden');
+      document.getElementById('step2AuthMessage').classList.add('hidden');
 
       try {
         if (stepAuthMode === 'signup') {
@@ -920,7 +975,6 @@
           });
 
           if (error) {
-            // If user already exists, automatically try signing them in
             if (String(error.message || '').toLowerCase().includes('already registered')) {
               const signInFallback = await supabaseClient.auth.signInWithPassword({ email, password });
               if (!signInFallback.error && signInFallback.data.user) {
@@ -936,16 +990,14 @@
             return;
           }
 
-          // Attempt immediate sign-in in case session wasn't attached automatically
           const { data: loginData, error: loginErr } = await supabaseClient.auth.signInWithPassword({ email, password });
           if (!loginErr && loginData && loginData.user) {
             await onClientAuthenticated(loginData.user);
             return;
           }
 
-          // Supabase "Confirm email" is still enabled on the project
           showAuthBanner(
-            'Account created! Check your email for the confirmation link — or disable "Confirm email" in Supabase Dashboard → Authentication → Providers → Email for instant sign-in.',
+            'Account created! Check your email for the confirmation link — or disable "Confirm email" in Supabase Authentication → Providers → Email for instant sign-in.',
             false
           );
           switchStepAuthMode('signin');
@@ -980,12 +1032,13 @@
       hasLoyaltyDiscount = false;
       cachedMemberOrders = [];
 
+      closeVehicleProfileModal();
+      closeLiveOrderModal();
+
       document.getElementById('bannerMemberStatus').textContent =
         'Instant scheduling, personalized vehicle care profiles & VIP tracking active.';
-      document.getElementById('step3AuthGate').classList.remove('hidden');
+      document.getElementById('step2AuthGate').classList.remove('hidden');
       document.getElementById('bookingFormWrapper').classList.add('hidden');
-      document.getElementById('orderViewContainer').classList.add('hidden');
-      document.getElementById('stepProgressWrapper').classList.remove('hidden');
     }
 
     async function onClientAuthenticated(user) {
@@ -997,7 +1050,7 @@
       document.getElementById('bannerMemberStatus').innerHTML =
         `Signed in as <strong class="text-[#C59B27]">${escapeHtml(displayName)}</strong> &bull; Personalized Vehicle Care &amp; VIP Active`;
 
-      document.getElementById('step3AuthGate').classList.add('hidden');
+      document.getElementById('step2AuthGate').classList.add('hidden');
       document.getElementById('bookingFormWrapper').classList.remove('hidden');
 
       document.getElementById('memberProfileName').textContent = displayName;
@@ -1028,7 +1081,6 @@
       return digits.length >= 10 ? digits.slice(-10) : digits;
     }
 
-    // Load client's Black Label VIP Status, Loyalty Count, and Orders inside Account
     async function loadMemberVipAndLoyalty(user) {
       const phoneInputVal = document.getElementById('phone').value || (user.user_metadata && user.user_metadata.phone) || '';
       const digits = normalizePhoneDigits(phoneInputVal);
@@ -1061,10 +1113,12 @@
       }
 
       cachedMemberOrders = allClientRows;
-      document.getElementById('accountOrdersCountBadge').textContent = String(allClientRows.length);
+      document.getElementById('liveOrderPillText').textContent =
+        allClientRows.length > 0
+          ? `Track Orders (${allClientRows.length})`
+          : 'No Active Orders Yet';
       renderAccountOrdersList();
 
-      // Check Black Label VIP Status
       isBlackLabelVIP = allClientRows.some(r => {
         const svc = String(r.service_type || '').toLowerCase();
         const pay = String(r.payment_status || '').toLowerCase();
@@ -1097,7 +1151,6 @@
         if (ovVipTag) ovVipTag.classList.add('hidden');
       }
 
-      // Count completed services for 25% OFF add-ons after 5th service
       const completedRows = allClientRows.filter(r => {
         const st = String(r.status || '').trim().toLowerCase();
         return st === 'completed' || st.includes('complete');
@@ -1127,26 +1180,14 @@
       return allClientRows;
     }
 
-    function toggleAccountOrdersDrawer(forceState) {
-      const drawer = document.getElementById('accountOrdersDrawer');
-      if (typeof forceState === 'boolean') {
-        drawer.classList.toggle('hidden', !forceState);
-        return;
-      }
-      drawer.classList.toggle('hidden');
-      if (!drawer.classList.contains('hidden') && currentUser) {
-        loadMemberVipAndLoyalty(currentUser);
-      }
-    }
-
     function renderAccountOrdersList() {
       const listEl = document.getElementById('accountOrdersList');
       if (!listEl) return;
 
       if (!cachedMemberOrders || cachedMemberOrders.length === 0) {
         listEl.innerHTML = `
-          <div class="p-3 bg-black border border-zinc-800 rounded-lg text-center text-xs text-zinc-400">
-            No bookings on your account yet. Complete your booking below to track your service live!
+          <div class="p-3 bg-zinc-950 border border-zinc-800 rounded-lg text-center text-xs text-zinc-400">
+            No bookings on your account yet. Complete your booking in Step 2 to watch your live service tracker here!
           </div>
         `;
         return;
@@ -1154,32 +1195,25 @@
 
       listEl.innerHTML = cachedMemberOrders
         .map((ord, idx) => `
-          <div onclick="openAccountOrderTracker(${idx})" class="p-2.5 bg-black border border-zinc-800 hover:border-[#C59B27] rounded-lg cursor-pointer transition space-y-1">
+          <div onclick="selectOrderInModal(${idx})" class="p-2.5 bg-zinc-950 border border-zinc-800 hover:border-[#C59B27] rounded-lg cursor-pointer transition space-y-1">
             <div class="flex items-center justify-between gap-2">
               <span class="text-xs font-bold text-[#C59B27]">${escapeHtml(ord.service_date)} &bull; ${escapeHtml(ord.time_slot)}</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-zinc-900 text-white border border-zinc-700">${escapeHtml(ord.status || 'Confirmed')}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-black text-white border border-zinc-700">${escapeHtml(ord.status || 'Confirmed')}</span>
             </div>
             <p class="text-[11px] text-zinc-200 font-semibold truncate">${escapeHtml(ord.service_type)}</p>
             <div class="flex items-center justify-between text-[11px] text-zinc-400">
               <span>Total: $${ord.amount_paid || 0}</span>
-              <span class="text-[#C59B27] font-bold">Open Live Order View &rarr;</span>
+              <span class="text-[#C59B27] font-bold">Track Live &rarr;</span>
             </div>
           </div>
         `)
         .join('');
     }
 
-    function openAccountOrderTracker(index) {
+    function selectOrderInModal(index) {
       const booking = cachedMemberOrders[index];
       if (!booking) return;
-      openOrderView(booking);
-    }
-
-    function returnToMemberAccountView() {
-      document.getElementById('orderViewContainer').classList.add('hidden');
-      document.getElementById('stepProgressWrapper').classList.remove('hidden');
-      document.getElementById('bookingFormWrapper').classList.remove('hidden');
-      toggleAccountOrdersDrawer(true);
+      loadOrderIntoTrackerModal(booking);
     }
 
     let phoneReloadTimer = null;
@@ -1325,7 +1359,19 @@
 
     function syncSelectedVehicleToPackage() {
       const selectedVeh = clientVehicles.find(v => v.id === selectedVehicleId);
-      if (!selectedVeh) return;
+      const pillEl = document.getElementById('selectedVehiclePillText');
+
+      if (!selectedVeh) {
+        if (pillEl) {
+          pillEl.textContent = `Manage Garage (${clientVehicles.length} / ${MAX_GARAGE_VEHICLES} Cars)`;
+        }
+        return;
+      }
+
+      if (pillEl) {
+        const vehTitle = [selectedVeh.year, selectedVeh.make, selectedVeh.model].filter(Boolean).join(' ');
+        pillEl.textContent = `${vehTitle} (${clientVehicles.length}/${MAX_GARAGE_VEHICLES})`;
+      }
 
       const packageSelect = document.getElementById('servicePackageCombined');
       if (!packageSelect) return;
@@ -1350,22 +1396,27 @@
       const listEl = document.getElementById('savedVehiclesList');
       const countBadge = document.getElementById('garageCountBadge');
       const addBtn = document.getElementById('toggleAddVehicleBtn');
+      const pillEl = document.getElementById('selectedVehiclePillText');
 
       countBadge.textContent = `${clientVehicles.length} / ${MAX_GARAGE_VEHICLES} Cars`;
+      if (pillEl && clientVehicles.length === 0) {
+        pillEl.textContent = `Manage Garage (0 / ${MAX_GARAGE_VEHICLES} Cars)`;
+      }
+
       if (clientVehicles.length >= MAX_GARAGE_VEHICLES) {
         addBtn.disabled = true;
-        addBtn.className = 'bg-zinc-900 text-zinc-500 border border-zinc-800 font-bold px-2.5 py-1 rounded text-[11px] cursor-not-allowed';
+        addBtn.className = 'bg-zinc-900 text-zinc-500 border border-zinc-800 font-bold px-3 py-1.5 rounded-lg text-xs cursor-not-allowed';
         addBtn.textContent = 'Garage Full (4/4)';
       } else {
         addBtn.disabled = false;
-        addBtn.className = 'bg-[#C59B27] hover:bg-[#d8ad34] text-black font-bold px-2.5 py-1 rounded text-[11px] transition';
+        addBtn.className = 'bg-[#C59B27] hover:bg-[#d8ad34] text-black font-bold px-3 py-1.5 rounded-lg text-xs transition';
         addBtn.textContent = '+ Add Vehicle';
       }
 
       if (clientVehicles.length === 0) {
         listEl.innerHTML = `
-          <div class="sm:col-span-2 p-3 bg-zinc-950 border border-dashed border-zinc-800 rounded-lg text-center">
-            <p class="text-xs text-zinc-400">No vehicles saved in your profile yet. Click <strong class="text-[#C59B27]">+ Add Vehicle</strong> to register up to 4 cars with custom care preferences.</p>
+          <div class="sm:col-span-2 p-4 bg-black border border-dashed border-zinc-800 rounded-xl text-center">
+            <p class="text-xs text-zinc-400">No vehicles saved in your profile yet. Click <strong class="text-[#C59B27]">+ Add Vehicle</strong> above to register up to 4 cars with custom care preferences.</p>
           </div>
         `;
         return;
@@ -1377,7 +1428,7 @@
           const title = [v.year, v.make, v.model].filter(Boolean).join(' ');
           const metaLine = [v.category, v.color, v.plate ? `Plate: ${v.plate}` : ''].filter(Boolean).join(' • ');
           return `
-            <div onclick="selectVehicleForBooking('${v.id}')" class="p-3 rounded-lg border ${isSelected ? 'border-[#C59B27] bg-zinc-950 shadow-md' : 'border-zinc-800 bg-zinc-950/60 hover:border-zinc-700'} cursor-pointer transition relative">
+            <div onclick="selectVehicleForBooking('${v.id}')" class="p-3 rounded-xl border ${isSelected ? 'border-[#C59B27] bg-black shadow-md' : 'border-zinc-800 bg-black/60 hover:border-zinc-700'} cursor-pointer transition relative">
               <div class="flex items-start justify-between gap-2">
                 <div class="min-w-0">
                   <div class="flex items-center gap-1.5">
@@ -1433,13 +1484,9 @@
       calculateTotalPrice();
     }
 
-    // 3-Step Wizard Navigation Controller
+    // 2-Step Wizard Navigation Controller
     function goToStep(step) {
-      if (step === 2 && !selectedDateStr) {
-        alert('Please select a date on the calendar first.');
-        return;
-      }
-      if (step === 3 && (!selectedDateStr || !selectedTimeSlotStr)) {
+      if (step === 2 && (!selectedDateStr || !selectedTimeSlotStr)) {
         alert('Please select both a date and an arrival time window first.');
         return;
       }
@@ -1448,40 +1495,35 @@
 
       document.getElementById('step1Container').classList.toggle('hidden', step !== 1);
       document.getElementById('step2Container').classList.toggle('hidden', step !== 2);
-      document.getElementById('step3Container').classList.toggle('hidden', step !== 3);
 
-      for (let i = 1; i <= 3; i++) {
+      for (let i = 1; i <= 2; i++) {
         const pill = document.getElementById(`stepIndicator${i}`);
         const stepLabel = pill.querySelector('span:first-child');
         const stepTitle = pill.querySelector('span:last-child');
 
         if (i === step) {
-          pill.className = 'flex flex-col items-center p-2 rounded-lg border border-[#C59B27] bg-black transition text-center shadow-md';
+          pill.className = 'flex flex-col items-center p-2.5 rounded-lg border border-[#C59B27] bg-black transition text-center shadow-md';
           stepLabel.className = 'text-[10px] font-bold uppercase tracking-wider text-[#C59B27]';
           stepTitle.className = 'text-xs font-bold text-white mt-0.5';
         } else if (i < step) {
-          pill.className = 'flex flex-col items-center p-2 rounded-lg border border-red-600/60 bg-black transition text-center cursor-pointer';
+          pill.className = 'flex flex-col items-center p-2.5 rounded-lg border border-red-600/60 bg-black transition text-center cursor-pointer';
           stepLabel.className = 'text-[10px] font-bold uppercase tracking-wider text-red-500';
           stepTitle.className = 'text-xs font-bold text-zinc-200 mt-0.5';
         } else {
-          const isUnlocked = (i === 2 && selectedDateStr) || (i === 3 && selectedDateStr && selectedTimeSlotStr);
-          pill.className = `flex flex-col items-center p-2 rounded-lg border border-zinc-800 bg-black/60 ${isUnlocked ? 'opacity-90 cursor-pointer hover:border-[#C59B27]/50' : 'opacity-40 cursor-not-allowed'} transition text-center`;
+          const isUnlocked = selectedDateStr && selectedTimeSlotStr;
+          pill.className = `flex flex-col items-center p-2.5 rounded-lg border border-zinc-800 bg-black/60 ${isUnlocked ? 'opacity-90 cursor-pointer hover:border-[#C59B27]/50' : 'opacity-40 cursor-not-allowed'} transition text-center`;
           stepLabel.className = 'text-[10px] font-bold uppercase tracking-wider text-zinc-500';
           stepTitle.className = 'text-xs font-bold text-zinc-400 mt-0.5';
         }
       }
 
       if (step === 2) {
-        document.getElementById('step2DateBadge').textContent = formattedDisplayDateStr;
-      }
-
-      if (step === 3) {
         document.getElementById('summaryDateTimeText').textContent = `${formattedDisplayDateStr}  •  ${selectedTimeSlotStr}`;
         if (currentUser) {
-          document.getElementById('step3AuthGate').classList.add('hidden');
+          document.getElementById('step2AuthGate').classList.add('hidden');
           document.getElementById('bookingFormWrapper').classList.remove('hidden');
         } else {
-          document.getElementById('step3AuthGate').classList.remove('hidden');
+          document.getElementById('step2AuthGate').classList.remove('hidden');
           document.getElementById('bookingFormWrapper').classList.add('hidden');
         }
       }
@@ -1684,13 +1726,27 @@
 
     calculateTotalPrice();
 
-    // Time Slot Grid Selection Setup (Step 2)
+    // Combined Step 1: Time Slot Selection Setup
     const timeSlotBtns = document.querySelectorAll('.time-slot-btn');
-    const step2NextBtn = document.getElementById('step2NextBtn');
+    const step1NextBtn = document.getElementById('step1NextBtn');
+
+    function updateStep1ScheduleSummary() {
+      const summaryEl = document.getElementById('selectedDateDisplay');
+      if (selectedDateStr && selectedTimeSlotStr) {
+        summaryEl.textContent = `${formattedDisplayDateStr} • ${selectedTimeSlotStr}`;
+        step1NextBtn.disabled = false;
+      } else if (selectedDateStr) {
+        summaryEl.textContent = `${formattedDisplayDateStr} (Select time slot)`;
+        step1NextBtn.disabled = true;
+      } else {
+        summaryEl.textContent = 'None selected';
+        step1NextBtn.disabled = true;
+      }
+    }
 
     timeSlotBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        if (btn.disabled) return;
+        if (btn.disabled || !selectedDateStr) return;
 
         timeSlotBtns.forEach(b => {
           if (!b.disabled) {
@@ -1704,9 +1760,9 @@
 
         selectedTimeSlotStr = btn.getAttribute('data-time');
         document.getElementById('selectedTimeSlotValue').value = selectedTimeSlotStr;
-        step2NextBtn.disabled = false;
+        updateStep1ScheduleSummary();
 
-        setTimeout(() => goToStep(3), 200);
+        setTimeout(() => goToStep(2), 200);
       });
     });
 
@@ -1728,6 +1784,13 @@
     }
 
     function updateTimeSlotAvailability(dateStr, monthBookings) {
+      const slotGrid = document.getElementById('timeSlotGrid');
+      const dateBadge = document.getElementById('step1DateBadge');
+
+      slotGrid.classList.remove('opacity-45', 'pointer-events-none');
+      dateBadge.textContent = formattedDisplayDateStr;
+      dateBadge.className = 'text-xs font-bold text-[#C59B27]';
+
       const bookedSlots = monthBookings
         .filter(b => b.service_date === dateStr)
         .map(b => b.time_slot);
@@ -1744,7 +1807,6 @@
           if (selectedTimeSlotStr === slotValue) {
             selectedTimeSlotStr = '';
             document.getElementById('selectedTimeSlotValue').value = '';
-            step2NextBtn.disabled = true;
           }
         } else {
           btn.disabled = false;
@@ -1757,6 +1819,8 @@
           btn.title = `${countForSlot}/${TIME_SLOT_MAX} booked`;
         }
       });
+
+      updateStep1ScheduleSummary();
     }
 
     // Initialize Stripe & Elements
@@ -1777,7 +1841,7 @@
         return;
       }
       if (!selectedDateStr || !selectedTimeSlotStr) {
-        alert('Please complete Step 1 (Date) and Step 2 (Time) before paying.');
+        alert('Please select your date and time slot in Step 1 before paying.');
         event.decline();
         return;
       }
@@ -1878,7 +1942,6 @@
     });
 
     let currentDate = new Date();
-    const step1NextBtn = document.getElementById('step1NextBtn');
 
     async function renderCalendar() {
       const year = currentDate.getFullYear();
@@ -1931,13 +1994,13 @@
             selectedDateStr = dateStr;
             document.getElementById('serviceDate').value = selectedDateStr;
             formattedDisplayDateStr = `${formattedMonth}/${formattedDay}/${year}`;
-            document.getElementById('selectedDateDisplay').textContent = formattedDisplayDateStr;
 
-            step1NextBtn.disabled = false;
             updateTimeSlotAvailability(selectedDateStr, currentMonthBookings);
             renderCalendar();
 
-            setTimeout(() => goToStep(2), 200);
+            if (selectedDateStr && selectedTimeSlotStr) {
+              setTimeout(() => goToStep(2), 200);
+            }
           });
         }
         grid.appendChild(dayDiv);
@@ -2114,6 +2177,9 @@
         await loadMemberVipAndLoyalty(currentUser);
       }
 
+      submitBtn.disabled = false;
+      calculateTotalPrice();
+
       const savedRecord = (data && data[0]) ? data[0] : {
         service_date: selectedDateStr,
         time_slot: selectedTimeSlotStr,
@@ -2124,25 +2190,22 @@
         status: 'Confirmed'
       };
 
-      openOrderView(savedRecord);
+      // Automatically open Live Order View Modal upon booking confirmation
+      openLiveOrderModal(savedRecord);
     }
 
     // ==========================================
-    // PRIVATE LIVE ORDER VIEW & TIMER
+    // LIVE ORDER VIEW MODAL LOGIC & TIMER
     // ==========================================
     let activeOrderChannel = null;
     let orderSyncInterval = null;
     let detailingTimerInterval = null;
     let detailingStartTime = null;
 
-    function openOrderView(booking) {
-      if (!currentUser) return;
+    function loadOrderIntoTrackerModal(booking) {
+      if (!currentUser || !booking) return;
 
-      document.getElementById('stepProgressWrapper').classList.add('hidden');
-      document.getElementById('step3AuthGate').classList.add('hidden');
-      document.getElementById('bookingFormWrapper').classList.add('hidden');
-      document.getElementById('orderViewContainer').classList.remove('hidden');
-
+      document.getElementById('activeOrderTrackerBody').classList.remove('hidden');
       document.getElementById('ovOrderNumber').textContent = booking.id ? `#${String(booking.id).slice(0, 8).toUpperCase()}` : '';
       document.getElementById('ovScheduleText').textContent = `${booking.service_date} (${booking.time_slot})`;
       document.getElementById('ovAddressText').textContent = booking.service_address || 'your location';
@@ -2155,6 +2218,13 @@
       } else {
         document.getElementById('ovAddonsRow').classList.add('hidden');
       }
+
+      if (detailingTimerInterval) {
+        clearInterval(detailingTimerInterval);
+        detailingTimerInterval = null;
+      }
+      detailingStartTime = null;
+      document.getElementById('ovTimerDisplay').textContent = '00:00:00';
 
       applyOrderStatusUI(booking.status || 'Confirmed', booking.started_at);
 
@@ -2220,15 +2290,15 @@
         const stepNum = idx + 1;
 
         if (stepNum < stageIndex) {
-          el.className = 'flex items-start gap-3 p-3 rounded-lg border border-red-600/40 bg-zinc-950 transition';
+          el.className = 'flex items-start gap-3 p-2.5 rounded-lg border border-red-600/40 bg-black transition';
           circle.className = 'w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5';
           circle.textContent = '✓';
         } else if (stepNum === stageIndex) {
-          el.className = 'flex items-start gap-3 p-3 rounded-lg border border-[#C59B27] bg-zinc-950 shadow-md transition';
+          el.className = 'flex items-start gap-3 p-2.5 rounded-lg border border-[#C59B27] bg-black shadow-md transition';
           circle.className = 'w-6 h-6 rounded-full bg-[#C59B27] text-black flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5';
           circle.textContent = String(stepNum);
         } else {
-          el.className = 'flex items-start gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-950/50 opacity-45 transition';
+          el.className = 'flex items-start gap-3 p-2.5 rounded-lg border border-zinc-800 bg-black/50 opacity-45 transition';
           circle.className = 'w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5';
           circle.textContent = String(stepNum);
         }
