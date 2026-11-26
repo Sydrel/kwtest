@@ -10,7 +10,6 @@
   <!-- Stripe JS Library -->
   <script src="https://js.stripe.com/v3/"></script>
   <style>
-    /* Custom Scrollbar for Add-ons */
     ::-webkit-scrollbar {
       width: 6px;
     }
@@ -31,13 +30,10 @@
   <!-- Services Alert Notification Popup Modal -->
   <div id="servicesAlertModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300">
     <div class="bg-zinc-950 border border-[#C59B27]/60 rounded-xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative">
-      
-      <!-- Close Button (X) -->
       <button type="button" onclick="closeServicesAlert()" class="absolute top-4 right-4 text-zinc-400 hover:text-[#C59B27] text-lg font-bold transition">
         &times;
       </button>
 
-      <!-- Modal Header -->
       <div class="flex items-center gap-3 mb-3">
         <div class="p-2 bg-[#C59B27]/10 border border-[#C59B27]/40 rounded-lg text-[#C59B27]">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +46,6 @@
         </div>
       </div>
 
-      <!-- Modal Body Text -->
       <div class="bg-black border border-zinc-800 p-3.5 sm:p-4 rounded-lg my-4 text-center space-y-2">
         <p class="text-xs sm:text-sm font-semibold text-zinc-200 leading-relaxed">
           Your vehicle gets serviced twice monthly, and you pay exactly the price you see.
@@ -60,155 +55,89 @@
         </p>
       </div>
 
-      <!-- Action Button -->
       <button type="button" onclick="closeServicesAlert()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs sm:text-sm transition shadow-lg shadow-red-950/50">
         Got It, Continue
       </button>
     </div>
   </div>
 
-  <!-- Live Order View Lookup Modal -->
+  <!-- Authenticated Client Live Order Portal Modal -->
   <div id="orderLookupModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-300">
-    <div class="bg-zinc-950 border border-[#C59B27]/60 rounded-xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative">
-      
+    <div class="bg-zinc-950 border border-[#C59B27]/60 rounded-xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <button type="button" onclick="closeOrderLookupModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-[#C59B27] text-lg font-bold transition">
         &times;
       </button>
 
       <div class="mb-4">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Real-Time Status &amp; Timer</span>
+        <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Private Member Portal</span>
         <h3 class="text-base sm:text-lg font-bold text-white mt-0.5">Live Order View</h3>
-        <p class="text-xs text-zinc-400 mt-1">Enter the email address or phone number used when booking to view your live detailing progress.</p>
+        <p id="modalAuthSubtitle" class="text-xs text-zinc-400 mt-1">Sign in to your KW Client Account to access your live order tracker, vehicle care profile, and VIP status.</p>
       </div>
 
-      <form id="orderLookupForm" onsubmit="lookupClientOrder(event)" class="space-y-3">
-        <div>
-          <label class="block text-xs font-medium mb-1 text-zinc-300">Email Address or Phone Number</label>
-          <input type="text" id="orderLookupInput" required placeholder="e.g. client@email.com or (555) 123-4567" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
+      <!-- Modal Sign-In / Sign-Up Form (Shown when logged out) -->
+      <div id="modalAuthBox" class="space-y-3">
+        <div class="p-1 bg-black border border-zinc-800 rounded-lg grid grid-cols-2 gap-1">
+          <button type="button" id="modalTabSignIn" onclick="switchModalAuthMode('signin')" class="py-1.5 rounded text-xs font-bold bg-[#C59B27] text-black transition">Sign In</button>
+          <button type="button" id="modalTabSignUp" onclick="switchModalAuthMode('signup')" class="py-1.5 rounded text-xs font-bold text-zinc-400 hover:text-white transition">Create Account</button>
         </div>
 
-        <p id="orderLookupError" class="hidden text-xs text-red-500 font-medium"></p>
-
-        <button type="submit" id="orderLookupSubmitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs sm:text-sm transition shadow-lg shadow-red-950/50">
-          Open Live Order View
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Black Label 365 Add/Edit Vehicle Care Profile Modal -->
-  <div id="vehicleProfileModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-zinc-950 border border-[#C59B27] rounded-xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative my-auto">
-      <button type="button" onclick="closeVehicleProfileModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-[#C59B27] text-lg font-bold transition">
-        &times;
-      </button>
-
-      <div class="mb-4 border-b border-zinc-800 pb-3">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Black Label 365 Concierge Garage</span>
-        <h3 id="vpModalTitle" class="text-base sm:text-lg font-bold text-white mt-0.5">Add Vehicle Care Profile</h3>
-        <p class="text-[11px] text-zinc-400 mt-0.5">Saved to your phone number (up to 4 vehicles max) for tailored detailing.</p>
-      </div>
-
-      <div class="space-y-3 text-xs">
-        <input type="hidden" id="vpEditId">
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <div>
-            <label class="block font-semibold text-zinc-300 mb-1">Year, Make &amp; Model *</label>
-            <input type="text" id="vpYearMakeModel" placeholder="e.g. 2025 Porsche 911 GT3" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+        <form id="modalAuthForm" onsubmit="handleModalAuthSubmit(event)" class="space-y-2.5">
+          <div id="modalSignUpFields" class="hidden space-y-2.5">
+            <div>
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Full Name</label>
+              <input type="text" id="modalFullName" placeholder="e.g. Jordan Rivera" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Mobile Phone Number</label>
+              <input type="tel" id="modalPhone" placeholder="(555) 123-4567" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+            </div>
           </div>
-          <div>
-            <label class="block font-semibold text-zinc-300 mb-1">Exterior Color *</label>
-            <input type="text" id="vpColor" placeholder="e.g. Jet Black Metallic" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
-          </div>
-        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-semibold text-zinc-300 mb-1">License Plate / Tag (Optional)</label>
-            <input type="text" id="vpPlate" placeholder="e.g. FL-KW365" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
+            <label class="block text-xs font-medium mb-1 text-zinc-300">Email Address</label>
+            <input type="email" id="modalEmail" required placeholder="you@email.com" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C59B27]">
           </div>
-          <div>
-            <label class="block font-semibold text-zinc-300 mb-1">Paint &amp; Wrap Finish</label>
-            <select id="vpPaintFinish" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
-              <option value="Gloss Clearcoat">Gloss Clearcoat</option>
-              <option value="Matte / Satin Paint">Matte / Satin Paint (No Wax)</option>
-              <option value="Full Gloss PPF Wrap">Full Gloss PPF Wrap</option>
-              <option value="Stealth / Satin PPF Wrap">Stealth / Satin PPF Wrap</option>
-              <option value="Vinyl Color Wrap">Vinyl Color Wrap</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-semibold text-zinc-300 mb-1">Ceramic Coating Status</label>
-            <select id="vpCeramicStatus" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
-              <option value="None">None</option>
-              <option value="KW 1-2 Year Ceramic">KW 1–2 Year Ceramic</option>
-              <option value="KW 4-5 Year Ultimate Ceramic">KW 4–5 Year Ultimate Ceramic</option>
-              <option value="Third-Party Ceramic Coated">Third-Party Ceramic Coated</option>
-            </select>
+            <label class="block text-xs font-medium mb-1 text-zinc-300">Password</label>
+            <input type="password" id="modalPassword" required minlength="6" placeholder="Minimum 6 characters" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#C59B27]">
           </div>
-          <div>
-            <label class="block font-semibold text-zinc-300 mb-1">Wheel &amp; Brake Spec</label>
-            <select id="vpWheelType" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
-              <option value="Standard Alloy / Painted">Standard Alloy / Painted</option>
-              <option value="Gloss Black / Powdercoated">Gloss Black / Powdercoated</option>
-              <option value="Chrome / Polished Forged">Chrome / Polished Forged</option>
-              <option value="Carbon Ceramic Brakes (pH-Neutral Only)">Carbon Ceramic Brakes (pH-Neutral Only)</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-          <div>
-            <label class="block font-semibold text-zinc-300 mb-1">Interior Material</label>
-            <select id="vpInterior" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
-              <option value="Leather">Leather</option>
-              <option value="Nappa / Full-Grain Leather">Nappa / Full-Grain</option>
-              <option value="Alcantara / Suede">Alcantara / Suede</option>
-              <option value="Vegan Leather / Cloth">Vegan / Cloth</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-semibold text-zinc-300 mb-1">Tire Dressing</label>
-            <select id="vpTireShine" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
-              <option value="Satin / OEM Matte">Satin / OEM Matte</option>
-              <option value="High Gloss Wet Look">High Gloss Wet Look</option>
-              <option value="No Tire Dressing">No Tire Dressing</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-semibold text-zinc-300 mb-1">Cabin Scent</label>
-            <select id="vpScent" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]">
-              <option value="Unscented (Neutral)">Unscented</option>
-              <option value="New Car Crisp">New Car</option>
-              <option value="Rich Leather">Rich Leather</option>
-            </select>
-          </div>
-        </div>
+          <p id="modalAuthError" class="hidden text-xs text-red-500 font-medium"></p>
 
-        <div>
-          <label class="block font-semibold text-zinc-300 mb-1">Special Technician Care Notes</label>
-          <textarea id="vpNotes" rows="2" placeholder="e.g. Touchless air-dry only, do not move seat memory, gate code #4412..." class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-[#C59B27]"></textarea>
-        </div>
-
-        <p id="vpModalError" class="hidden text-red-500 font-semibold"></p>
-
-        <div class="pt-2 flex items-center justify-end gap-2">
-          <button type="button" onclick="closeVehicleProfileModal()" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg border border-zinc-800 transition">
-            Cancel
+          <button type="submit" id="modalAuthSubmitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs sm:text-sm transition shadow-lg shadow-red-950/50">
+            Sign In to Live Order View
           </button>
-          <button type="button" id="vpSaveBtn" onclick="saveVehicleCareProfile()" class="bg-[#C59B27] hover:bg-[#d8ad32] text-black font-bold py-2.5 px-5 rounded-lg transition shadow-lg">
-            Save Vehicle Profile
+        </form>
+      </div>
+
+      <!-- Modal Member Orders List (Shown when logged in) -->
+      <div id="modalOrdersBox" class="hidden space-y-3">
+        <div class="p-2.5 bg-black border border-[#C59B27]/40 rounded-lg flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <p id="modalMemberName" class="text-xs font-bold text-white truncate"></p>
+            <p id="modalMemberEmail" class="text-[11px] text-zinc-400 truncate"></p>
+          </div>
+          <span id="modalVipBadge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-700 text-zinc-300 flex-shrink-0">
+            Member
+          </span>
+        </div>
+
+        <div id="modalOrdersList" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+
+        <div class="pt-2 border-t border-zinc-800 flex items-center justify-between gap-2">
+          <button type="button" onclick="signOutClientAccount()" class="text-xs text-zinc-400 hover:text-red-400 font-semibold transition">
+            Sign Out
+          </button>
+          <button type="button" onclick="closeOrderLookupModal()" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-200 px-3 py-1.5 rounded-lg text-xs font-bold border border-zinc-700 transition">
+            Close
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Compact Logo Header (Fits Cleanly Above Fold on Desktop) -->
+  <!-- Compact Logo Header -->
   <header class="mb-3.5 max-w-2xl w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2.5 sm:gap-3.5 px-1">
     <img src="https://i.imgur.com/9Q025WO.png" alt="KW Commercial Fleet Washing & Mobile Detailing LLC Logo" class="h-11 sm:h-12 w-auto flex-shrink-0 object-contain filter drop-shadow-[0_0_10px_rgba(197,155,39,0.25)]">
     <div class="text-center sm:text-left min-w-0 flex-1">
@@ -224,7 +153,7 @@
   <!-- Main 3-Step Wizard & Order View Container -->
   <div class="max-w-2xl w-full bg-zinc-950 p-4 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl shadow-2xl border border-[#8A6814]/40">
     
-    <!-- System Notification Banner (Green) + Live Order View & Services Alert Buttons -->
+    <!-- System Notification Banner + Live Order View & Services Alert Buttons -->
     <div id="topBannerBar" class="mb-4 p-2.5 bg-black border border-emerald-500/30 rounded-lg flex flex-wrap items-center justify-between gap-2 shadow-md">
       <div class="flex items-start gap-2.5 flex-1 min-w-[200px]">
         <span class="flex-shrink-0 mt-0.5 relative flex h-2.5 w-2.5">
@@ -233,8 +162,8 @@
         </span>
         <div>
           <p class="text-xs font-bold text-emerald-400 tracking-wide uppercase">System Online &mdash; Live Booking</p>
-          <p class="text-[11px] text-zinc-400 leading-snug mt-0.5">
-            Instant scheduling, live service tracking &amp; automated membership billing active.
+          <p id="bannerMemberStatus" class="text-[11px] text-zinc-400 leading-snug mt-0.5">
+            Instant scheduling, personalized vehicle care profiles &amp; VIP tracking active.
           </p>
         </div>
       </div>
@@ -251,28 +180,25 @@
     <!-- 3-Step Progress Indicator -->
     <div id="stepProgressWrapper" class="mb-4">
       <div class="grid grid-cols-3 gap-2">
-        <!-- Step 1 Pill -->
         <button type="button" id="stepIndicator1" onclick="goToStep(1)" class="flex flex-col items-center p-2 rounded-lg border border-[#C59B27] bg-black transition text-center">
           <span class="text-[10px] font-bold uppercase tracking-wider text-[#C59B27]">Step 1</span>
           <span class="text-xs font-bold text-white mt-0.5">Select Date</span>
         </button>
 
-        <!-- Step 2 Pill -->
         <button type="button" id="stepIndicator2" onclick="if(selectedDateStr) goToStep(2)" class="flex flex-col items-center p-2 rounded-lg border border-zinc-800 bg-black/60 opacity-50 transition text-center">
           <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Step 2</span>
           <span class="text-xs font-bold text-zinc-300 mt-0.5">Select Time</span>
         </button>
 
-        <!-- Step 3 Pill -->
         <button type="button" id="stepIndicator3" onclick="if(selectedDateStr && selectedTimeSlotStr) goToStep(3)" class="flex flex-col items-center p-2 rounded-lg border border-zinc-800 bg-black/60 opacity-50 transition text-center">
           <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Step 3</span>
-          <span class="text-xs font-bold text-zinc-300 mt-0.5">Booking Info</span>
+          <span class="text-xs font-bold text-zinc-300 mt-0.5">Member &amp; Care</span>
         </button>
       </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- STEP 1: BOOKING CALENDAR                   -->
+    <!-- STEP 1: BOOKING CALENDAR (UNCHANGED)       -->
     <!-- ========================================== -->
     <div id="step1Container" class="bg-black p-4 sm:p-5 rounded-xl border border-zinc-800/90 space-y-3.5">
       <div class="border-b border-zinc-900 pb-2.5">
@@ -292,7 +218,6 @@
         <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
       </div>
 
-      <!-- Responsive Calendar Grid -->
       <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1.5 text-center"></div>
 
       <div class="pt-2.5 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-2.5">
@@ -306,7 +231,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- STEP 2: TIME SLOT SELECTION                -->
+    <!-- STEP 2: TIME SLOT SELECTION (UNCHANGED)    -->
     <!-- ========================================== -->
     <div id="step2Container" class="hidden bg-black p-4 sm:p-5 rounded-xl border border-zinc-800/90 space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-900 pb-2.5">
@@ -343,34 +268,202 @@
           &larr; Back
         </button>
         <button type="button" id="step2NextBtn" onclick="goToStep(3)" disabled class="bg-red-600 hover:bg-red-700 disabled:bg-zinc-900 disabled:text-zinc-600 disabled:cursor-not-allowed text-white font-bold py-2 px-5 rounded-lg text-xs transition shadow-lg">
-          Next: Booking Information &rarr;
+          Next: Member Portal &rarr;
         </button>
       </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- STEP 3: BOOKING INFORMATION & PAYMENT      -->
-    <!-- ========================================== -->
+    <!-- ========================================================== -->
+    <!-- STEP 3: CLIENT ACCOUNT, VEHICLE CARE PROFILE & PAYMENT     -->
+    <!-- ========================================================== -->
     <div id="step3Container" class="hidden w-full">
-      <div id="bookingFormWrapper">
-        <!-- Selected Date & Time Summary Strip -->
-        <div class="mb-4 p-3 bg-black border border-[#8A6814]/50 rounded-lg flex flex-wrap items-center justify-between gap-2">
-          <div class="text-xs text-zinc-300">
-            <span class="text-zinc-500 uppercase font-bold text-[10px] tracking-wider block">Appointment Schedule</span>
-            <span id="summaryDateTimeText" class="text-[#C59B27] font-bold"></span>
-          </div>
-          <button type="button" onclick="goToStep(1)" class="text-[11px] bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-2.5 py-1 rounded border border-zinc-700 font-semibold transition">
-            Edit Date / Time
+
+      <!-- Selected Date & Time Summary Strip -->
+      <div class="mb-4 p-3 bg-black border border-[#8A6814]/50 rounded-lg flex flex-wrap items-center justify-between gap-2">
+        <div class="text-xs text-zinc-300">
+          <span class="text-zinc-500 uppercase font-bold text-[10px] tracking-wider block">Appointment Schedule</span>
+          <span id="summaryDateTimeText" class="text-[#C59B27] font-bold"></span>
+        </div>
+        <button type="button" onclick="goToStep(1)" class="text-[11px] bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-2.5 py-1 rounded border border-zinc-700 font-semibold transition">
+          Edit Date / Time
+        </button>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- STEP 3A: ACCOUNT GATE (CREATE ACCOUNT OR SIGN IN FIRST)  -->
+      <!-- ======================================================== -->
+      <div id="step3AuthGate" class="bg-black border border-[#C59B27]/50 rounded-xl p-4 sm:p-5 space-y-4">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Step 3 &bull; Client Membership Access</span>
+          <h2 class="text-base sm:text-lg font-bold text-white mt-0.5">Sign In or Create Your KW Client Account</h2>
+          <p class="text-xs text-zinc-400 mt-1">
+            Access your <strong class="text-white">Personalized Vehicle Care Profile</strong> (up to 4 vehicles), track your <strong class="text-[#C59B27]">Black Label VIP Status</strong>, and unlock your private <strong class="text-white">Live Order View</strong>.
+          </p>
+        </div>
+
+        <!-- Auth Mode Toggle -->
+        <div class="p-1 bg-zinc-950 border border-zinc-800 rounded-lg grid grid-cols-2 gap-1.5">
+          <button type="button" id="stepAuthSignInTab" onclick="switchStepAuthMode('signin')" class="py-2 px-3 rounded-md text-xs font-bold bg-[#C59B27] text-black transition">
+            Sign In
+          </button>
+          <button type="button" id="stepAuthSignUpTab" onclick="switchStepAuthMode('signup')" class="py-2 px-3 rounded-md text-xs font-bold text-zinc-400 hover:text-white transition">
+            Create Account
           </button>
         </div>
 
-        <h2 class="text-base sm:text-lg font-bold mb-1 text-white flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Step 3: Booking Information & Payment
-        </h2>
-        <p class="text-xs text-zinc-400 mb-3">Complete your details and select your plan or member add-ons.</p>
+        <form id="step3AuthForm" onsubmit="handleStep3AuthSubmit(event)" class="space-y-3">
+          <div id="step3SignUpExtraFields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Full Name</label>
+              <input type="text" id="authFullName" placeholder="Full Name" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27]">
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Mobile Phone Number</label>
+              <input type="tel" id="authPhone" placeholder="(555) 123-4567" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27]">
+            </div>
+          </div>
 
-        <!-- Booking Mode Switch: New Subscription vs Existing Member Add-Ons Only -->
-        <div class="mb-4 p-1 bg-black border border-zinc-800 rounded-lg grid grid-cols-2 gap-1.5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Email Address</label>
+              <input type="email" id="authEmail" required placeholder="client@email.com" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27]">
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Password</label>
+              <input type="password" id="authPassword" required minlength="6" placeholder="Min. 6 characters" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27]">
+            </div>
+          </div>
+
+          <p id="step3AuthMessage" class="hidden text-xs font-medium"></p>
+
+          <div class="pt-1 flex flex-col sm:flex-row gap-2.5">
+            <button type="button" onclick="goToStep(2)" class="sm:w-1/3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg text-xs border border-zinc-800 transition">
+              &larr; Back to Time
+            </button>
+            <button type="submit" id="step3AuthSubmitBtn" class="sm:w-2/3 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs sm:text-sm transition shadow-lg shadow-red-950/50">
+              Sign In &amp; Open Vehicle Profile
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- STEP 3B: AUTHENTICATED VEHICLE CARE PROFILE & CHECKOUT   -->
+      <!-- ======================================================== -->
+      <div id="bookingFormWrapper" class="hidden space-y-4">
+
+        <!-- Member Profile & Black Label VIP Status Card -->
+        <div class="p-3.5 sm:p-4 bg-black border border-[#C59B27]/60 rounded-xl space-y-3 shadow-lg">
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 id="memberProfileName" class="text-sm sm:text-base font-bold text-white">Member Profile</h3>
+                <span id="vipStatusBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-700">
+                  Standard Member
+                </span>
+              </div>
+              <p id="memberProfileSubtext" class="text-[11px] text-zinc-400 mt-0.5"></p>
+            </div>
+            <button type="button" onclick="signOutClientAccount()" class="text-[11px] text-zinc-400 hover:text-red-400 bg-zinc-950 px-2.5 py-1 rounded border border-zinc-800 font-semibold transition">
+              Sign Out
+            </button>
+          </div>
+
+          <!-- VIP Tier & 5th-Service Loyalty Strip -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-zinc-900 text-xs">
+            <div class="p-2.5 bg-zinc-950 border border-zinc-800/90 rounded-lg">
+              <span class="text-[10px] uppercase tracking-wider font-bold text-zinc-500 block">Membership Tier</span>
+              <span id="vipTierDetailText" class="text-xs font-bold text-[#C59B27]">Enroll in Black Label 365 for VIP Status</span>
+            </div>
+            <div class="p-2.5 bg-zinc-950 border border-zinc-800/90 rounded-lg flex items-center justify-between gap-2">
+              <div>
+                <span class="text-[10px] uppercase tracking-wider font-bold text-zinc-500 block">5th-Service Add-On Reward</span>
+                <span id="loyaltyStatusText" class="text-xs font-semibold text-zinc-300">0 / 5 Completed Services</span>
+              </div>
+              <span id="loyaltyProgressBadge" class="px-2 py-0.5 rounded bg-black border border-[#8A6814]/50 text-[10px] font-bold text-[#C59B27] flex-shrink-0">0 / 5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personalized Vehicle Care Profile (Max 4 Vehicles) -->
+        <div class="p-3.5 sm:p-4 bg-black border border-zinc-800 rounded-xl space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-900 pb-2.5">
+            <div>
+              <h4 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Personalized Vehicle Care Profile
+              </h4>
+              <p class="text-[11px] text-zinc-400 mt-0.5">Save up to <strong class="text-[#C59B27]">4 vehicles</strong> with custom care notes and select the vehicle for this visit.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="garageCountBadge" class="px-2 py-0.5 rounded bg-zinc-950 border border-[#C59B27]/40 text-[10px] font-bold text-[#C59B27]">
+                0 / 4 Cars
+              </span>
+              <button type="button" id="toggleAddVehicleBtn" onclick="toggleAddVehicleForm()" class="bg-[#C59B27] hover:bg-[#d8ad34] text-black font-bold px-2.5 py-1 rounded text-[11px] transition">
+                + Add Vehicle
+              </button>
+            </div>
+          </div>
+
+          <!-- Saved Garage Vehicles Grid -->
+          <div id="savedVehiclesList" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+
+          <!-- Add New Vehicle Form (Hidden when 4 cars reached or closed) -->
+          <div id="addVehicleFormBox" class="hidden p-3 bg-zinc-950 border border-[#C59B27]/50 rounded-lg space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-[#C59B27] uppercase tracking-wider">Add Vehicle to Garage (Max 4)</span>
+              <button type="button" onclick="toggleAddVehicleForm(false)" class="text-xs text-zinc-400 hover:text-white">&times; Close</button>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div>
+                <label class="block text-[11px] text-zinc-400 mb-1">Year</label>
+                <input type="text" id="vehYear" placeholder="2024" maxlength="4" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+              </div>
+              <div>
+                <label class="block text-[11px] text-zinc-400 mb-1">Make *</label>
+                <input type="text" id="vehMake" placeholder="e.g. BMW" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+              </div>
+              <div class="col-span-2 sm:col-span-1">
+                <label class="block text-[11px] text-zinc-400 mb-1">Model *</label>
+                <input type="text" id="vehModel" placeholder="e.g. X5 M" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div>
+                <label class="block text-[11px] text-zinc-400 mb-1">Exterior Color</label>
+                <input type="text" id="vehColor" placeholder="e.g. Black Sapphire" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+              </div>
+              <div>
+                <label class="block text-[11px] text-zinc-400 mb-1">License Plate</label>
+                <input type="text" id="vehPlate" placeholder="Optional" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white uppercase focus:outline-none focus:border-[#C59B27]">
+              </div>
+              <div>
+                <label class="block text-[11px] text-zinc-400 mb-1">Vehicle Category *</label>
+                <select id="vehCategory" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+                  <option value="Coupe">Coupe</option>
+                  <option value="Sedan" selected>Sedan</option>
+                  <option value="Midsize SUV / Crossover">Midsize SUV / Crossover</option>
+                  <option value="Pickup Truck">Pickup Truck</option>
+                  <option value="Large SUV">Large SUV</option>
+                  <option value="Executive Vehicle">Premium Fleet / Executive</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] text-zinc-400 mb-1">Personalized Care Preferences &amp; Paint/Interior Notes</label>
+              <input type="text" id="vehCareNotes" placeholder="e.g. Ceramic coated, matte PPF on hood, leather conditioner, no tire shine..." class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-[#C59B27]">
+            </div>
+
+            <button type="button" onclick="saveNewVehicleToProfile()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-xs transition">
+              Save Vehicle to Care Profile
+            </button>
+          </div>
+        </div>
+
+        <!-- Booking Mode Switch: New Monthly Plan vs Existing Member Add-Ons Only -->
+        <div class="p-1 bg-black border border-zinc-800 rounded-lg grid grid-cols-2 gap-1.5">
           <button type="button" id="modeSubscriptionBtn" onclick="setBookingMode('subscription')" class="py-2 px-2.5 rounded-md text-xs font-bold bg-[#C59B27] text-black transition">
             New Monthly Plan
           </button>
@@ -380,39 +473,26 @@
         </div>
 
         <form id="bookingForm" class="space-y-3 sm:space-y-3.5">
-          <div>
-            <label class="block text-xs font-medium mb-1 text-zinc-300">Full Name</label>
-            <input type="text" id="clientName" required class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5">
             <div>
-              <label class="block text-xs font-medium mb-1 text-zinc-300">Phone Number <span class="text-[10px] text-[#C59B27]">(Tracks Loyalty &amp; Garage)</span></label>
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Full Name</label>
+              <input type="text" id="clientName" required class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Phone Number</label>
               <input type="tel" id="phone" required placeholder="(555) 123-4567" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
             </div>
             <div>
-              <label class="block text-xs font-medium mb-1 text-zinc-300">Email Address</label>
-              <input type="email" id="email" required class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Account Email</label>
+              <input type="email" id="email" required readonly class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-zinc-400 cursor-not-allowed">
             </div>
-          </div>
-
-          <!-- Loyalty Status Banner (Auto-updates from Phone Number in Supabase) -->
-          <div id="loyaltyStatusBox" class="p-2.5 bg-black border border-zinc-800 rounded-lg flex items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-2">
-              <span id="loyaltyStatusDot" class="w-2 h-2 rounded-full bg-zinc-600 flex-shrink-0"></span>
-              <span id="loyaltyStatusText" class="text-zinc-400">Enter your phone number to check your 5-service loyalty status (25% OFF add-ons).</span>
-            </div>
-            <span id="loyaltyProgressBadge" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-[10px] font-bold text-zinc-300 flex-shrink-0">0 / 5 Services</span>
           </div>
 
           <!-- Subscription Plan Section (Hidden in Add-Ons Only Mode) -->
           <div id="subscriptionPlanSection" class="space-y-3">
-            <!-- Single Unified Dropdown: Subscription Plan - Vehicle Category -->
             <div>
-              <label class="block text-xs font-medium mb-1 text-zinc-300">Select Subscription Plan & Vehicle Category</label>
-              <select id="servicePackageCombined" onchange="onPlanSelectionChanged()" class="w-full bg-black border border-[#8A6814]/50 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] font-semibold transition">
-                
-                <!-- KW Signature Wash 365 Plans ($220 - $300) -->
+              <label class="block text-xs font-medium mb-1 text-zinc-300">Select Subscription Plan &amp; Vehicle Category</label>
+              <select id="servicePackageCombined" onchange="calculateTotalPrice()" class="w-full bg-black border border-[#8A6814]/50 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] font-semibold transition">
                 <optgroup label="KW Signature Wash 365">
                   <option value="KW Signature Wash 365 - Coupe" data-plan="KW Signature Wash 365" data-vehicle="Coupe" data-price="220" data-is-subscription="true" selected>KW Signature Wash 365 - Coupe ($220/mo)</option>
                   <option value="KW Signature Wash 365 - Sedan" data-plan="KW Signature Wash 365" data-vehicle="Sedan" data-price="240" data-is-subscription="true">KW Signature Wash 365 - Sedan ($240/mo)</option>
@@ -421,7 +501,6 @@
                   <option value="KW Signature Wash 365 - Large SUV" data-plan="KW Signature Wash 365" data-vehicle="Large SUV" data-price="300" data-is-subscription="true">KW Signature Wash 365 - Large SUV ($300/mo)</option>
                 </optgroup>
 
-                <!-- 365 AutoCare Plans ($280 - $400) -->
                 <optgroup label="365 AutoCare">
                   <option value="365 AutoCare - Coupe" data-plan="365 AutoCare" data-vehicle="Coupe" data-price="280" data-is-subscription="true">365 AutoCare - Coupe ($280/mo)</option>
                   <option value="365 AutoCare - Sedan" data-plan="365 AutoCare" data-vehicle="Sedan" data-price="310" data-is-subscription="true">365 AutoCare - Sedan ($310/mo)</option>
@@ -430,8 +509,7 @@
                   <option value="365 AutoCare - Large SUV" data-plan="365 AutoCare" data-vehicle="Large SUV" data-price="400" data-is-subscription="true">365 AutoCare - Large SUV ($400/mo)</option>
                 </optgroup>
 
-                <!-- Black Label 365 Plans ($449 - $700) -->
-                <optgroup label="Black Label 365">
+                <optgroup label="Black Label 365 (Unlocks Black Label VIP Status)">
                   <option value="Black Label 365 ($449) - Coupe" data-plan="Black Label 365 ($449)" data-vehicle="Coupe" data-price="449" data-is-subscription="true">Black Label 365 - Coupe ($449/mo)</option>
                   <option value="Black Label 365 ($499) - Sedan" data-plan="Black Label 365 ($499)" data-vehicle="Sedan" data-price="499" data-is-subscription="true">Black Label 365 - Sedan ($499/mo)</option>
                   <option value="Black Label 365 ($549) - Midsize SUV" data-plan="Black Label 365 ($549)" data-vehicle="Midsize SUV / Crossover" data-price="549" data-is-subscription="true">Black Label 365 - Midsize SUV / Crossover ($549/mo)</option>
@@ -439,17 +517,14 @@
                   <option value="Black Label 365 ($649) - Large SUV" data-plan="Black Label 365 ($649)" data-vehicle="Large SUV" data-price="649" data-is-subscription="true">Black Label 365 - Large SUV ($649/mo)</option>
                   <option value="Black Label 365 ($700) - Premium Fleet / Executive" data-plan="Black Label 365 ($700)" data-vehicle="Executive Vehicle" data-price="700" data-is-subscription="true">Black Label 365 - Premium Fleet / Executive ($700/mo)</option>
                 </optgroup>
-
               </select>
             </div>
 
-            <!-- Setup Fee Mandatory Row ($50) -->
             <div class="p-3 bg-black border border-zinc-800 rounded-lg flex items-center justify-between">
               <span class="text-xs font-semibold text-zinc-200">Setup Fee <span class="text-red-500 font-bold">(Non-refundable)</span></span>
               <span class="text-xs font-bold text-[#C59B27]">$50</span>
             </div>
 
-            <!-- Subscription Agreement Disclaimer -->
             <div id="subscriptionDisclaimer" class="p-3 bg-black border border-[#8A6814]/40 rounded-lg text-xs text-zinc-300 space-y-1">
               <p class="font-bold text-[#C59B27] flex items-center gap-1.5">
                 <svg class="w-4 h-4 text-[#C59B27]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
@@ -461,64 +536,14 @@
             </div>
           </div>
 
-          <!-- Existing Member Add-Ons Only Notice (Shown in Add-Ons Only Mode) -->
+          <!-- Existing Member Add-Ons Only Notice -->
           <div id="addonsOnlyNotice" class="hidden p-3 bg-black border border-[#C59B27]/50 rounded-lg text-xs text-zinc-300 space-y-1">
             <p class="font-bold text-[#C59B27] flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Active Subscriber Add-On Booking (One-Time Charge)
             </p>
             <p class="leading-relaxed text-[11px] text-zinc-400">
-              No plan fee or $50 setup fee will be charged. Select the add-on services below to attach to your scheduled visit.
+              No plan fee or $50 setup fee will be charged. Select the add-on services below to attach to your selected vehicle's visit.
             </p>
-          </div>
-
-          <!-- ======================================================== -->
-          <!-- BLACK LABEL 365 EXCLUSIVE: PERSONALIZED VEHICLE CARE GARAGE -->
-          <!-- ======================================================== -->
-          <!-- Locked Preview Banner (Shown when non-Black Label plan is active) -->
-          <div id="blackLabelLockedBanner" class="p-3 bg-black border border-zinc-800/90 rounded-lg flex items-center justify-between gap-3">
-            <div class="flex items-start gap-2.5">
-              <span class="px-2 py-0.5 rounded bg-zinc-900 border border-[#C59B27]/40 text-[10px] font-bold uppercase tracking-wider text-[#C59B27] flex-shrink-0 mt-0.5">
-                Black Label 365
-              </span>
-              <p class="text-[11px] text-zinc-400 leading-snug">
-                <strong class="text-zinc-200">Personalized Vehicle Care Profile (Up to 4 Vehicles)</strong> is included exclusively with <span class="text-[#C59B27] font-semibold">Black Label 365</span> memberships.
-              </p>
-            </div>
-          </div>
-
-          <!-- Active Black Label 365 Garage Card (Max 4 Vehicles per Phone Number) -->
-          <div id="blackLabelGarageSection" class="hidden p-3.5 bg-black border border-[#C59B27] rounded-lg space-y-3 shadow-lg">
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2.5">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-[#C59B27] animate-pulse"></span>
-                  <h4 class="text-xs font-bold text-[#C59B27] uppercase tracking-wider">Black Label 365 — Personalized Vehicle Care Profile</h4>
-                </div>
-                <p class="text-[10px] text-zinc-400 mt-0.5">Save up to <strong class="text-white">4 vehicles per phone number</strong> with exact paint, wheel &amp; interior specs.</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <span id="garageCountBadge" class="px-2 py-0.5 rounded bg-[#C59B27]/15 border border-[#C59B27]/50 text-[10px] font-bold text-[#C59B27]">
-                  0 / 4 Cars
-                </span>
-                <button type="button" id="addVehicleBtn" onclick="openVehicleProfileModal()" class="bg-[#C59B27] hover:bg-[#d8ad32] disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-black font-bold px-2.5 py-1 rounded text-[11px] transition">
-                  + Add Car
-                </button>
-              </div>
-            </div>
-
-            <!-- Phone Prompt if 10 digits not entered yet -->
-            <div id="garagePhoneHint" class="p-2.5 bg-zinc-950 border border-zinc-800 rounded text-[11px] text-zinc-400">
-              Enter your 10-digit phone number above to load or save up to 4 Black Label 365 vehicle profiles.
-            </div>
-
-            <!-- Saved 4-Car Grid -->
-            <div id="garageVehiclesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
-
-            <!-- Active Selected Vehicle Indicator -->
-            <div id="selectedVehicleStrip" class="hidden p-2 bg-zinc-950 border border-emerald-500/40 rounded text-[11px] text-emerald-400 flex items-center justify-between gap-2">
-              <span id="selectedVehicleText" class="font-semibold truncate"></span>
-              <span class="text-[10px] uppercase font-bold tracking-wider flex-shrink-0">Attached to Order</span>
-            </div>
           </div>
 
           <!-- Standard Add-ons Selection Section -->
@@ -530,8 +555,6 @@
               </span>
             </div>
             <div class="space-y-3 text-xs text-zinc-300 max-h-56 overflow-y-auto pr-1">
-              
-              <!-- Headlight Restoration ($145 - $210) -->
               <div>
                 <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Headlight Restoration</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -546,7 +569,6 @@
                 </div>
               </div>
 
-              <!-- Pet Hair Removal ($50 - $90) -->
               <div>
                 <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Pet Hair Removal</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -561,7 +583,6 @@
                 </div>
               </div>
 
-              <!-- Seat Shampoo / Extraction ($100 - $140) -->
               <div>
                 <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Seat Shampoo / Extraction</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -576,7 +597,6 @@
                 </div>
               </div>
 
-              <!-- Engine Bay Cleaning ($100 - $150) -->
               <div>
                 <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Engine Bay Cleaning</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -591,7 +611,6 @@
                 </div>
               </div>
 
-              <!-- Excessive Soil Removal ($70 - $100) -->
               <div>
                 <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1">Excessive Soil Removal</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -605,7 +624,6 @@
                   </label>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -614,15 +632,14 @@
             <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
               <div>
                 <h4 class="text-xs font-bold text-[#C59B27] uppercase tracking-wider flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#C59B27]"></span> KW Elite Paint Restoration & Ceramic Protection
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#C59B27]"></span> KW Elite Paint Restoration &amp; Ceramic Protection
                 </h4>
-                <p class="text-[10px] text-zinc-400 mt-0.5">Professional defect removal & long-term hydrophobic shielding</p>
+                <p class="text-[10px] text-zinc-400 mt-0.5">Professional defect removal &amp; long-term hydrophobic shielding</p>
               </div>
               <span class="text-[10px] bg-[#C59B27]/10 text-[#C59B27] border border-[#C59B27]/40 px-2 py-0.5 rounded font-bold uppercase flex-shrink-0">Elite Tier</span>
             </div>
 
             <div class="space-y-3 text-xs text-zinc-300 max-h-60 overflow-y-auto pr-1">
-              <!-- Paint Correction Sub-section -->
               <div>
                 <p class="text-[11px] font-bold text-[#C59B27] uppercase tracking-wider mb-1">Paint Correction <span class="text-zinc-400 normal-case font-normal">(Luxury/Exotic: Custom Quote)</span></p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -653,7 +670,6 @@
                 </div>
               </div>
 
-              <!-- Ceramic Coating Protection Sub-section -->
               <div>
                 <p class="text-[11px] font-bold text-[#C59B27] uppercase tracking-wider mb-1">Ceramic Coating Protection <span class="text-zinc-400 normal-case font-normal">(Luxury/Exotic: $1,899+ / Custom)</span></p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -686,7 +702,7 @@
             </div>
           </div>
 
-          <!-- Loyalty Savings Summary Row (Shown when 25% Discount Applies & Add-on Selected) -->
+          <!-- Loyalty Savings Summary Row -->
           <div id="loyaltySavingsSummary" class="hidden p-2.5 bg-black border border-[#C59B27]/60 rounded-lg flex items-center justify-between text-xs">
             <span class="text-[#C59B27] font-semibold">5th-Service Loyalty Savings (25% OFF Add-Ons):</span>
             <span id="loyaltySavingsAmount" class="text-emerald-400 font-bold">-$0</span>
@@ -696,8 +712,6 @@
           <div class="relative">
             <label class="block text-xs font-medium mb-1 text-zinc-300">Mobile Service Address</label>
             <input type="text" id="serviceAddress" required placeholder="Start typing street address..." autocomplete="off" class="w-full bg-black border border-zinc-800 rounded-lg p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-[#C59B27] transition">
-            
-            <!-- Dropdown Suggestions Container -->
             <ul id="addressSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-zinc-950 border border-[#8A6814]/50 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-50 hidden divide-y divide-zinc-800/60"></ul>
           </div>
 
@@ -716,7 +730,6 @@
               </button>
             </div>
 
-            <!-- Section 1: Card / Online Payment Box -->
             <div id="cardPaymentSection" class="space-y-3">
               <div>
                 <label class="block text-xs font-medium mb-1.5 text-zinc-300">Express Instant Checkout</label>
@@ -736,7 +749,6 @@
               </div>
             </div>
 
-            <!-- Section 2: Pay in Person / Zelle Box (Hidden by Default) -->
             <div id="inPersonSection" class="hidden p-4 bg-black border border-zinc-800 rounded-lg space-y-2">
               <div class="flex items-center gap-2 text-[#C59B27] font-bold text-xs">
                 <span class="w-2 h-2 rounded-full bg-[#C59B27]"></span> Pay Upon Completion or via Zelle
@@ -745,7 +757,7 @@
                 No payment is required right now. You can pay with <strong class="text-white">Cash</strong>, <strong class="text-white">Card</strong>, or <strong class="text-white">Zelle</strong> when our detailing unit finishes servicing your vehicle at your location.
               </p>
               <div class="p-2.5 bg-zinc-950 border border-[#8A6814]/40 rounded text-xs text-zinc-400">
-                <span class="font-bold text-[#C59B27]">Zelle Info:</span> Send payment to <span class="text-white font-medium">KW Commercial Fleet Washing & Mobile Detailing LLC</span> upon arrival.
+                <span class="font-bold text-[#C59B27]">Zelle Info:</span> Send payment to <span class="text-white font-medium">KW Commercial Fleet Washing &amp; Mobile Detailing LLC</span> upon arrival.
               </div>
             </div>
           </div>
@@ -762,13 +774,17 @@
       </div>
 
       <!-- ========================================== -->
-      <!-- LIVE ORDER VIEW (POST-PAYMENT TRACKER)     -->
+      <!-- PRIVATE LIVE ORDER VIEW (LOGGED-IN ONLY)   -->
       <!-- ========================================== -->
       <div id="orderViewContainer" class="hidden bg-black border border-[#C59B27]/60 rounded-xl p-4 sm:p-6 space-y-5 shadow-2xl">
-        <!-- Top Header & Order ID -->
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
           <div>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Live Service Tracker</span>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">Private Live Service Tracker</span>
+              <span id="ovVipTag" class="hidden px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-[#C59B27] text-black">
+                Black Label VIP
+              </span>
+            </div>
             <h3 class="text-base sm:text-lg font-bold text-white">Order View <span id="ovOrderNumber" class="text-zinc-400 text-xs font-mono"></span></h3>
           </div>
           <span id="ovStatusBadge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#C59B27]/15 text-[#C59B27] border border-[#C59B27]/50">
@@ -776,7 +792,7 @@
           </span>
         </div>
 
-        <!-- Live Service Duration Tracker Box (Synced with KW Portal) -->
+        <!-- Live Service Duration Tracker Box -->
         <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3">
           <div>
             <p class="text-[11px] uppercase tracking-wider font-bold text-zinc-400">Service Duration Tracker</p>
@@ -789,7 +805,6 @@
 
         <!-- 4-Stage Visual Progress Stepper -->
         <div class="space-y-3 py-1">
-          <!-- Stage 1: Confirmed -->
           <div id="stage-confirmed" class="flex items-start gap-3 p-3 rounded-lg border border-[#C59B27]/50 bg-zinc-950 transition">
             <div class="w-6 h-6 rounded-full bg-[#C59B27] text-black flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">1</div>
             <div>
@@ -798,7 +813,6 @@
             </div>
           </div>
 
-          <!-- Stage 2: On My Way -->
           <div id="stage-onway" class="flex items-start gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-950/50 opacity-50 transition">
             <div class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">2</div>
             <div>
@@ -807,7 +821,6 @@
             </div>
           </div>
 
-          <!-- Stage 3: In Progress -->
           <div id="stage-progress" class="flex items-start gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-950/50 opacity-50 transition">
             <div class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">3</div>
             <div>
@@ -816,12 +829,11 @@
             </div>
           </div>
 
-          <!-- Stage 4: Completed -->
           <div id="stage-completed" class="flex items-start gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-950/50 opacity-50 transition">
             <div class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">4</div>
             <div>
               <p class="text-xs sm:text-sm font-bold text-white">Completed</p>
-              <p class="text-[11px] text-zinc-400">Service finished! Thank you for choosing KW Commercial Fleet Washing & Mobile Detailing LLC.</p>
+              <p class="text-[11px] text-zinc-400">Service finished! Thank you for choosing KW Commercial Fleet Washing &amp; Mobile Detailing LLC.</p>
             </div>
           </div>
         </div>
@@ -829,7 +841,7 @@
         <!-- Order Summary Footer -->
         <div class="p-3 bg-zinc-950 border border-zinc-800 rounded-lg text-xs space-y-1.5">
           <div class="flex justify-between gap-2">
-            <span class="text-zinc-400 flex-shrink-0">Service Plan:</span>
+            <span class="text-zinc-400 flex-shrink-0">Service &amp; Vehicle:</span>
             <span id="ovServiceSummary" class="text-white font-semibold text-right"></span>
           </div>
           <div id="ovAddonsRow" class="hidden flex justify-between gap-2">
@@ -842,19 +854,18 @@
           </div>
         </div>
 
-        <!-- Copy Tracking Link & Book Another Service -->
         <div class="flex flex-col sm:flex-row gap-2">
-          <button type="button" onclick="copyOrderTrackingLink()" class="sm:w-2/3 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition shadow-lg shadow-red-950/40">
-            Copy Live Tracking Link
+          <button type="button" onclick="openOrderLookupModal()" class="sm:w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition shadow-lg shadow-red-950/40">
+            All My Member Orders
           </button>
-          <button type="button" onclick="window.location.href = window.location.pathname" class="sm:w-1/3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg text-xs border border-zinc-800 transition">
+          <button type="button" onclick="window.location.href = window.location.pathname" class="sm:w-1/2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold py-2.5 px-4 rounded-lg text-xs border border-zinc-800 transition">
             New Booking
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Container Footer: Version v1.0.0 & Nova Web Forge Credit -->
+    <!-- Container Footer -->
     <footer class="mt-4 pt-3 border-t border-zinc-900 flex flex-wrap items-center justify-center gap-2.5 text-[11px] text-zinc-500">
       <a id="footerChangelogLink" href="https://fearless-mulberry-c4d.notion.site/v1-0-0-Initial-Production-Release-42120cabc8b18096b686ca1ca4cd01c9?source=copy_link" target="_blank" rel="noopener noreferrer" title="View Release Notes & Hotfixes" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-black border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 hover:border-emerald-400/60 font-mono font-semibold transition">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
@@ -866,16 +877,10 @@
   </div>
 
   <script>
-    // ==============================================================
-    // PUBLIC CHANGELOG / RELEASE NOTES URL:
-    // ==============================================================
     const CHANGELOG_URL = 'https://fearless-mulberry-c4d.notion.site/v1-0-0-Initial-Production-Release-42120cabc8b18096b686ca1ca4cd01c9?source=copy_link';
-
     (function bindChangelogFooterLink() {
       const linkEl = document.getElementById('footerChangelogLink');
-      if (linkEl && CHANGELOG_URL) {
-        linkEl.href = CHANGELOG_URL;
-      }
+      if (linkEl && CHANGELOG_URL) linkEl.href = CHANGELOG_URL;
     })();
 
     function closeServicesAlert() {
@@ -888,18 +893,9 @@
       if (modal) modal.classList.remove('hidden');
     }
 
-    function openOrderLookupModal() {
-      document.getElementById('orderLookupError').classList.add('hidden');
-      document.getElementById('orderLookupModal').classList.remove('hidden');
-    }
-
-    function closeOrderLookupModal() {
-      document.getElementById('orderLookupModal').classList.add('hidden');
-    }
-
     const DAILY_MAX_LIMIT = 4;
     const TIME_SLOT_MAX = 4;
-    const MAX_BLACK_LABEL_VEHICLES = 4;
+    const MAX_GARAGE_VEHICLES = 4;
 
     const SUPABASE_URL = 'https://rqvxkvbkgrplhrsvibve.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_SxFkjpNuef4TbmJ-8g35XQ_pEmjFQ9s';
@@ -916,38 +912,639 @@
     let selectedTimeSlotStr = '';
     let currentMonthBookings = [];
 
-    // Booking Mode ('subscription' | 'addons_only'), Loyalty & Black Label 365 Garage State
+    // Client Account, VIP Status, Garage (Max 4 Cars) & Loyalty State
+    let currentUser = null;
+    let clientVehicles = [];
+    let selectedVehicleId = null;
+    let isBlackLabelVIP = false;
     let bookingMode = 'subscription';
     let completedServiceCount = 0;
     let hasLoyaltyDiscount = false;
-    let hasExistingBlackLabelSub = false;
-    let savedGarageVehicles = [];
-    let selectedVehicleProfileId = null;
 
-    function isBlackLabelEligible() {
-      if (bookingMode === 'subscription') {
-        const packageSelect = document.getElementById('servicePackageCombined');
-        const val = packageSelect ? packageSelect.value : '';
-        return val.startsWith('Black Label 365') || hasExistingBlackLabelSub;
+    let stepAuthMode = 'signin';
+    let modalAuthMode = 'signin';
+
+    function switchStepAuthMode(mode) {
+      stepAuthMode = mode;
+      const signInTab = document.getElementById('stepAuthSignInTab');
+      const signUpTab = document.getElementById('stepAuthSignUpTab');
+      const extraFields = document.getElementById('step3SignUpExtraFields');
+      const submitBtn = document.getElementById('step3AuthSubmitBtn');
+      const msgEl = document.getElementById('step3AuthMessage');
+      msgEl.classList.add('hidden');
+
+      if (mode === 'signin') {
+        signInTab.className = 'py-2 px-3 rounded-md text-xs font-bold bg-[#C59B27] text-black transition';
+        signUpTab.className = 'py-2 px-3 rounded-md text-xs font-bold text-zinc-400 hover:text-white transition';
+        extraFields.classList.add('hidden');
+        document.getElementById('authFullName').required = false;
+        document.getElementById('authPhone').required = false;
+        submitBtn.textContent = 'Sign In & Open Vehicle Profile';
+      } else {
+        signUpTab.className = 'py-2 px-3 rounded-md text-xs font-bold bg-[#C59B27] text-black transition';
+        signInTab.className = 'py-2 px-3 rounded-md text-xs font-bold text-zinc-400 hover:text-white transition';
+        extraFields.classList.remove('hidden');
+        document.getElementById('authFullName').required = true;
+        document.getElementById('authPhone').required = true;
+        submitBtn.textContent = 'Create Account & Build Vehicle Profile';
       }
-      return hasExistingBlackLabelSub;
     }
 
-    function syncBlackLabelGarageVisibility() {
-      const eligible = isBlackLabelEligible();
-      const lockedBanner = document.getElementById('blackLabelLockedBanner');
-      const garageSection = document.getElementById('blackLabelGarageSection');
+    function switchModalAuthMode(mode) {
+      modalAuthMode = mode;
+      const signInTab = document.getElementById('modalTabSignIn');
+      const signUpTab = document.getElementById('modalTabSignUp');
+      const extraFields = document.getElementById('modalSignUpFields');
+      const submitBtn = document.getElementById('modalAuthSubmitBtn');
+      document.getElementById('modalAuthError').classList.add('hidden');
 
-      lockedBanner.classList.toggle('hidden', eligible);
-      garageSection.classList.toggle('hidden', !eligible);
-      renderGarageVehicles();
+      if (mode === 'signin') {
+        signInTab.className = 'py-1.5 rounded text-xs font-bold bg-[#C59B27] text-black transition';
+        signUpTab.className = 'py-1.5 rounded text-xs font-bold text-zinc-400 hover:text-white transition';
+        extraFields.classList.add('hidden');
+        document.getElementById('modalFullName').required = false;
+        document.getElementById('modalPhone').required = false;
+        submitBtn.textContent = 'Sign In to Live Order View';
+      } else {
+        signUpTab.className = 'py-1.5 rounded text-xs font-bold bg-[#C59B27] text-black transition';
+        signInTab.className = 'py-1.5 rounded text-xs font-bold text-zinc-400 hover:text-white transition';
+        extraFields.classList.remove('hidden');
+        document.getElementById('modalFullName').required = true;
+        document.getElementById('modalPhone').required = true;
+        submitBtn.textContent = 'Create Account & View Orders';
+      }
     }
 
-    function onPlanSelectionChanged() {
+    async function handleStep3AuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      const fullName = document.getElementById('authFullName').value.trim();
+      const phone = document.getElementById('authPhone').value.trim();
+      const btn = document.getElementById('step3AuthSubmitBtn');
+      const msgEl = document.getElementById('step3AuthMessage');
+
+      btn.disabled = true;
+      msgEl.classList.add('hidden');
+
+      try {
+        if (stepAuthMode === 'signup') {
+          btn.textContent = 'Creating Account...';
+          const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { full_name: fullName, phone: phone }
+            }
+          });
+          if (error) throw error;
+
+          if (data.user && !data.session) {
+            msgEl.textContent = 'Account created! Please check your email to confirm, then sign in above.';
+            msgEl.className = 'text-xs font-semibold text-emerald-400';
+            msgEl.classList.remove('hidden');
+            switchStepAuthMode('signin');
+          } else if (data.user) {
+            await onClientAuthenticated(data.user);
+          }
+        } else {
+          btn.textContent = 'Signing In...';
+          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          if (data.user) {
+            await onClientAuthenticated(data.user);
+          }
+        }
+      } catch (err) {
+        msgEl.textContent = err.message || 'Authentication failed. Please try again.';
+        msgEl.className = 'text-xs font-semibold text-red-500';
+        msgEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        switchStepAuthMode(stepAuthMode);
+      }
+    }
+
+    async function handleModalAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('modalEmail').value.trim();
+      const password = document.getElementById('modalPassword').value;
+      const fullName = document.getElementById('modalFullName').value.trim();
+      const phone = document.getElementById('modalPhone').value.trim();
+      const btn = document.getElementById('modalAuthSubmitBtn');
+      const errEl = document.getElementById('modalAuthError');
+
+      btn.disabled = true;
+      errEl.classList.add('hidden');
+
+      try {
+        if (modalAuthMode === 'signup') {
+          btn.textContent = 'Creating Account...';
+          const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: { data: { full_name: fullName, phone: phone } }
+          });
+          if (error) throw error;
+          if (data.user && !data.session) {
+            errEl.textContent = 'Account created! Please confirm your email, then sign in.';
+            errEl.className = 'text-xs text-emerald-400 font-medium';
+            errEl.classList.remove('hidden');
+            switchModalAuthMode('signin');
+          } else if (data.user) {
+            await onClientAuthenticated(data.user);
+            await renderModalMemberOrders();
+          }
+        } else {
+          btn.textContent = 'Signing In...';
+          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          if (data.user) {
+            await onClientAuthenticated(data.user);
+            await renderModalMemberOrders();
+          }
+        }
+      } catch (err) {
+        errEl.textContent = err.message || 'Invalid login credentials.';
+        errEl.className = 'text-xs text-red-500 font-medium';
+        errEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        switchModalAuthMode(modalAuthMode);
+      }
+    }
+
+    async function signOutClientAccount() {
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      clientVehicles = [];
+      selectedVehicleId = null;
+      isBlackLabelVIP = false;
+      completedServiceCount = 0;
+      hasLoyaltyDiscount = false;
+
+      document.getElementById('bannerMemberStatus').textContent =
+        'Instant scheduling, personalized vehicle care profiles & VIP tracking active.';
+      document.getElementById('step3AuthGate').classList.remove('hidden');
+      document.getElementById('bookingFormWrapper').classList.add('hidden');
+      document.getElementById('orderViewContainer').classList.add('hidden');
+      document.getElementById('stepProgressWrapper').classList.remove('hidden');
+
+      // Reset modal state if open
+      document.getElementById('modalAuthBox').classList.remove('hidden');
+      document.getElementById('modalOrdersBox').classList.add('hidden');
+    }
+
+    async function onClientAuthenticated(user) {
+      currentUser = user;
+      const meta = user.user_metadata || {};
+      const displayName = meta.full_name || user.email.split('@')[0];
+      const savedPhone = meta.phone || '';
+
+      document.getElementById('bannerMemberStatus').innerHTML =
+        `Signed in as <strong class="text-[#C59B27]">${escapeHtml(displayName)}</strong> &bull; Personalized Vehicle Care &amp; VIP Active`;
+
+      // Unlock Step 3 member workspace
+      document.getElementById('step3AuthGate').classList.add('hidden');
+      document.getElementById('bookingFormWrapper').classList.remove('hidden');
+
+      document.getElementById('memberProfileName').textContent = displayName;
+      document.getElementById('memberProfileSubtext').textContent = user.email;
+      document.getElementById('email').value = user.email;
+
+      if (!document.getElementById('clientName').value && meta.full_name) {
+        document.getElementById('clientName').value = meta.full_name;
+      }
+      if (!document.getElementById('phone').value && savedPhone) {
+        document.getElementById('phone').value = savedPhone;
+      }
+
+      await loadMemberVipAndLoyalty(user);
+      await loadClientVehicles(user.id);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function normalizePhoneDigits(raw) {
+      const digits = (raw || '').replace(/\D/g, '');
+      return digits.length >= 10 ? digits.slice(-10) : digits;
+    }
+
+    // Load client's Black Label VIP Status & 5-Service Loyalty Count
+    async function loadMemberVipAndLoyalty(user) {
+      const phoneInputVal = document.getElementById('phone').value || (user.user_metadata && user.user_metadata.phone) || '';
+      const digits = normalizePhoneDigits(phoneInputVal);
+
+      const { data: userBookings } = await supabaseClient
+        .from('bookings')
+        .select('*')
+        .eq('email', user.email)
+        .order('created_at', { ascending: false });
+
+      let allClientRows = Array.isArray(userBookings) ? [...userBookings] : [];
+
+      if (digits.length === 10) {
+        const area = digits.slice(0, 3);
+        const prefix = digits.slice(3, 6);
+        const line = digits.slice(6, 10);
+        const { data: phoneRows } = await supabaseClient
+          .from('bookings')
+          .select('*')
+          .ilike('phone', `%${area}%${prefix}%${line}%`);
+
+        if (Array.isArray(phoneRows)) {
+          const seenIds = new Set(allClientRows.map(r => r.id));
+          phoneRows.forEach(r => {
+            if (!seenIds.has(r.id) && normalizePhoneDigits(r.phone) === digits) {
+              allClientRows.push(r);
+            }
+          });
+        }
+      }
+
+      // Check Black Label VIP Status
+      isBlackLabelVIP = allClientRows.some(r => {
+        const svc = String(r.service_type || '').toLowerCase();
+        const pay = String(r.payment_status || '').toLowerCase();
+        return svc.includes('black label') && !pay.includes('cancel');
+      });
+
+      const hasAnySub = allClientRows.some(r => r.is_subscription === true);
+
+      const vipBadge = document.getElementById('vipStatusBadge');
+      const vipTierText = document.getElementById('vipTierDetailText');
+      const ovVipTag = document.getElementById('ovVipTag');
+
+      if (isBlackLabelVIP) {
+        vipBadge.textContent = '★ Black Label VIP';
+        vipBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#C59B27] text-black shadow-md';
+        vipTierText.textContent = 'Black Label 365 VIP Member — Priority Scheduling Active';
+        vipTierText.className = 'text-xs font-bold text-[#C59B27]';
+        if (ovVipTag) ovVipTag.classList.remove('hidden');
+      } else if (hasAnySub) {
+        vipBadge.textContent = '365 Member';
+        vipBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-900 text-[#C59B27] border border-[#C59B27]/50';
+        vipTierText.textContent = 'Active 365 Subscriber (Upgrade to Black Label 365 for VIP)';
+        vipTierText.className = 'text-xs font-semibold text-zinc-200';
+        if (ovVipTag) ovVipTag.classList.add('hidden');
+      } else {
+        vipBadge.textContent = 'Standard Member';
+        vipBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-700';
+        vipTierText.textContent = 'Enroll in Black Label 365 to unlock Black Label VIP Status';
+        vipTierText.className = 'text-xs font-semibold text-zinc-400';
+        if (ovVipTag) ovVipTag.classList.add('hidden');
+      }
+
+      // Count completed services for 25% OFF add-ons after 5th service
+      const completedRows = allClientRows.filter(r => {
+        const st = String(r.status || '').trim().toLowerCase();
+        return st === 'completed' || st.includes('complete');
+      });
+
+      completedServiceCount = completedRows.length;
+      hasLoyaltyDiscount = completedServiceCount >= 5;
+
+      const loyaltyText = document.getElementById('loyaltyStatusText');
+      const loyaltyBadge = document.getElementById('loyaltyProgressBadge');
+      const discountPill = document.getElementById('addonDiscountPill');
+
+      if (hasLoyaltyDiscount) {
+        loyaltyText.textContent = '25% OFF Add-Ons Unlocked!';
+        loyaltyText.className = 'text-xs font-bold text-emerald-400';
+        loyaltyBadge.textContent = `${completedServiceCount} Done (25% OFF)`;
+        discountPill.classList.remove('hidden');
+      } else {
+        const left = 5 - completedServiceCount;
+        loyaltyText.textContent = `${left} more service${left === 1 ? '' : 's'} until 25% OFF add-ons`;
+        loyaltyText.className = 'text-xs font-semibold text-zinc-300';
+        loyaltyBadge.textContent = `${completedServiceCount} / 5`;
+        discountPill.classList.add('hidden');
+      }
+
       calculateTotalPrice();
-      syncBlackLabelGarageVisibility();
+      return allClientRows;
     }
 
+    let phoneReloadTimer = null;
+    document.getElementById('phone').addEventListener('input', () => {
+      if (!currentUser) return;
+      clearTimeout(phoneReloadTimer);
+      phoneReloadTimer = setTimeout(() => loadMemberVipAndLoyalty(currentUser), 450);
+    });
+
+    // ========================================================
+    // PERSONALIZED VEHICLE CARE PROFILE (MAX 4 CARS PER ACCOUNT)
+    // ========================================================
+    function getLocalGarageKey(userId) {
+      return `kw_garage_vehicles_${userId}`;
+    }
+
+    async function loadClientVehicles(userId) {
+      let vehicles = [];
+      try {
+        const { data, error } = await supabaseClient
+          .from('client_vehicles')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: true });
+
+        if (!error && Array.isArray(data)) {
+          vehicles = data;
+          localStorage.setItem(getLocalGarageKey(userId), JSON.stringify(vehicles));
+        } else {
+          vehicles = JSON.parse(localStorage.getItem(getLocalGarageKey(userId)) || '[]');
+        }
+      } catch (_) {
+        vehicles = JSON.parse(localStorage.getItem(getLocalGarageKey(userId)) || '[]');
+      }
+
+      clientVehicles = vehicles.slice(0, MAX_GARAGE_VEHICLES);
+      if (clientVehicles.length > 0 && !clientVehicles.some(v => v.id === selectedVehicleId)) {
+        selectedVehicleId = clientVehicles[0].id;
+      }
+      renderSavedVehicles();
+      syncSelectedVehicleToPackage();
+    }
+
+    function toggleAddVehicleForm(forceState) {
+      const box = document.getElementById('addVehicleFormBox');
+      if (typeof forceState === 'boolean') {
+        box.classList.toggle('hidden', !forceState);
+        return;
+      }
+      if (clientVehicles.length >= MAX_GARAGE_VEHICLES) {
+        alert('Maximum of 4 vehicles per account reached. Remove a vehicle to add another.');
+        return;
+      }
+      box.classList.toggle('hidden');
+    }
+
+    async function saveNewVehicleToProfile() {
+      if (!currentUser) return;
+      if (clientVehicles.length >= MAX_GARAGE_VEHICLES) {
+        alert('Maximum of 4 vehicles per account reached.');
+        return;
+      }
+
+      const year = document.getElementById('vehYear').value.trim();
+      const make = document.getElementById('vehMake').value.trim();
+      const model = document.getElementById('vehModel').value.trim();
+      const color = document.getElementById('vehColor').value.trim();
+      const plate = document.getElementById('vehPlate').value.trim().toUpperCase();
+      const category = document.getElementById('vehCategory').value;
+      const careNotes = document.getElementById('vehCareNotes').value.trim();
+
+      if (!make || !model) {
+        alert('Please enter at least the vehicle Make and Model.');
+        return;
+      }
+
+      const newVeh = {
+        id: crypto.randomUUID ? crypto.randomUUID() : `veh_${Date.now()}`,
+        user_id: currentUser.id,
+        year,
+        make,
+        model,
+        color,
+        plate,
+        category,
+        care_notes: careNotes
+      };
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('client_vehicles')
+          .insert([newVeh])
+          .select();
+        if (!error && data && data[0]) {
+          newVeh.id = data[0].id;
+        }
+      } catch (_) {
+        // Fallback to localStorage cache seamlessly
+      }
+
+      clientVehicles.push(newVeh);
+      localStorage.setItem(getLocalGarageKey(currentUser.id), JSON.stringify(clientVehicles));
+      selectedVehicleId = newVeh.id;
+
+      // Clear form & close
+      document.getElementById('vehYear').value = '';
+      document.getElementById('vehMake').value = '';
+      document.getElementById('vehModel').value = '';
+      document.getElementById('vehColor').value = '';
+      document.getElementById('vehPlate').value = '';
+      document.getElementById('vehCareNotes').value = '';
+      toggleAddVehicleForm(false);
+
+      renderSavedVehicles();
+      syncSelectedVehicleToPackage();
+    }
+
+    async function removeVehicleFromProfile(vehicleId, event) {
+      if (event) event.stopPropagation();
+      if (!currentUser) return;
+
+      clientVehicles = clientVehicles.filter(v => v.id !== vehicleId);
+      localStorage.setItem(getLocalGarageKey(currentUser.id), JSON.stringify(clientVehicles));
+
+      try {
+        await supabaseClient
+          .from('client_vehicles')
+          .delete()
+          .eq('id', vehicleId)
+          .eq('user_id', currentUser.id);
+      } catch (_) {}
+
+      if (selectedVehicleId === vehicleId) {
+        selectedVehicleId = clientVehicles.length > 0 ? clientVehicles[0].id : null;
+      }
+
+      renderSavedVehicles();
+      syncSelectedVehicleToPackage();
+    }
+
+    function selectVehicleForBooking(vehicleId) {
+      selectedVehicleId = vehicleId;
+      renderSavedVehicles();
+      syncSelectedVehicleToPackage();
+    }
+
+    function syncSelectedVehicleToPackage() {
+      const selectedVeh = clientVehicles.find(v => v.id === selectedVehicleId);
+      if (!selectedVeh) return;
+
+      const packageSelect = document.getElementById('servicePackageCombined');
+      if (!packageSelect) return;
+
+      // Match current plan family with the selected vehicle's category
+      const currentOpt = packageSelect.options[packageSelect.selectedIndex];
+      const currentPlan = currentOpt ? currentOpt.getAttribute('data-plan') : 'KW Signature Wash 365';
+      const planPrefix = currentPlan.split(' (')[0];
+
+      for (let i = 0; i < packageSelect.options.length; i++) {
+        const opt = packageSelect.options[i];
+        const optPlan = opt.getAttribute('data-plan') || '';
+        const optVeh = opt.getAttribute('data-vehicle') || '';
+        if (optPlan.startsWith(planPrefix) && optVeh === selectedVeh.category) {
+          packageSelect.selectedIndex = i;
+          break;
+        }
+      }
+      calculateTotalPrice();
+    }
+
+    function renderSavedVehicles() {
+      const listEl = document.getElementById('savedVehiclesList');
+      const countBadge = document.getElementById('garageCountBadge');
+      const addBtn = document.getElementById('toggleAddVehicleBtn');
+
+      countBadge.textContent = `${clientVehicles.length} / ${MAX_GARAGE_VEHICLES} Cars`;
+      if (clientVehicles.length >= MAX_GARAGE_VEHICLES) {
+        addBtn.disabled = true;
+        addBtn.className = 'bg-zinc-900 text-zinc-500 border border-zinc-800 font-bold px-2.5 py-1 rounded text-[11px] cursor-not-allowed';
+        addBtn.textContent = 'Garage Full (4/4)';
+      } else {
+        addBtn.disabled = false;
+        addBtn.className = 'bg-[#C59B27] hover:bg-[#d8ad34] text-black font-bold px-2.5 py-1 rounded text-[11px] transition';
+        addBtn.textContent = '+ Add Vehicle';
+      }
+
+      if (clientVehicles.length === 0) {
+        listEl.innerHTML = `
+          <div class="sm:col-span-2 p-3 bg-zinc-950 border border-dashed border-zinc-800 rounded-lg text-center">
+            <p class="text-xs text-zinc-400">No vehicles saved in your profile yet. Click <strong class="text-[#C59B27]">+ Add Vehicle</strong> to register up to 4 cars with custom care preferences.</p>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = clientVehicles
+        .map((v) => {
+          const isSelected = v.id === selectedVehicleId;
+          const title = [v.year, v.make, v.model].filter(Boolean).join(' ');
+          const metaLine = [v.category, v.color, v.plate ? `Plate: ${v.plate}` : ''].filter(Boolean).join(' • ');
+          return `
+            <div onclick="selectVehicleForBooking('${v.id}')" class="p-3 rounded-lg border ${isSelected ? 'border-[#C59B27] bg-zinc-950 shadow-md' : 'border-zinc-800 bg-zinc-950/60 hover:border-zinc-700'} cursor-pointer transition relative">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full ${isSelected ? 'bg-[#C59B27]' : 'bg-zinc-600'} flex-shrink-0"></span>
+                    <p class="text-xs font-bold text-white truncate">${escapeHtml(title)}</p>
+                  </div>
+                  <p class="text-[11px] text-zinc-400 mt-0.5 truncate">${escapeHtml(metaLine)}</p>
+                </div>
+                <button type="button" onclick="removeVehicleFromProfile('${v.id}', event)" title="Remove vehicle" class="text-zinc-500 hover:text-red-500 text-xs font-bold px-1">
+                  &times;
+                </button>
+              </div>
+              ${v.care_notes ? `<p class="mt-2 pt-1.5 border-t border-zinc-900 text-[10px] text-[#C59B27] line-clamp-2">Care Note: ${escapeHtml(v.care_notes)}</p>` : ''}
+              <div class="mt-2 flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-[#C59B27]' : 'text-zinc-500'}">
+                  ${isSelected ? '✓ Selected for Visit' : 'Tap to Select'}
+                </span>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    function getSelectedVehicleSummary() {
+      const v = clientVehicles.find(item => item.id === selectedVehicleId);
+      if (!v) return '';
+      const name = [v.year, v.make, v.model].filter(Boolean).join(' ');
+      const extras = [v.color, v.plate ? `#${v.plate}` : '', v.care_notes ? `Notes: ${v.care_notes}` : ''].filter(Boolean).join(' | ');
+      return extras ? `${name} (${extras})` : name;
+    }
+
+    // ========================================================
+    // AUTHENTICATED LIVE ORDER VIEW MODAL
+    // ========================================================
+    async function openOrderLookupModal() {
+      document.getElementById('orderLookupError').classList.add('hidden');
+      document.getElementById('orderLookupModal').classList.remove('hidden');
+
+      if (currentUser) {
+        document.getElementById('modalAuthBox').classList.add('hidden');
+        document.getElementById('modalOrdersBox').classList.remove('hidden');
+        await renderModalMemberOrders();
+      } else {
+        document.getElementById('modalAuthBox').classList.remove('hidden');
+        document.getElementById('modalOrdersBox').classList.add('hidden');
+      }
+    }
+
+    function closeOrderLookupModal() {
+      document.getElementById('orderLookupModal').classList.add('hidden');
+    }
+
+    async function renderModalMemberOrders() {
+      if (!currentUser) return;
+      const meta = currentUser.user_metadata || {};
+      const displayName = meta.full_name || currentUser.email.split('@')[0];
+
+      document.getElementById('modalMemberName').textContent = displayName;
+      document.getElementById('modalMemberEmail').textContent = currentUser.email;
+
+      const allOrders = await loadMemberVipAndLoyalty(currentUser);
+      const modalVipBadge = document.getElementById('modalVipBadge');
+      if (isBlackLabelVIP) {
+        modalVipBadge.textContent = '★ Black Label VIP';
+        modalVipBadge.className = 'px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-[#C59B27] text-black flex-shrink-0';
+      } else {
+        modalVipBadge.textContent = 'Member';
+        modalVipBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-700 text-zinc-300 flex-shrink-0';
+      }
+
+      const listEl = document.getElementById('modalOrdersList');
+      if (!allOrders || allOrders.length === 0) {
+        listEl.innerHTML = `
+          <div class="p-4 bg-black border border-zinc-800 rounded-lg text-center text-xs text-zinc-400">
+            No bookings found on your account yet. Select a date and time to schedule your first service!
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = allOrders
+        .map((ord, idx) => `
+          <div onclick="openMemberOrderFromModal(${idx})" class="p-3 bg-black border border-zinc-800 hover:border-[#C59B27] rounded-lg cursor-pointer transition space-y-1">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-[#C59B27]">${escapeHtml(ord.service_date)} &bull; ${escapeHtml(ord.time_slot)}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-zinc-900 text-white border border-zinc-700">${escapeHtml(ord.status || 'Confirmed')}</span>
+            </div>
+            <p class="text-xs text-zinc-200 font-semibold truncate">${escapeHtml(ord.service_type)}</p>
+            <div class="flex items-center justify-between text-[11px] text-zinc-400">
+              <span>Total: $${ord.amount_paid || 0}</span>
+              <span class="text-[#C59B27] font-semibold">Open Live Tracker &rarr;</span>
+            </div>
+          </div>
+        `)
+        .join('');
+
+      window._cachedMemberOrders = allOrders;
+    }
+
+    function openMemberOrderFromModal(index) {
+      const booking = (window._cachedMemberOrders || [])[index];
+      if (!booking) return;
+      closeOrderLookupModal();
+      closeServicesAlert();
+
+      selectedDateStr = booking.service_date;
+      selectedTimeSlotStr = booking.time_slot;
+      formattedDisplayDateStr = booking.service_date;
+      goToStep(3);
+      openOrderView(booking);
+    }
+
+    // Booking Mode Switch ('subscription' | 'addons_only')
     function setBookingMode(mode) {
       bookingMode = mode;
       const subBtn = document.getElementById('modeSubscriptionBtn');
@@ -968,380 +1565,7 @@
       }
 
       calculateTotalPrice();
-      syncBlackLabelGarageVisibility();
     }
-
-    // Normalize phone number to last 10 digits for reliable matching
-    function normalizePhoneDigits(raw) {
-      const digits = (raw || '').replace(/\D/g, '');
-      return digits.length >= 10 ? digits.slice(-10) : digits;
-    }
-
-    // Fetch saved Black Label 365 Vehicle Care Profiles (Max 4 per phone number)
-    async function loadBlackLabelGarageByPhone(digits) {
-      if (!digits || digits.length < 10) {
-        savedGarageVehicles = [];
-        selectedVehicleProfileId = null;
-        renderGarageVehicles();
-        return;
-      }
-
-      const { data, error } = await supabaseClient
-        .from('black_label_vehicles')
-        .select('*')
-        .eq('phone_normalized', digits)
-        .order('created_at', { ascending: true })
-        .limit(MAX_BLACK_LABEL_VEHICLES);
-
-      if (error) {
-        console.error('Error loading Black Label vehicle profiles:', error);
-        return;
-      }
-
-      savedGarageVehicles = data || [];
-      if (savedGarageVehicles.length > 0 && !savedGarageVehicles.some(v => v.id === selectedVehicleProfileId)) {
-        selectedVehicleProfileId = savedGarageVehicles[0].id;
-      } else if (savedGarageVehicles.length === 0) {
-        selectedVehicleProfileId = null;
-      }
-
-      renderGarageVehicles();
-    }
-
-    function renderGarageVehicles() {
-      const digits = normalizePhoneDigits(document.getElementById('phone').value);
-      const countBadge = document.getElementById('garageCountBadge');
-      const addBtn = document.getElementById('addVehicleBtn');
-      const phoneHint = document.getElementById('garagePhoneHint');
-      const grid = document.getElementById('garageVehiclesGrid');
-      const selectedStrip = document.getElementById('selectedVehicleStrip');
-      const selectedText = document.getElementById('selectedVehicleText');
-
-      const count = savedGarageVehicles.length;
-      countBadge.textContent = `${count} / ${MAX_BLACK_LABEL_VEHICLES} Cars`;
-
-      if (digits.length < 10) {
-        phoneHint.classList.remove('hidden');
-        addBtn.disabled = true;
-        grid.innerHTML = '';
-        selectedStrip.classList.add('hidden');
-        return;
-      }
-
-      phoneHint.classList.add('hidden');
-      addBtn.disabled = count >= MAX_BLACK_LABEL_VEHICLES;
-      addBtn.textContent = count >= MAX_BLACK_LABEL_VEHICLES ? 'Max 4 Cars Reached' : '+ Add Car';
-
-      grid.innerHTML = '';
-
-      if (count === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full p-3 bg-zinc-950 border border-dashed border-zinc-800 rounded-lg text-center text-[11px] text-zinc-400">
-            No vehicles saved yet for this number. Click <strong class="text-[#C59B27]">+ Add Car</strong> to create your first Black Label 365 care profile.
-          </div>
-        `;
-        selectedStrip.classList.add('hidden');
-        return;
-      }
-
-      savedGarageVehicles.forEach((v, idx) => {
-        const isSelected = v.id === selectedVehicleProfileId;
-        const card = document.createElement('div');
-        card.className = isSelected
-          ? 'p-3 rounded-lg bg-zinc-950 border-2 border-[#C59B27] cursor-pointer transition space-y-1.5 shadow-md'
-          : 'p-3 rounded-lg bg-zinc-950 border border-zinc-800 hover:border-[#C59B27]/60 cursor-pointer transition space-y-1.5';
-
-        card.onclick = () => {
-          selectedVehicleProfileId = v.id;
-          renderGarageVehicles();
-        };
-
-        card.innerHTML = `
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${isSelected ? 'bg-[#C59B27] text-black' : 'bg-zinc-900 text-zinc-400'}">
-                Car ${idx + 1} of 4 ${isSelected ? '• Selected' : ''}
-              </span>
-              <h5 class="text-xs font-bold text-white truncate mt-1">${escapeHtml(v.year_make_model)}</h5>
-              <p class="text-[10px] text-zinc-400 truncate">${escapeHtml(v.color || 'Color N/A')}${v.license_plate ? ' • ' + escapeHtml(v.license_plate) : ''}</p>
-            </div>
-            <div class="flex items-center gap-1 flex-shrink-0" onclick="event.stopPropagation()">
-              <button type="button" onclick="openVehicleProfileModal('${v.id}')" class="text-[10px] px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-[#C59B27] border border-zinc-700 font-semibold">
-                Edit
-              </button>
-              <button type="button" onclick="deleteVehicleCareProfile('${v.id}')" class="text-[10px] px-1.5 py-0.5 rounded bg-zinc-900 hover:bg-red-950 text-red-400 border border-zinc-800 font-bold" title="Remove Vehicle">
-                &times;
-              </button>
-            </div>
-          </div>
-          <div class="pt-1.5 border-t border-zinc-900 text-[10px] text-zinc-300 space-y-0.5">
-            <p><span class="text-zinc-500">Finish:</span> ${escapeHtml(v.paint_finish || 'Gloss')} &bull; <span class="text-zinc-500">Ceramic:</span> ${escapeHtml(v.ceramic_status || 'None')}</p>
-            <p><span class="text-zinc-500">Interior:</span> ${escapeHtml(v.interior_material || 'Leather')} &bull; <span class="text-zinc-500">Tires:</span> ${escapeHtml(v.tire_shine_pref || 'Satin')}</p>
-            ${v.care_notes ? `<p class="text-[#C59B27] italic truncate">"${escapeHtml(v.care_notes)}"</p>` : ''}
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      const activeCar = savedGarageVehicles.find(v => v.id === selectedVehicleProfileId);
-      if (activeCar) {
-        selectedStrip.classList.remove('hidden');
-        selectedText.textContent = `Active Vehicle: ${activeCar.year_make_model} (${activeCar.paint_finish})`;
-      } else {
-        selectedStrip.classList.add('hidden');
-      }
-    }
-
-    function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function openVehicleProfileModal(editId = null) {
-      const digits = normalizePhoneDigits(document.getElementById('phone').value);
-      if (digits.length < 10) {
-        alert('Please enter your 10-digit phone number first.');
-        return;
-      }
-
-      if (!editId && savedGarageVehicles.length >= MAX_BLACK_LABEL_VEHICLES) {
-        alert('Maximum of 4 vehicles per phone number reached. Edit or remove an existing vehicle first.');
-        return;
-      }
-
-      document.getElementById('vpModalError').classList.add('hidden');
-      document.getElementById('vpEditId').value = editId || '';
-
-      if (editId) {
-        const v = savedGarageVehicles.find(item => item.id === editId);
-        if (!v) return;
-        document.getElementById('vpModalTitle').textContent = 'Edit Vehicle Care Profile';
-        document.getElementById('vpYearMakeModel').value = v.year_make_model || '';
-        document.getElementById('vpColor').value = v.color || '';
-        document.getElementById('vpPlate').value = v.license_plate || '';
-        document.getElementById('vpPaintFinish').value = v.paint_finish || 'Gloss Clearcoat';
-        document.getElementById('vpCeramicStatus').value = v.ceramic_status || 'None';
-        document.getElementById('vpWheelType').value = v.wheel_type || 'Standard Alloy / Painted';
-        document.getElementById('vpInterior').value = v.interior_material || 'Leather';
-        document.getElementById('vpTireShine').value = v.tire_shine_pref || 'Satin / OEM Matte';
-        document.getElementById('vpScent').value = v.scent_pref || 'Unscented (Neutral)';
-        document.getElementById('vpNotes').value = v.care_notes || '';
-      } else {
-        document.getElementById('vpModalTitle').textContent = `Add Vehicle Care Profile (${savedGarageVehicles.length + 1} of 4)`;
-        document.getElementById('vpYearMakeModel').value = '';
-        document.getElementById('vpColor').value = '';
-        document.getElementById('vpPlate').value = '';
-        document.getElementById('vpPaintFinish').value = 'Gloss Clearcoat';
-        document.getElementById('vpCeramicStatus').value = 'None';
-        document.getElementById('vpWheelType').value = 'Standard Alloy / Painted';
-        document.getElementById('vpInterior').value = 'Leather';
-        document.getElementById('vpTireShine').value = 'Satin / OEM Matte';
-        document.getElementById('vpScent').value = 'Unscented (Neutral)';
-        document.getElementById('vpNotes').value = '';
-      }
-
-      document.getElementById('vehicleProfileModal').classList.remove('hidden');
-    }
-
-    function closeVehicleProfileModal() {
-      document.getElementById('vehicleProfileModal').classList.add('hidden');
-    }
-
-    async function saveVehicleCareProfile() {
-      const digits = normalizePhoneDigits(document.getElementById('phone').value);
-      const editId = document.getElementById('vpEditId').value.trim();
-      const yearMakeModel = document.getElementById('vpYearMakeModel').value.trim();
-      const color = document.getElementById('vpColor').value.trim();
-      const errEl = document.getElementById('vpModalError');
-      const saveBtn = document.getElementById('vpSaveBtn');
-
-      if (!yearMakeModel || !color) {
-        errEl.textContent = 'Please enter the Year, Make & Model and Exterior Color.';
-        errEl.classList.remove('hidden');
-        return;
-      }
-
-      if (!editId && savedGarageVehicles.length >= MAX_BLACK_LABEL_VEHICLES) {
-        errEl.textContent = 'Maximum of 4 vehicles allowed per Black Label 365 phone number.';
-        errEl.classList.remove('hidden');
-        return;
-      }
-
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'Saving...';
-      errEl.classList.add('hidden');
-
-      const payload = {
-        phone_normalized: digits,
-        client_email: document.getElementById('email').value.trim() || null,
-        client_name: document.getElementById('clientName').value.trim() || null,
-        vehicle_nickname: `${yearMakeModel} - ${color}`,
-        year_make_model: yearMakeModel,
-        color: color,
-        license_plate: document.getElementById('vpPlate').value.trim() || null,
-        paint_finish: document.getElementById('vpPaintFinish').value,
-        ceramic_status: document.getElementById('vpCeramicStatus').value,
-        wheel_type: document.getElementById('vpWheelType').value,
-        interior_material: document.getElementById('vpInterior').value,
-        tire_shine_pref: document.getElementById('vpTireShine').value,
-        scent_pref: document.getElementById('vpScent').value,
-        care_notes: document.getElementById('vpNotes').value.trim() || null,
-        updated_at: new Date().toISOString()
-      };
-
-      let result;
-      if (editId) {
-        result = await supabaseClient
-          .from('black_label_vehicles')
-          .update(payload)
-          .eq('id', editId)
-          .select();
-      } else {
-        result = await supabaseClient
-          .from('black_label_vehicles')
-          .insert([payload])
-          .select();
-      }
-
-      saveBtn.disabled = false;
-      saveBtn.textContent = 'Save Vehicle Profile';
-
-      if (result.error) {
-        errEl.textContent = result.error.message || 'Unable to save vehicle profile.';
-        errEl.classList.remove('hidden');
-        return;
-      }
-
-      if (result.data && result.data[0]) {
-        selectedVehicleProfileId = result.data[0].id;
-      }
-
-      closeVehicleProfileModal();
-      await loadBlackLabelGarageByPhone(digits);
-    }
-
-    async function deleteVehicleCareProfile(id) {
-      const digits = normalizePhoneDigits(document.getElementById('phone').value);
-      const { error } = await supabaseClient
-        .from('black_label_vehicles')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        alert('Error removing vehicle: ' + error.message);
-        return;
-      }
-
-      await loadBlackLabelGarageByPhone(digits);
-    }
-
-    function getSelectedBlackLabelVehicleSummary() {
-      if (!isBlackLabelEligible() || !selectedVehicleProfileId) return '';
-      const v = savedGarageVehicles.find(item => item.id === selectedVehicleProfileId);
-      if (!v) return '';
-
-      const parts = [
-        `${v.year_make_model} (${v.color || 'N/A'})`,
-        v.license_plate ? `Plate: ${v.license_plate}` : '',
-        `Finish: ${v.paint_finish}`,
-        `Ceramic: ${v.ceramic_status}`,
-        `Wheels: ${v.wheel_type}`,
-        `Interior: ${v.interior_material}`,
-        `Tires: ${v.tire_shine_pref}`,
-        `Scent: ${v.scent_pref}`,
-        v.care_notes ? `Notes: ${v.care_notes}` : ''
-      ].filter(Boolean);
-
-      return parts.join(' | ');
-    }
-
-    // Check completed services count & Black Label 365 membership in Supabase by phone number
-    let loyaltyLookupTimer = null;
-    async function checkClientLoyaltyByPhone() {
-      const phoneInput = document.getElementById('phone');
-      const statusDot = document.getElementById('loyaltyStatusDot');
-      const statusText = document.getElementById('loyaltyStatusText');
-      const progressBadge = document.getElementById('loyaltyProgressBadge');
-      const discountPill = document.getElementById('addonDiscountPill');
-
-      const digits = normalizePhoneDigits(phoneInput.value);
-      if (digits.length < 10) {
-        completedServiceCount = 0;
-        hasLoyaltyDiscount = false;
-        hasExistingBlackLabelSub = false;
-        statusDot.className = 'w-2 h-2 rounded-full bg-zinc-600 flex-shrink-0';
-        statusText.textContent = 'Enter your 10-digit phone number to check your 5-service loyalty status (25% OFF add-ons).';
-        statusText.className = 'text-zinc-400';
-        progressBadge.textContent = '0 / 5 Services';
-        progressBadge.className = 'px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-[10px] font-bold text-zinc-300 flex-shrink-0';
-        discountPill.classList.add('hidden');
-        calculateTotalPrice();
-        syncBlackLabelGarageVisibility();
-        return;
-      }
-
-      statusText.textContent = 'Checking service history & Black Label 365 status...';
-
-      const area = digits.slice(0, 3);
-      const prefix = digits.slice(3, 6);
-      const line = digits.slice(6, 10);
-
-      const { data, error } = await supabaseClient
-        .from('bookings')
-        .select('id, phone, status, service_type, is_subscription')
-        .ilike('phone', `%${area}%${prefix}%${line}%`);
-
-      if (error || !data) {
-        console.error('Loyalty lookup error:', error);
-        return;
-      }
-
-      const matchingClientRows = data.filter(row => normalizePhoneDigits(row.phone) === digits);
-
-      // Detect if phone number holds an active/existing Black Label 365 subscription
-      hasExistingBlackLabelSub = matchingClientRows.some(row => {
-        const svc = (row.service_type || '').toLowerCase();
-        const st = (row.status || '').toLowerCase();
-        return svc.includes('black label 365') && !st.includes('cancel');
-      });
-
-      const completedRows = matchingClientRows.filter(row => {
-        const st = (row.status || '').trim().toLowerCase();
-        return st === 'completed' || st.includes('complete');
-      });
-
-      completedServiceCount = completedRows.length;
-      hasLoyaltyDiscount = completedServiceCount >= 5;
-
-      if (hasLoyaltyDiscount) {
-        statusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0';
-        statusText.textContent = 'Loyalty Unlocked! 25% OFF automatically applied to all selected add-ons.';
-        statusText.className = 'text-emerald-400 font-semibold';
-        progressBadge.textContent = `${completedServiceCount} Completed (25% OFF)`;
-        progressBadge.className = 'px-2 py-0.5 rounded bg-[#C59B27]/15 border border-[#C59B27]/60 text-[10px] font-bold text-[#C59B27] flex-shrink-0';
-        discountPill.classList.remove('hidden');
-      } else {
-        const remaining = 5 - completedServiceCount;
-        statusDot.className = 'w-2 h-2 rounded-full bg-[#C59B27] flex-shrink-0';
-        statusText.textContent = `${completedServiceCount} completed service${completedServiceCount === 1 ? '' : 's'} found. ${remaining} more until 25% OFF add-ons!`;
-        statusText.className = 'text-zinc-300';
-        progressBadge.textContent = `${completedServiceCount} / 5 Services`;
-        progressBadge.className = 'px-2 py-0.5 rounded bg-zinc-900 border border-[#8A6814]/50 text-[10px] font-bold text-[#C59B27] flex-shrink-0';
-        discountPill.classList.add('hidden');
-      }
-
-      calculateTotalPrice();
-      syncBlackLabelGarageVisibility();
-      await loadBlackLabelGarageByPhone(digits);
-    }
-
-    document.getElementById('phone').addEventListener('input', () => {
-      clearTimeout(loyaltyLookupTimer);
-      loyaltyLookupTimer = setTimeout(checkClientLoyaltyByPhone, 400);
-    });
 
     // 3-Step Wizard Navigation Controller
     function goToStep(step) {
@@ -1387,7 +1611,13 @@
 
       if (step === 3) {
         document.getElementById('summaryDateTimeText').textContent = `${formattedDisplayDateStr}  •  ${selectedTimeSlotStr}`;
-        syncBlackLabelGarageVisibility();
+        if (currentUser) {
+          document.getElementById('step3AuthGate').classList.add('hidden');
+          document.getElementById('bookingFormWrapper').classList.remove('hidden');
+        } else {
+          document.getElementById('step3AuthGate').classList.remove('hidden');
+          document.getElementById('bookingFormWrapper').classList.add('hidden');
+        }
       }
     }
 
@@ -1412,12 +1642,10 @@
           try {
             const url = `https://api.locationiq.com/v1/autocomplete?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(query)}&limit=5&countrycodes=us`;
             const res = await fetch(url);
-            
             if (!res.ok) {
               addressSuggestions.classList.add('hidden');
               return;
             }
-            
             const data = await res.json();
             addressSuggestions.innerHTML = '';
             selectedIndex = -1;
@@ -1433,13 +1661,11 @@
                   </svg>
                   <span class="truncate">${item.display_name}</span>
                 `;
-
                 li.addEventListener('click', () => {
                   addressInput.value = item.display_name;
                   addressSuggestions.classList.add('hidden');
                   addressSuggestions.innerHTML = '';
                 });
-
                 addressSuggestions.appendChild(li);
               });
               addressSuggestions.classList.remove('hidden');
@@ -1455,7 +1681,6 @@
       addressInput.addEventListener('keydown', (e) => {
         const items = addressSuggestions.querySelectorAll('li');
         if (!items.length) return;
-
         if (e.key === 'ArrowDown') {
           e.preventDefault();
           selectedIndex = (selectedIndex + 1) % items.length;
@@ -1474,11 +1699,8 @@
 
       function updateHighlight(items) {
         items.forEach((item, index) => {
-          if (index === selectedIndex) {
-            item.classList.add('bg-zinc-900', 'text-[#C59B27]');
-          } else {
-            item.classList.remove('bg-zinc-900', 'text-[#C59B27]');
-          }
+          if (index === selectedIndex) item.classList.add('bg-zinc-900', 'text-[#C59B27]');
+          else item.classList.remove('bg-zinc-900', 'text-[#C59B27]');
         });
       }
 
@@ -1527,20 +1749,16 @@
       calculateTotalPrice();
     });
 
-    // Helper returning raw add-on total, loyalty discount, and discounted total
     function getAddonsBreakdown() {
       let rawAddonsTotal = 0;
       document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
         rawAddonsTotal += parseInt(cb.getAttribute('data-price') || 0, 10);
       });
-
       const discountAmount = hasLoyaltyDiscount ? Math.round(rawAddonsTotal * 0.25) : 0;
       const finalAddonsTotal = rawAddonsTotal - discountAmount;
-
       return { rawAddonsTotal, discountAmount, finalAddonsTotal };
     }
 
-    // Builds formatted comma-separated add-ons string (notes 25% loyalty discount if applied)
     function getFormattedAddOns() {
       const checkedBoxes = Array.from(document.querySelectorAll('.addon-checkbox:checked'));
       if (checkedBoxes.length === 0) return null;
@@ -1557,7 +1775,6 @@
         .join(', ');
     }
 
-    // Dynamic Price Calculator (Supports both Subscription + Add-Ons and Add-Ons Only Mode)
     function calculateTotalPrice() {
       const packageSelect = document.getElementById('servicePackageCombined');
       const savingsSummaryEl = document.getElementById('loyaltySavingsSummary');
@@ -1573,7 +1790,6 @@
       }
 
       let finalTotal = 0;
-
       if (bookingMode === 'addons_only') {
         finalTotal = finalAddonsTotal;
         if (submitBtn) {
@@ -1681,7 +1897,6 @@
     const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
     const elements = stripe.elements({ mode: 'payment', amount: 27000, currency: 'usd' });
 
-    // Express Checkout
     const expressCheckoutElement = elements.create('expressCheckout', {
       buttonHeight: 44,
       buttonTheme: { applePay: 'white-outline', googlePay: 'black' },
@@ -1690,6 +1905,11 @@
     expressCheckoutElement.mount('#express-checkout-element');
 
     expressCheckoutElement.on('confirm', async (event) => {
+      if (!currentUser) {
+        alert('Please sign in to your KW Client Account first.');
+        event.decline();
+        return;
+      }
       if (!selectedDateStr || !selectedTimeSlotStr) {
         alert('Please complete Step 1 (Date) and Step 2 (Time) before paying.');
         event.decline();
@@ -1712,9 +1932,9 @@
       const formattedAddOns = getFormattedAddOns();
 
       const billingDetails = event.billingDetails || {};
-      const clientName = billingDetails.name || document.getElementById('clientName').value || 'Express Checkout Customer';
-      const clientEmail = billingDetails.email || document.getElementById('email').value || 'express@checkout.com';
-      const clientPhone = billingDetails.phone || document.getElementById('phone').value || 'N/A';
+      const clientName = document.getElementById('clientName').value || billingDetails.name || 'Member';
+      const clientEmail = currentUser.email;
+      const clientPhone = document.getElementById('phone').value || billingDetails.phone || 'N/A';
       
       let serviceAddress = document.getElementById('serviceAddress').value;
       if (!serviceAddress && billingDetails.address) {
@@ -1737,7 +1957,7 @@
             addOns: formattedAddOns || '',
             isSubscription: isSub,
             packageName: isSub ? selectedOpt.value : 'Existing Member Add-Ons Only',
-            clientName: clientName,
+            clientName,
             email: clientEmail,
             phone: clientPhone
           })
@@ -1821,7 +2041,6 @@
 
         const dateObj = new Date(year, month, day);
         const dayOfWeek = dateObj.getDay();
-
         const totalOrdersOnDate = currentMonthBookings.filter(b => b.service_date === dateStr).length;
 
         dayDiv.textContent = day;
@@ -1845,7 +2064,6 @@
           dayDiv.addEventListener('click', () => {
             selectedDateStr = dateStr;
             document.getElementById('serviceDate').value = selectedDateStr;
-            
             formattedDisplayDateStr = `${formattedMonth}/${formattedDay}/${year}`;
             document.getElementById('selectedDateDisplay').textContent = formattedDisplayDateStr;
 
@@ -1867,6 +2085,10 @@
     // Form Submission Handler
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!currentUser) {
+        alert('Please sign in to your KW Client Account before confirming.');
+        return;
+      }
       if (!selectedDateStr || !selectedTimeSlotStr) {
         alert('Please select a date and time slot first.');
         return;
@@ -1887,16 +2109,14 @@
       const basePrice = isSub ? parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10) : 0;
       const setupFeeToCharge = isSub ? SETUP_FEE : 0;
       const formattedAddOns = getFormattedAddOns();
-
       const totalAmount = basePrice + setupFeeToCharge + finalAddonsTotal;
 
-      // Path A: Pay in Person / Zelle
       if (currentPaymentMethod === 'in_person') {
         submitBtn.textContent = 'Saving Booking...';
         await saveBookingToSupabaseWithDetails({
           clientName: document.getElementById('clientName').value,
           phone: document.getElementById('phone').value,
-          email: document.getElementById('email').value,
+          email: currentUser.email,
           serviceAddress: document.getElementById('serviceAddress').value,
           amountPaid: totalAmount,
           stripePaymentId: 'IN_PERSON_ZELLE',
@@ -1908,7 +2128,6 @@
         return;
       }
 
-      // Path B: Online Card Payment via Stripe
       submitBtn.textContent = isSub ? 'Setting Up Monthly Subscription...' : 'Processing Add-Ons Payment...';
       if (cardErrors) cardErrors.textContent = '';
 
@@ -1927,7 +2146,7 @@
             isSubscription: isSub,
             packageName: isSub ? selectedOpt.value : 'Existing Member Add-Ons Only',
             clientName: document.getElementById('clientName').value,
-            email: document.getElementById('email').value,
+            email: currentUser.email,
             phone: document.getElementById('phone').value
           })
         });
@@ -1940,7 +2159,7 @@
             card: card,
             billing_details: {
               name: document.getElementById('clientName').value,
-              email: document.getElementById('email').value,
+              email: currentUser.email,
               phone: document.getElementById('phone').value
             }
           }
@@ -1957,7 +2176,7 @@
           await saveBookingToSupabaseWithDetails({
             clientName: document.getElementById('clientName').value,
             phone: document.getElementById('phone').value,
-            email: document.getElementById('email').value,
+            email: currentUser.email,
             serviceAddress: document.getElementById('serviceAddress').value,
             amountPaid: totalAmount,
             stripePaymentId: paymentResult.paymentIntent.id,
@@ -1978,17 +2197,19 @@
     async function saveBookingToSupabaseWithDetails({ clientName, phone, email, serviceAddress, amountPaid, stripePaymentId, paymentStatus, isSubscription }) {
       const packageSelect = document.getElementById('servicePackageCombined');
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
-      
-      const vehicleCategory = isSubscription
-        ? (selectedOpt ? selectedOpt.getAttribute('data-vehicle') : 'Unknown')
-        : 'Existing Member';
+      const selectedVeh = clientVehicles.find(v => v.id === selectedVehicleId);
+
+      const vehicleCategory = selectedVeh
+        ? selectedVeh.category
+        : (isSubscription ? (selectedOpt ? selectedOpt.getAttribute('data-vehicle') : 'Unknown') : 'Existing Member');
+
       const packageSelected = isSubscription
         ? (selectedOpt ? selectedOpt.value : 'KW Signature Wash 365')
         : 'Existing Member Add-Ons Only';
 
+      const vehicleSummary = getSelectedVehicleSummary();
+      const vehicleTag = vehicleSummary ? ` [Vehicle: ${vehicleSummary}]` : '';
       const formattedAddOns = getFormattedAddOns();
-      const vehicleProfileSummary = getSelectedBlackLabelVehicleSummary();
-      const vehicleTag = vehicleProfileSummary ? ` | Vehicle Care Profile: [${vehicleProfileSummary}]` : '';
 
       const fullServiceDescription = isSubscription
         ? (`${packageSelected} + $50 Setup Fee` + (formattedAddOns ? ` + Addons: [${formattedAddOns}]` : '') + vehicleTag)
@@ -2023,6 +2244,10 @@
         return;
       }
 
+      if (currentUser) {
+        await loadMemberVipAndLoyalty(currentUser);
+      }
+
       const savedRecord = (data && data[0]) ? data[0] : {
         service_date: selectedDateStr,
         time_slot: selectedTimeSlotStr,
@@ -2037,61 +2262,23 @@
     }
 
     // ==========================================
-    // LIVE ORDER VIEW & SERVICE DURATION TRACKER
+    // PRIVATE LIVE ORDER VIEW & TIMER
     // ==========================================
     let activeOrderChannel = null;
     let orderSyncInterval = null;
     let detailingTimerInterval = null;
     let detailingStartTime = null;
 
-    async function lookupClientOrder(e) {
-      e.preventDefault();
-      const query = document.getElementById('orderLookupInput').value.trim();
-      const errorEl = document.getElementById('orderLookupError');
-      const btn = document.getElementById('orderLookupSubmitBtn');
-
-      if (!query) return;
-
-      btn.disabled = true;
-      btn.textContent = 'Searching Order...';
-      errorEl.classList.add('hidden');
-
-      const { data, error } = await supabaseClient
-        .from('bookings')
-        .select('*')
-        .or(`email.ilike.${query},phone.ilike.%${query}%`)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      btn.disabled = false;
-      btn.textContent = 'Open Live Order View';
-
-      if (error || !data || data.length === 0) {
-        errorEl.textContent = 'No booking found with that email or phone number. Please check and try again.';
-        errorEl.classList.remove('hidden');
+    function openOrderView(booking) {
+      if (!currentUser) {
+        openOrderLookupModal();
         return;
       }
 
-      const booking = data[0];
-      closeOrderLookupModal();
-      closeServicesAlert();
-
-      selectedDateStr = booking.service_date;
-      selectedTimeSlotStr = booking.time_slot;
-      formattedDisplayDateStr = booking.service_date;
-      goToStep(3);
-      openOrderView(booking);
-    }
-
-    function openOrderView(booking) {
       document.getElementById('stepProgressWrapper').classList.add('hidden');
+      document.getElementById('step3AuthGate').classList.add('hidden');
       document.getElementById('bookingFormWrapper').classList.add('hidden');
       document.getElementById('orderViewContainer').classList.remove('hidden');
-
-      if (booking.id) {
-        const newUrl = `${window.location.pathname}?order=${booking.id}`;
-        window.history.replaceState({}, '', newUrl);
-      }
 
       document.getElementById('ovOrderNumber').textContent = booking.id ? `#${String(booking.id).slice(0, 8).toUpperCase()}` : '';
       document.getElementById('ovScheduleText').textContent = `${booking.service_date} (${booking.time_slot})`;
@@ -2211,30 +2398,11 @@
       document.getElementById('ovTimerDisplay').textContent = `${hrs}:${mins}:${secs}`;
     }
 
-    function copyOrderTrackingLink() {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Live tracking link copied! Reopen this link anytime to check your detailing status.');
-    }
-
-    // Auto-load Order View if client opens ?order=<id> directly
-    (async function checkExistingOrderParam() {
-      const params = new URLSearchParams(window.location.search);
-      const orderId = params.get('order');
-      if (!orderId) return;
-
-      const { data, error } = await supabaseClient
-        .from('bookings')
-        .select('*')
-        .eq('id', orderId)
-        .single();
-
-      if (!error && data) {
-        closeServicesAlert();
-        selectedDateStr = data.service_date;
-        selectedTimeSlotStr = data.time_slot;
-        formattedDisplayDateStr = data.service_date;
-        goToStep(3);
-        openOrderView(data);
+    // Restore Active Supabase Client Session on Page Load
+    (async function restoreClientSession() {
+      const { data } = await supabaseClient.auth.getSession();
+      if (data && data.session && data.session.user) {
+        await onClientAuthenticated(data.session.user);
       }
     })();
   </script>
