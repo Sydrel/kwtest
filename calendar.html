@@ -1079,7 +1079,42 @@
     const LOCATIONIQ_API_KEY = 'pk.6aed632131158f485c9b1b025bfc45d2';
     const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/create-payment-intent`;
 
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // ========================================================
+    // ACCOUNT SEPARATION CONFIG: CLIENT BOOKING VS KW PORTAL
+    // ========================================================
+    const PORTAL_ADMIN_IDS = [
+      'ded9fa7f-5bf5-4778-8d35-1f1db18b2bba',
+      '41d1ea5b-0d0a-4953-9a6e-a3c14786b5b1'
+    ];
+
+    const PORTAL_STAFF_EMAILS = [
+      'kwfleetcare@gmail.com'
+    ];
+
+    function isPortalStaffAccount(user) {
+      if (!user) return false;
+      if (PORTAL_ADMIN_IDS.includes(user.id)) return true;
+
+      const email = String(user.email || '').trim().toLowerCase();
+      if (PORTAL_STAFF_EMAILS.map(e => e.toLowerCase()).includes(email)) {
+        return true;
+      }
+
+      const meta = user.user_metadata || {};
+      const appMeta = user.app_metadata || {};
+      const role = String(meta.role || appMeta.role || '').trim().toLowerCase();
+      return ['admin', 'employee', 'staff', 'dispatcher', 'portal'].includes(role);
+    }
+
+    // Isolated storageKey prevents session collision with the backend KW Portal
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        storageKey: 'kw_client_booking_auth',
+        persistSession: true,
+        autoRefreshToken: true
+      }
+    });
+
     const EXECUTIVE_MEMBERSHIP_MONTHLY = 50;
 
     // Initialize Stripe & Elements EARLY so calculateTotalPrice() can update the live amount
@@ -1146,6 +1181,14 @@
       const phone = document.getElementById('authPhone').value.trim();
       const btn = document.getElementById('step2AuthSubmitBtn');
 
+      if (PORTAL_STAFF_EMAILS.map(em => em.toLowerCase()).includes(email)) {
+        showAuthBanner(
+          'This email belongs to a KW Portal admin account. Please use a separate personal client email to book services.',
+          true
+        );
+        return;
+      }
+
       btn.disabled = true;
       document.getElementById('step2AuthMessage').classList.add('hidden');
 
@@ -1156,7 +1199,12 @@
             email,
             password,
             options: {
-              data: { full_name: fullName, phone: phone }
+              data: {
+                full_name: fullName,
+                phone: phone,
+                role: 'client',
+                account_type: 'client_booking'
+              }
             }
           });
 
@@ -1209,7 +1257,7 @@
     }
 
     async function signOutClientAccount() {
-      await supabaseClient.auth.signOut();
+      await supabaseClient.auth.signOut({ scope: 'local' });
       currentUser = null;
       clientVehicles = [];
       selectedVehicleId = null;
@@ -1228,6 +1276,18 @@
     }
 
     async function onClientAuthenticated(user) {
+      if (isPortalStaffAccount(user)) {
+        await supabaseClient.auth.signOut({ scope: 'local' });
+        currentUser = null;
+        document.getElementById('step2AuthGate').classList.remove('hidden');
+        document.getElementById('bookingFormWrapper').classList.add('hidden');
+        showAuthBanner(
+          'KW Portal admin accounts cannot sign into the Client Booking Portal. Please use a separate client email.',
+          true
+        );
+        return;
+      }
+
       currentUser = user;
       const meta = user.user_metadata || {};
       const displayName = meta.full_name || user.email.split('@')[0];
@@ -1892,7 +1952,6 @@
       const savingsAmountEl = document.getElementById('loyaltySavingsAmount');
       const breakdownEl = document.getElementById('checkoutTotalBreakdown');
 
-      // Update live accordion badges
       const stdChecked = document.querySelectorAll('.standard-addon-cb:checked');
       const eliteChecked = document.querySelectorAll('.elite-addon-cb:checked');
       const stdBadge = document.getElementById('standardAddonsBadge');
@@ -1935,7 +1994,6 @@
 
       let finalTotal = 0;
       if (bookingMode === 'addons_only') {
-        // Strictly $0 plan and $0 membership fee in Add-Ons Only mode
         finalTotal = finalAddonsTotal;
 
         if (elements && typeof elements.update === 'function') {
@@ -2090,8 +2148,8 @@
     expressCheckoutElement.mount('#express-checkout-element');
 
     expressCheckoutElement.on('confirm', async (event) => {
-      if (!currentUser) {
-        alert('Please sign in to your KW Client Account first.');
+      if (!currentUser || isPortalStaffAccount(currentUser)) {
+        alert('Please sign in with a valid KW Client Account first.');
         event.decline();
         return;
       }
@@ -2270,8 +2328,8 @@
     // Form Submission Handler
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!currentUser) {
-        alert('Please sign in to your KW Client Account before confirming.');
+      if (!currentUser || isPortalStaffAccount(currentUser)) {
+        alert('Please sign in with a valid KW Client Account before confirming.');
         return;
       }
       if (!selectedDateStr || !selectedTimeSlotStr) {
@@ -2595,7 +2653,7 @@
       document.getElementById('ovTimerDisplay').textContent = `${hrs}:${mins}:${secs}`;
     }
 
-    // Restore Active Supabase Client Session on Page Load
+    // Restore Active Client Session on Page Load (Rejects KW Portal Admin Sessions)
     (async function restoreClientSession() {
       const { data } = await supabaseClient.auth.getSession();
       if (data && data.session && data.session.user) {
