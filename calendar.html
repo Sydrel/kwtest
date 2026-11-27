@@ -570,7 +570,7 @@
 
             <!-- Existing Member Add-Ons Only Notice -->
             <div id="addonsOnlyNotice" class="hidden px-2.5 py-2 bg-zinc-950 border border-[#C59B27]/40 rounded-lg text-[11px] text-zinc-300">
-              <strong class="text-[#C59B27]">Active Subscriber Add-Ons:</strong> $0 plan fee &amp; $0 membership fee. Select your one-time add-ons below.
+              <strong class="text-[#C59B27]">Active Subscriber Add-Ons:</strong> $0 plan fee &amp; $0 membership fee. Pay only the price of your selected add-ons below.
             </div>
 
             <!-- Mobile Service Address -->
@@ -1081,6 +1081,10 @@
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const EXECUTIVE_MEMBERSHIP_MONTHLY = 50;
+
+    // Initialize Stripe & Elements EARLY so calculateTotalPrice() can update the live amount
+    const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+    const elements = stripe.elements({ mode: 'payment', amount: 27000, currency: 'usd' });
 
     let currentStep = 1;
     let selectedDateStr = '';
@@ -1931,12 +1935,22 @@
 
       let finalTotal = 0;
       if (bookingMode === 'addons_only') {
+        // Strictly $0 plan and $0 membership fee in Add-Ons Only mode
         finalTotal = finalAddonsTotal;
+
+        if (elements && typeof elements.update === 'function') {
+          elements.update({ amount: Math.max(100, finalTotal * 100) });
+        }
+
         if (breakdownEl) {
-          breakdownEl.textContent = `Add-Ons Total = $${finalTotal.toLocaleString()}`;
+          breakdownEl.textContent = finalTotal > 0
+            ? `Add-Ons Only Total = $${finalTotal.toLocaleString()}`
+            : 'Select at least 1 add-on ($0)';
         }
         if (submitBtn) {
-          if (currentPaymentMethod === 'in_person') {
+          if (finalTotal <= 0) {
+            submitBtn.innerHTML = 'Select Add-On Service Above ($0)';
+          } else if (currentPaymentMethod === 'in_person') {
             submitBtn.innerHTML = `Confirm Member Add-Ons ($${finalTotal.toLocaleString()} in Person/Zelle)`;
           } else {
             submitBtn.innerHTML = `Confirm &amp; Pay Add-Ons (<span id="payBtnAmount">$${finalTotal.toLocaleString()}</span>)`;
@@ -1948,6 +1962,10 @@
       const selectedOpt = packageSelect ? packageSelect.options[packageSelect.selectedIndex] : null;
       const basePrice = parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
       finalTotal = basePrice + EXECUTIVE_MEMBERSHIP_MONTHLY + finalAddonsTotal;
+
+      if (elements && typeof elements.update === 'function') {
+        elements.update({ amount: Math.max(100, finalTotal * 100) });
+      }
 
       if (breakdownEl) {
         breakdownEl.textContent = finalAddonsTotal > 0
@@ -2064,10 +2082,6 @@
       updateStep1ScheduleSummary();
     }
 
-    // Initialize Stripe & Elements
-    const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    const elements = stripe.elements({ mode: 'payment', amount: 27000, currency: 'usd' });
-
     const expressCheckoutElement = elements.create('expressCheckout', {
       buttonHeight: 44,
       buttonTheme: { applePay: 'white-outline', googlePay: 'black' },
@@ -2088,18 +2102,19 @@
       }
 
       const { finalAddonsTotal } = getAddonsBreakdown();
-      if (bookingMode === 'addons_only' && finalAddonsTotal <= 0) {
+      const isSub = bookingMode === 'subscription';
+
+      if (!isSub && finalAddonsTotal <= 0) {
         alert('Please select at least one add-on service to book.');
         event.decline();
         return;
       }
 
-      const totalAmount = calculateTotalPrice();
       const packageSelect = document.getElementById('servicePackageCombined');
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
-      const basePrice = bookingMode === 'addons_only' ? 0 : parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10);
-      const membershipFeeToCharge = bookingMode === 'addons_only' ? 0 : EXECUTIVE_MEMBERSHIP_MONTHLY;
-      const isSub = bookingMode === 'subscription';
+      const basePrice = isSub ? parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10) : 0;
+      const membershipFeeToCharge = isSub ? EXECUTIVE_MEMBERSHIP_MONTHLY : 0;
+      const totalAmount = basePrice + membershipFeeToCharge + finalAddonsTotal;
       const formattedAddOns = getFormattedAddOns();
 
       const billingDetails = event.billingDetails || {};
@@ -2273,7 +2288,9 @@
       }
 
       const { finalAddonsTotal } = getAddonsBreakdown();
-      if (bookingMode === 'addons_only' && finalAddonsTotal <= 0) {
+      const isSub = bookingMode === 'subscription';
+
+      if (!isSub && finalAddonsTotal <= 0) {
         alert('Please select at least one add-on service before confirming.');
         return;
       }
@@ -2283,7 +2300,6 @@
 
       const packageSelect = document.getElementById('servicePackageCombined');
       const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
-      const isSub = bookingMode === 'subscription';
       const basePrice = isSub ? parseInt(selectedOpt ? selectedOpt.getAttribute('data-price') : 220, 10) : 0;
       const membershipFeeToCharge = isSub ? EXECUTIVE_MEMBERSHIP_MONTHLY : 0;
       const formattedAddOns = getFormattedAddOns();
